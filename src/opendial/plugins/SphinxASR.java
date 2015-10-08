@@ -126,7 +126,7 @@ public class SphinxASR implements Module {
 		// retrieving the path to the grammar file
 		if (params.containsKey("grammar")) {
 			File grammarFile = new File(getFile(params.getProperty("grammar")));
-			configuration.setGrammarPath(grammarFile.getParent() + "/");
+			configuration.setGrammarPath(grammarFile.getParent() + File.separator);
 			configuration.setGrammarName(grammarFile.getName().replace(".gram", ""));
 			configuration.setUseGrammar(true);
 			log.info("Recognition grammar: " + grammarFile.getPath());
@@ -253,7 +253,7 @@ public class SphinxASR implements Module {
 		}
 		File f = new File(path);
 		if (!f.exists() && !system.getDomain().isEmpty()) {
-			String rootpath = system.getDomain().getSourceFile().getParent() + "/";
+			String rootpath = system.getDomain().getSourceFile().getParent() + File.separator;
 			f = new File(rootpath + path);
 		}
 		if (!f.exists()) {
