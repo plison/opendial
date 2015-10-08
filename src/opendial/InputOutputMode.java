@@ -26,12 +26,14 @@ package opendial;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.logging.Logger;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import opendial.bn.BNetwork;
+import opendial.bn.nodes.ChanceNode;
 import opendial.readers.XMLStateReader;
 import opendial.utils.XMLUtils;
 
@@ -85,10 +87,12 @@ public class InputOutputMode implements Runnable {
 		catch (IOException e) {
 			log.warning("cannot extract standard input: " + e);
 		}
- 
+
 		if (input.startsWith("<state>")) {
-			BNetwork bn =
-					XMLStateReader.extractBayesianNetworkFromString(input);
+			BNetwork bn = XMLStateReader.extractBayesianNetworkFromString(input);
+			for (ChanceNode cn : new ArrayList<ChanceNode>(bn.getChanceNodes())) {
+				cn.setId(cn.getId().replace("^n", "'"));
+			}
 			ds.curState = new DialogueState(bn);
 			ds.update();
 		}
