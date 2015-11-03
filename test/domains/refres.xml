@@ -9,6 +9,10 @@
 <value prob="0.7">box</value>
 </variable>
 
+<variable id="type(object_3)">
+<value prob="1.0">unknown</value>
+</variable>
+
 <variable id="rgb(object_1)">
 <value>[252,14,3]</value>
 </variable>

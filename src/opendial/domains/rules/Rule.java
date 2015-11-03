@@ -143,6 +143,7 @@ public class Rule {
 
 		RuleOutput output = new RuleOutput(ruleType);
 		RuleGrounding groundings = getGroundings(input);
+
 		for (Assignment g : groundings.getAlternatives()) {
 
 			Assignment full = !(g.isEmpty()) ? new Assignment(input, g) : input;
@@ -155,7 +156,6 @@ public class Rule {
 			output.addOutput(match);
 
 		}
-
 		return output;
 	}
 
@@ -208,7 +208,6 @@ public class Rule {
 		for (RuleCase c : cases) {
 			groundings.add(c.getGroundings(input));
 		}
-		groundings.extend(new Assignment("random", (new Random()).nextInt(9999)));
 		return groundings;
 	}
 
@@ -317,6 +316,13 @@ public class Rule {
 						slots.removeAll(input.getVariables());
 						groundings.add(Assignment.createOneValue(slots, ""));
 					}
+				}
+			}
+
+			for (Effect e : getEffects()) {
+				for (String randomToGenerate : e.getRandomsToGenerate()) {
+					groundings.extend(new Assignment(randomToGenerate,
+							(new Random()).nextInt(99999)));
 				}
 			}
 			return groundings;

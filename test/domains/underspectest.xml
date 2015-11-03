@@ -1,0 +1,131 @@
+<domain>
+	
+	<initialstate>
+	 
+	<variable id="shape(obj_1)">
+		<value prob="0.9">cube</value>
+		<value prob="0.1">unknown</value>		
+	</variable>
+	
+	<variable id="shape(obj_2)">
+		<value prob="0.2">sphere</value>				
+		<value prob="0.1">cube</value>
+		<value prob="0.7">unknown</value>		
+	</variable>
+
+	<variable id="shape(obj_3)">
+		<value prob="0.7">cylinder</value>
+		<value prob="0.3">unknown</value>		
+	</variable>
+ 
+	<variable id="rgb(obj_1)">
+		<value prob="1">(251,0,2)</value>	
+	</variable>
+
+	<variable id="rgb(obj_2)">
+		<value prob="1">(2,3,12)</value>	
+	</variable>
+
+	<variable id="rgb(obj_3)">
+		<value prob="1">(251,0,2)</value>	
+	</variable>
+	
+	<variable id="u_u">
+		<value prob="1">look at the red cube</value>
+	</variable>
+	
+	</initialstate>
+	
+
+<model trigger="u_u">
+	
+	<rule>
+		<case>
+			<condition>
+				<if var="u_u" relation="contains" value="look at {X}"/>
+			</condition>
+			<effect prob="1">
+				<set var="reference" value="{X}"/>
+			</effect>
+		</case>
+	</rule>
+
+</model>
+
+ 
+<model trigger="reference">
+	
+	<rule>
+		<case>
+			<condition>
+				<if var="shape({Obj})" relation="=" value="{S}"/>
+				<if var="reference" relation="contains" value="{S}"/>
+			</condition>
+			<effect prob="1">
+				<set var="match" value="{Obj}"/>
+			</effect>
+		</case>
+		<case>
+			<condition>
+				<if var="shape({Obj})" relation="=" value="{S}"/>								
+				<if var="reference" relation="!contains" value="(cube|sphere|cylinder)"/>
+			</condition>
+			<effect prob="0.5">
+				<set var="match" value="{Obj}"/>
+			</effect>
+		</case>
+		</rule>
+	
+
+	<rule>
+		<case>
+			<condition>
+				<if var="reference" relation="contains" value="red"/>	
+				<if var="rgb({Obj})" value="({R},{G},{B})" />
+			</condition>
+			<effect prob="exp((-({R}-255)^2-{G}^2-{B}^2)/100)">
+				<set var="match" value="{Obj}"/>
+			</effect>
+		</case>
+		<case>
+			<condition>
+				<if var="reference" relation="contains" value="green"/>	
+				<if var="rgb({Obj})" value="({R},{G},{B})" />
+			</condition>
+			<effect prob="exp((-{R}^2-({G}-128)^2-{B}^2)/100)">
+				<set var="match" value="{Obj}"/>
+			</effect>
+		</case>
+		<case>
+			<condition>
+				<if var="reference" relation="contains" value="blue"/>	
+				<if var="rgb({Obj})" value="({R},{G},{B})" />
+			</condition>
+			<effect prob="exp((-{R}^2-{G}^2-({B}-255)^2)/100)">
+				<set var="match" value="{Obj}"/>
+			</effect>
+		</case>
+		<case>
+			<condition>
+				<if var="reference" relation="contains" value="black"/>	
+				<if var="rgb({Obj})" value="({R},{G},{B})" />
+			</condition>
+			<effect prob="exp((-{R}^2-{G}^2-{B}^2)/100)">
+				<set var="match" value="{Obj}"/>
+			</effect>
+		</case>
+		<case>
+			<condition>
+				<if var="reference" relation="contains" value="white"/>	
+				<if var="rgb({Obj})" value="({R},{G},{B})" />
+			</condition>
+			<effect prob="exp((-({R}-255)^2-({G}-255)^2-({B}-255)^2)/100)">
+				<set var="match" value="{Obj}"/>
+			</effect>
+		</case>
+	</rule>
+
+</model>
+
+
+</domain>

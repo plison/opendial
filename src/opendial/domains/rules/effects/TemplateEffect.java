@@ -23,6 +23,8 @@
 
 package opendial.domains.rules.effects;
 
+import java.util.HashSet;
+import java.util.Set;
 import java.util.logging.*;
 
 import opendial.bn.values.ValueFactory;
@@ -153,6 +155,17 @@ public final class TemplateEffect extends BasicEffect {
 	 */
 	public Template getValueTemplate() {
 		return valueTemplate;
+	}
+
+	/**
+	 * Returns all slots in the template effects
+	 * 
+	 * @return the set of all slots
+	 */
+	public Set<String> getAllSlots() {
+		Set<String> allslots = new HashSet<String>(labelTemplate.getSlots());
+		allslots.addAll(valueTemplate.getSlots());
+		return allslots;
 	}
 
 	// ===================================

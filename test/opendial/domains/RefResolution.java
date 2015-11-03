@@ -27,9 +27,11 @@ import static org.junit.Assert.assertEquals;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import opendial.DialogueSystem;
 import opendial.bn.values.ValueFactory;
+import opendial.modules.StatePruner;
 import opendial.readers.XMLDomainReader;
 
 import org.junit.Test;
@@ -37,6 +39,7 @@ import org.junit.Test;
 public class RefResolution {
 
 	Domain domain = XMLDomainReader.extractDomain("test/domains/refres.xml");
+	final static Logger log = Logger.getLogger("OpenDial");
 
 	@Test
 	public void nluTest() throws InterruptedException {
@@ -221,5 +224,19 @@ public class RefResolution {
 				system.getContent("a_m").getBest().toString());
 		assertEquals(0.34,
 				system.getContent("matches(ref_main)").getProb("[object_2]"), 0.05);
+	}
+
+	@Test
+	public void underspecTest1() throws InterruptedException {
+		Domain domain =
+				XMLDomainReader.extractDomain("test/domains/underspectest.xml");
+		DialogueSystem system = new DialogueSystem(domain);
+		system.getSettings().showGUI = false;
+		StatePruner.ENABLE_REDUCTION = false;
+		system.startSystem();
+		assertEquals(0.66, system.getContent("match").getProb("obj_1"), 0.05);
+		assertEquals(0.307, system.getContent("match").getProb("obj_3"), 0.05);
+		assertEquals(14, system.getState().getChanceNodeIds().size());
+		StatePruner.ENABLE_REDUCTION = true;
 	}
 }

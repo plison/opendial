@@ -270,9 +270,7 @@ public final class BasicCondition implements Condition {
 			}
 			return groundings;
 		}
-
 		String filledVar = groundCond.variable.toString();
-
 		// case 2 : the expected value contains unfilled slots
 		if (!groundCond.templateValue.getSlots().isEmpty()) {
 			Value actualValue = input.getValue(groundCond.variable.toString());

@@ -143,7 +143,6 @@ public class OutputDistribution implements ProbDistribution {
 	public IndependentDistribution getProbDistrib(Assignment condition) {
 
 		// creating the table
-
 		CategoricalTable.Builder builder =
 				new CategoricalTable.Builder(baseVar + primes);
 
@@ -155,26 +154,23 @@ public class OutputDistribution implements ProbDistribution {
 			}
 		}
 		Effect fullEffect = new Effect(fullEffects);
-
-		Set<Value> values = fullEffect.getValues(baseVar);
+		Map<Value, Double> values = fullEffect.getValues(baseVar);
 		// case 1: add effects
 		if (fullEffect.isNonExclusive(baseVar)) {
-			SetVal addVal = ValueFactory.create(values);
+			SetVal addVal = ValueFactory.create(values.keySet());
 			builder.addRow(addVal, 1.0);
 		}
-
 		// case 2 (most common): classical set operations
 		else if (!values.isEmpty()) {
-			for (Value v : values) {
-				builder.addRow(v, (1.0 / values.size()));
+			double total = values.values().stream().mapToDouble(d -> d).sum();
+			for (Value v : values.keySet()) {
+				builder.addRow(v, values.get(v) / total);
 			}
 		}
-
 		// case 3: set to none value
 		else {
 			builder.addRow(ValueFactory.none(), 1.0);
 		}
-
 		return builder.build();
 	}
 
@@ -204,7 +200,7 @@ public class OutputDistribution implements ProbDistribution {
 				if (e.isNonExclusive(baseVar)) {
 					return getValues_linearise();
 				}
-				Set<Value> setValues = e.getValues(baseVar);
+				Set<Value> setValues = e.getValues(baseVar).keySet();
 				values.addAll(setValues);
 				if (setValues.isEmpty()) {
 					values.add(ValueFactory.none());
@@ -233,7 +229,7 @@ public class OutputDistribution implements ProbDistribution {
 	 */
 	@Override
 	public Set<String> getInputVariables() {
-		return inputRules.stream().map(r -> r.getRule().getRuleId())
+		return inputRules.stream().map(r -> r.getVariable())
 				.collect(Collectors.toSet());
 	}
 

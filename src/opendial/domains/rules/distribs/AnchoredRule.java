@@ -38,6 +38,7 @@ import opendial.bn.distribs.ProbDistribution;
 import opendial.bn.distribs.UtilityFunction;
 import opendial.bn.values.Value;
 import opendial.datastructs.Assignment;
+import opendial.datastructs.Template;
 import opendial.datastructs.ValueRange;
 import opendial.domains.rules.Rule;
 import opendial.domains.rules.Rule.RuleType;
@@ -69,6 +70,9 @@ public final class AnchoredRule implements ProbDistribution, UtilityFunction {
 	// the range of possible output (or action) values
 	final ValueRange outputs;
 
+	// predefined filled slots for the rule (usually empty)
+	final Assignment filledSlots;
+
 	// set of inputs and outputs for the rule
 	final Set<String> variables;
 
@@ -94,19 +98,29 @@ public final class AnchoredRule implements ProbDistribution, UtilityFunction {
 	 * 
 	 * @param rule the probabilistic rule
 	 * @param state the dialogue state
+	 * @param filled
 	 */
-	public AnchoredRule(Rule rule, DialogueState state) {
+	public AnchoredRule(Rule rule, DialogueState state, Assignment filledSlots) {
 		this.rule = rule;
 		this.id = rule.getRuleId();
+		if (!filledSlots.isEmpty()) {
+			this.id += "(" + filledSlots + ")";
+		}
 		effects = new HashSet<Effect>();
 		outputs = new ValueRange();
 		parameters = new HashSet<String>();
+		this.filledSlots = filledSlots;
 
 		// determines the input range
 		inputs = new ValueRange();
-		state.getMatchingNodes(rule.getInputVariables()).stream()
-				.forEach(i -> inputs.addValues(i.getId(), i.getValues()));
-
+		for (Template t : rule.getInputVariables()) {
+			if (t.isFilledBy(filledSlots)) {
+				String t2 = t.fillSlots(filledSlots);
+				if (state.hasChanceNode(t2)) {
+					inputs.addValues(t2, state.getChanceNode(t2).getValues());
+				}
+			}
+		}
 		Set<Assignment> conditions = inputs.linearise();
 
 		// we already start a cache if we have a probability rule
@@ -118,10 +132,10 @@ public final class AnchoredRule implements ProbDistribution, UtilityFunction {
 		// determines the set of possible effects, output values and parameters
 		// (for all possible input values)
 		for (Assignment input : conditions) {
+			input.addAssignment(filledSlots);
 
 			RuleOutput output = getCachedOutput(input);
 			relevant = relevant || !output.isVoid();
-
 			// looping on all alternative effects in the output
 			for (Map.Entry<Effect, Parameter> o : output.getPairs()) {
 				Effect effect = o.getKey();
@@ -132,7 +146,6 @@ public final class AnchoredRule implements ProbDistribution, UtilityFunction {
 						.forEach(p -> parameters.add(p));
 			}
 		}
-
 		// adding the action variables, and activating the cache
 		if (relevant && rule.getRuleType() == RuleType.UTIL) {
 			variables.addAll(outputs.getVariables());
@@ -260,7 +273,6 @@ public final class AnchoredRule implements ProbDistribution, UtilityFunction {
 
 		double totalUtil = 0.0;
 		RuleOutput output = getCachedOutput(fullInput);
-
 		for (Effect effectOutput : output.getEffects()) {
 			Condition effectCondition = effectOutput.convertToCondition();
 			if (effectCondition.isSatisfiedBy(fullInput)) {
@@ -268,7 +280,6 @@ public final class AnchoredRule implements ProbDistribution, UtilityFunction {
 				totalUtil += param.getValue(fullInput);
 			}
 		}
-
 		return totalUtil;
 	}
 
@@ -373,13 +384,13 @@ public final class AnchoredRule implements ProbDistribution, UtilityFunction {
 	private RuleOutput getCachedOutput(Assignment input) {
 
 		if (cache == null) {
-			return rule.getOutput(input);
+			return rule.getOutput(new Assignment(input, filledSlots));
 		}
 		else if (input.size() > variables.size()) {
 			input = input.getTrimmed(variables);
 		}
-
-		return cache.computeIfAbsent(input, a -> rule.getOutput(a));
+		return cache.computeIfAbsent(new Assignment(input, filledSlots),
+				a -> rule.getOutput(a));
 	}
 
 }

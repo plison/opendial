@@ -24,8 +24,10 @@
 package opendial.bn.distribs;
 
 import java.util.logging.*;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -674,6 +676,22 @@ public class CategoricalTable implements IndependentDistribution {
 		 */
 		public double getTotalProb() {
 			return table.values().stream().mapToDouble(d -> d).sum();
+		}
+
+		/**
+		 * Returns the values included so far in the builder.
+		 * 
+		 * @return the values
+		 */
+		public List<Value> getValues() {
+			return new ArrayList<Value>(table.keySet());
+		}
+
+		/**
+		 * Clears the builder.
+		 */
+		public void clear() {
+			table.clear();
 		}
 	}
 

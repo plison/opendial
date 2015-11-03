@@ -25,8 +25,6 @@ package opendial.domains.rules.effects;
 
 import java.util.logging.*;
 
-import java.util.Collection;
-import java.util.Collections;
 import opendial.bn.values.Value;
 import opendial.bn.values.ValueFactory;
 import opendial.datastructs.Assignment;
@@ -71,6 +69,9 @@ public class BasicEffect {
 
 	/** Priority level (default is 1) */
 	int priority;
+
+	/** effect weight (default is 1) */
+	double weight = 1;
 
 	// ===================================
 	// EFFECT CONSTRUCTION
@@ -162,21 +163,21 @@ public class BasicEffect {
 	}
 
 	/**
-	 * Returns an empty set.
-	 * 
-	 * @return an empty set
-	 */
-	public Collection<String> getSlots() {
-		return Collections.emptySet();
-	}
-
-	/**
 	 * Returns the rule priority
 	 * 
 	 * @return the priority level
 	 */
 	public int getPriority() {
 		return priority;
+	}
+
+	/**
+	 * Returns the effect weight
+	 * 
+	 * @return the weight
+	 */
+	public double getWeight() {
+		return weight;
 	}
 
 	/**

@@ -27,13 +27,13 @@ import java.util.logging.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
-
+import opendial.bn.values.SetVal;
 import opendial.bn.values.Value;
 import opendial.bn.values.ValueFactory;
 import opendial.datastructs.Assignment;
@@ -56,7 +56,10 @@ public final class Effect implements Value {
 	final static Logger log = Logger.getLogger("OpenDial");
 
 	// the sub-effects included in the effect
-	final Set<BasicEffect> subeffects;
+	final List<BasicEffect> subeffects;
+
+	// the table of (grounded) values for the effect
+	final Map<String, Map<Value, Double>> valueTable;
 
 	// "equivalent" condition (inverse view)
 	Condition equivalentCondition;
@@ -64,6 +67,8 @@ public final class Effect implements Value {
 	// whether the effect is fully grounded or not
 	final boolean fullyGrounded;
 
+	// underspecified slots of the form "{randomX}"
+	final Set<String> randomsToGenerate;
 	// ===================================
 	// EFFECT CONSTRUCTION
 	// ===================================
@@ -73,8 +78,10 @@ public final class Effect implements Value {
 	 * 
 	 */
 	public Effect() {
-		subeffects = new HashSet<BasicEffect>();
+		subeffects = new ArrayList<BasicEffect>();
 		fullyGrounded = true;
+		randomsToGenerate = new HashSet<String>();
+		valueTable = new HashMap<String, Map<Value, Double>>();
 	}
 
 	/**
@@ -83,8 +90,15 @@ public final class Effect implements Value {
 	 * @param effect the effect to include
 	 */
 	public Effect(BasicEffect effect) {
-		subeffects = new HashSet<BasicEffect>(Arrays.asList(effect));
+		subeffects = Arrays.asList(effect);
 		fullyGrounded = !effect.containsSlots();
+		valueTable = new HashMap<String, Map<Value, Double>>();
+		randomsToGenerate = new HashSet<String>();
+		if (effect instanceof TemplateEffect) {
+			((TemplateEffect) effect).getAllSlots().stream()
+					.filter(s -> s.startsWith("random"))
+					.forEach(s -> randomsToGenerate.add(s));
+		}
 	}
 
 	/**
@@ -93,11 +107,19 @@ public final class Effect implements Value {
 	 * @param effects the effects to include
 	 */
 	public Effect(Collection<BasicEffect> effects) {
-		List<BasicEffect> effectsList = new ArrayList<BasicEffect>(effects);
-		Collections.sort(effectsList,
-				(e1, e2) -> Boolean.compare(e1.negated, e2.negated));
-		subeffects = new LinkedHashSet<BasicEffect>(effectsList);
+
+		subeffects = new ArrayList<BasicEffect>(effects);
 		fullyGrounded = subeffects.stream().allMatch(e -> !e.containsSlots());
+		valueTable = new HashMap<String, Map<Value, Double>>();
+
+		randomsToGenerate = new HashSet<String>();
+		for (BasicEffect effect : effects) {
+			if (effect instanceof TemplateEffect) {
+				((TemplateEffect) effect).getAllSlots().stream()
+						.filter(s -> s.startsWith("random"))
+						.forEach(s -> randomsToGenerate.add(s));
+			}
+		}
 	}
 
 	/**
@@ -174,9 +196,7 @@ public final class Effect implements Value {
 	}
 
 	/**
-	 * Returns the set of values specified in the effect for the given variable and
-	 * effect type. The method accepts the effect types SET, DISCARD and ADD (the
-	 * CLEAR effect does not return any value).
+	 * Returns the set of values specified in the effect for the given variable.
 	 * 
 	 * If several effects are defined with distinct priorities, only the effect with
 	 * highest priority is retained.
@@ -184,35 +204,11 @@ public final class Effect implements Value {
 	 * @param variable the variable
 	 * @return the values specified in the effect
 	 */
-	public Set<Value> getValues(String variable) {
-		Set<Value> result = new HashSet<Value>();
-		int highestPriority = Integer.MAX_VALUE;
-		for (BasicEffect e : subeffects) {
-			if (e.getVariable().equals(variable)) {
-				if (e.priority > highestPriority) {
-					continue;
-				}
-				else if (e.priority < highestPriority) {
-					result = new HashSet<Value>();
-					highestPriority = e.priority;
-				}
-				if (e.isNegated()) {
-					result.remove(e.getValue());
-					for (Value v : new ArrayList<Value>(result)) {
-						Collection<Value> subvals = v.getSubValues();
-						if (subvals.contains(e.getValue())) {
-							result.remove(v);
-							subvals.remove(e.getValue());
-							result.add(ValueFactory.create(subvals));
-						}
-					}
-				}
-				else if (!e.getValue().equals(ValueFactory.none())) {
-					result.add(e.getValue());
-				}
-			}
+	public Map<Value, Double> getValues(String variable) {
+		if (!valueTable.containsKey(variable)) {
+			valueTable.put(variable, createTable(variable));
 		}
-		return result;
+		return valueTable.get(variable);
 	}
 
 	/**
@@ -293,6 +289,16 @@ public final class Effect implements Value {
 			}
 		}
 		return a;
+	}
+
+	/**
+	 * Returns the slots of the form {randomX}, which are to be replaced by random
+	 * integers.
+	 * 
+	 * @return the set of slots to replace by random integers
+	 */
+	public Set<String> getRandomsToGenerate() {
+		return randomsToGenerate;
 	}
 
 	// ===================================
@@ -419,6 +425,53 @@ public final class Effect implements Value {
 						exclusive, negated));
 			}
 		}
+	}
+
+	// ===================================
+	// UTILITY FUNCTIONS
+	// ===================================
+
+	/**
+	 * Extracts the values (along with their weight) specified in the effect.
+	 * 
+	 * @param variable the variable
+	 * @return the corresponding values
+	 */
+	private Map<Value, Double> createTable(String variable) {
+
+		Map<Value, Double> values = new HashMap<Value, Double>();
+		// first pass
+		int maxPriority = Integer.MAX_VALUE;
+		Set<Value> toRemove = new HashSet<Value>();
+		toRemove.add(ValueFactory.none());
+		for (BasicEffect e : subeffects) {
+			if (e.getVariable().equals(variable)) {
+				if (e.priority < maxPriority) {
+					maxPriority = e.priority;
+				}
+				if (e.negated) {
+					toRemove.add(e.getValue());
+				}
+			}
+		}
+		// second pass
+		for (BasicEffect e : subeffects) {
+			String var = e.getVariable();
+			if (var.equals(variable)) {
+				Value value = e.getValue();
+				if (e.priority > maxPriority || e.negated
+						|| toRemove.contains(value)) {
+					continue;
+				}
+				if (toRemove.size() > 1 && value instanceof SetVal) {
+					Collection<Value> subvalues = ((SetVal) value).getSubValues();
+					subvalues.removeAll(toRemove);
+					value = ValueFactory.create(subvalues);
+				}
+				values.merge(value, e.weight, (w1, w2) -> w1 + w2);
+			}
+		}
+		return values;
 	}
 
 }

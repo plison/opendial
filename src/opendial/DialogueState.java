@@ -27,7 +27,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.logging.Logger;
 
@@ -328,15 +327,18 @@ public class DialogueState extends BNetwork {
 	 */
 	public void applyRule(Rule r) {
 
-		AnchoredRule arule = new AnchoredRule(r, this);
-		if (arule.isRelevant()) {
-			switch (r.getRuleType()) {
-			case PROB:
-				addProbabilityRule(arule);
-				break;
-			case UTIL:
-				addUtilityRule(arule);
-				break;
+		Set<Assignment> slots = getMatchingSlots(r.getInputVariables()).linearise();
+		for (Assignment filledSlot : slots) {
+			AnchoredRule arule = new AnchoredRule(r, this, filledSlot);
+			if (arule.isRelevant()) {
+				switch (r.getRuleType()) {
+				case PROB:
+					addProbabilityRule(arule);
+					break;
+				case UTIL:
+					addUtilityRule(arule);
+					break;
+				}
 			}
 		}
 	}
@@ -478,21 +480,23 @@ public class DialogueState extends BNetwork {
 	}
 
 	/**
-	 * Returns the chance nodes whose variable labels match the provided templates.
+	 * Returns the possible filled values for the underspecified slots in the
+	 * templates, on the basis of the variables in the dialogue sate.
 	 * 
-	 * @param templates the templates to match
-	 * @return the corresponding chance nodes
+	 * @param templates the templates to apply
+	 * @return the possible values (as a value range)
 	 */
-	public List<ChanceNode> getMatchingNodes(Collection<Template> templates) {
-		List<ChanceNode> inputVars = new ArrayList<ChanceNode>();
+	public ValueRange getMatchingSlots(Collection<Template> templates) {
+		ValueRange range = new ValueRange();
 		for (Template t : templates) {
-			for (String currentVar : getChanceNodeIds()) {
-				if (!currentVar.endsWith("'") && t.match(currentVar).isMatching()) {
-					inputVars.add(getChanceNode(currentVar));
-				}
+			if (!t.isUnderspecified()) {
+				continue;
 			}
+			getChanceNodeIds().stream().filter(c -> !c.endsWith("'"))
+					.map(c -> t.match(c)).filter(r -> r.isMatching())
+					.forEach(r -> range.addAssign(r));
 		}
-		return inputVars;
+		return range;
 	}
 
 	/**
@@ -654,7 +658,7 @@ public class DialogueState extends BNetwork {
 	 */
 	private void addProbabilityRule(AnchoredRule arule) {
 
-		String ruleId = arule.getRule().getRuleId();
+		String ruleId = arule.getVariable();
 		if (hasChanceNode(ruleId)) {
 			removeNode(ruleId);
 		}
@@ -700,8 +704,7 @@ public class DialogueState extends BNetwork {
 	 */
 	private void addUtilityRule(AnchoredRule arule) {
 
-		String ruleId = arule.getRule().getRuleId();
-
+		String ruleId = arule.getVariable();
 		if (hasUtilityNode(ruleId)) {
 			removeNode(ruleId);
 		}

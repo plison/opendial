@@ -253,7 +253,8 @@ public class SphinxASR implements Module {
 		}
 		File f = new File(path);
 		if (!f.exists() && !system.getDomain().isEmpty()) {
-			String rootpath = system.getDomain().getSourceFile().getParent() + File.separator;
+			String rootpath =
+					system.getDomain().getSourceFile().getParent() + File.separator;
 			f = new File(rootpath + path);
 		}
 		if (!f.exists()) {
