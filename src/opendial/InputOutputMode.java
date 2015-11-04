@@ -23,9 +23,7 @@
 
 package opendial;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.Console;
 import java.util.ArrayList;
 import java.util.logging.Logger;
 
@@ -52,8 +50,6 @@ public class InputOutputMode implements Runnable {
 	// logger
 	final static Logger log = Logger.getLogger("OpenDial");
 
-	final static boolean EXIT_AFTER_OUTPUT = true;
-
 	DialogueSystem ds;
 
 	/**
@@ -73,37 +69,34 @@ public class InputOutputMode implements Runnable {
 	@Override
 	public void run() {
 
-		BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
-		String input = "";
-		try {
-			String line;
-			while ((line = in.readLine()) != null && line.length() != 0) {
-				input += line;
-				if (line.contains("</state>")) {
-					break;
+		Console console = System.console();
+		while (true) {
+			try {
+				String line = console.readLine();
+				if (line != null) {
+					if (!line.startsWith("<state>") || !line.endsWith("</state>")) {
+						log.warning("Line is not well-formed (must start with <state> and end with </state>)");
+						continue;
+					}
+
+					BNetwork bn = XMLStateReader.extractBayesianNetworkFromString(line);
+					for (ChanceNode cn : new ArrayList<ChanceNode>(bn.getChanceNodes())) {
+						cn.setId(cn.getId().replace("^n", "'"));
+					}
+					ds.curState = new DialogueState(bn);
+					ds.update();
+
+					Document output = XMLUtils.newXMLDocument();
+					Element el = ds.getState().generateXML(output, ds.getState().getNodeIds());
+					output.appendChild(el);
+					System.out.println(XMLUtils.writeXMLString(output).replace("\n",""));
 				}
+
 			}
-		}
-		catch (IOException e) {
-			log.warning("cannot extract standard input: " + e);
-		}
-
-		if (input.startsWith("<state>")) {
-			BNetwork bn = XMLStateReader.extractBayesianNetworkFromString(input);
-			for (ChanceNode cn : new ArrayList<ChanceNode>(bn.getChanceNodes())) {
-				cn.setId(cn.getId().replace("^n", "'"));
+			catch (Exception e) {
+				e.printStackTrace();
+				System.exit(0);
 			}
-			ds.curState = new DialogueState(bn);
-			ds.update();
-		}
-
-		Document output = XMLUtils.newXMLDocument();
-		Element el = ds.getState().generateXML(output, ds.getState().getNodeIds());
-		output.appendChild(el);
-		System.out.println(XMLUtils.writeXMLString(output));
-
-		if (EXIT_AFTER_OUTPUT) {
-			System.exit(0);
 		}
 	}
 

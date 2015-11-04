@@ -852,12 +852,12 @@ public class DialogueSystem {
 	 * @throws IOException
 	 */
 	public static void main(String[] args) throws IOException {
-
+		
 		DialogueSystem system = new DialogueSystem();
 		String domainFile = System.getProperty("domain");
 		String dialogueFile = System.getProperty("dialogue");
 		String simulatorFile = System.getProperty("simulator");
-
+		
 		system.getSettings().fillSettings(System.getProperties());
 		if (domainFile != null) {
 			Domain domain;
@@ -871,6 +871,7 @@ public class DialogueSystem {
 			}
 			system.changeDomain(domain);
 		}
+
 		if (dialogueFile != null) {
 			system.importDialogue(dialogueFile);
 		}
