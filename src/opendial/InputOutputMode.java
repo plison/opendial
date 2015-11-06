@@ -78,18 +78,8 @@ public class InputOutputMode implements Runnable {
 						log.warning("Line is not well-formed (must start with <state> and end with </state>)");
 						continue;
 					}
-
-					BNetwork bn = XMLStateReader.extractBayesianNetworkFromString(line);
-					for (ChanceNode cn : new ArrayList<ChanceNode>(bn.getChanceNodes())) {
-						cn.setId(cn.getId().replace("^n", "'"));
-					}
-					ds.curState = new DialogueState(bn);
-					ds.update();
-
-					Document output = XMLUtils.newXMLDocument();
-					Element el = ds.getState().generateXML(output, ds.getState().getNodeIds());
-					output.appendChild(el);
-					System.out.println(XMLUtils.writeXMLString(output).replace("\n",""));
+					InputProcessor ip = new InputProcessor(line);
+					(new Thread(ip)).start();
 				}
 
 			}
@@ -99,5 +89,37 @@ public class InputOutputMode implements Runnable {
 			}
 		}
 	}
+
+	/**
+	 * Thread to process a given state input and generate the resulting output
+	 * (a lock is set on the dialogue state during that process).
+	 *
+	 */
+	class InputProcessor implements Runnable {
+
+		String input;
+
+		public InputProcessor(String input) {
+			this.input = input;
+		}
+
+		@Override
+		public void run() {
+			synchronized (ds.curState) {
+				BNetwork bn = XMLStateReader.extractBayesianNetworkFromString(input);
+				for (ChanceNode cn : new ArrayList<ChanceNode>(bn.getChanceNodes())) {
+					cn.setId(cn.getId().replace("^n", "'"));
+				}
+				ds.curState = new DialogueState(bn);
+				ds.update();
+
+				Document output = XMLUtils.newXMLDocument();
+				Element el = ds.getState().generateXML(output, ds.getState().getNodeIds());
+				output.appendChild(el);
+				System.out.println(XMLUtils.writeXMLString(output).replace("\n",""));
+			}
+		}
+	}
+
 
 }
