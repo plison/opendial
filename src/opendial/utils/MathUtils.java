@@ -27,7 +27,12 @@ import java.util.logging.*;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.function.Function;
 import java.util.stream.IntStream;
+
+import opendial.bn.values.ArrayVal;
+import opendial.bn.values.Value;
+import opendial.bn.values.ValueFactory;
 
 /**
  * Math utilities.
@@ -134,6 +139,66 @@ public class MathUtils {
 		double denum = gamma((dimension / 2.0) + 1);
 		double radius2 = Math.pow(radius, dimension);
 		return radius2 * numerator / denum;
+	}
+
+	public final static class DotProduct implements Function<List<String>, Value> {
+
+		@Override
+		public Value apply(List<String> input) {
+			if (input.size() != 2) {
+				throw new RuntimeException("Dot product requires 2 arguments");
+			}
+			Value val1 = ValueFactory.create(input.get(0));
+			Value val2 = ValueFactory.create(input.get(1));
+			if (!(val1 instanceof ArrayVal) || !(val2 instanceof ArrayVal)) {
+				throw new RuntimeException(
+						val1 + " and " + val2 + " are not ArrayVal objects");
+			}
+			double[] array1 = ((ArrayVal) val1).getArray();
+			double[] array2 = ((ArrayVal) val2).getArray();
+			if (array1.length != array2.length) {
+				throw new RuntimeException(
+						val1 + " and " + val2 + " have different dimensions");
+			}
+			double result = 0.0;
+			for (int i = 0; i < array1.length; i++) {
+				result += (array1[i] * array2[i]);
+			}
+			return ValueFactory.create(result);
+		}
+
+	}
+
+	public final static class LogisticFunction
+			implements Function<List<String>, Value> {
+
+		@Override
+		public Value apply(List<String> input) {
+			if (input.size() != 2) {
+				throw new RuntimeException(
+						"Logistic function requires 2 arguments, but is given: "
+								+ input);
+			}
+			Value val1 = ValueFactory.create(input.get(0));
+			Value val2 = ValueFactory.create(input.get(1));
+			if (!(val1 instanceof ArrayVal) || !(val2 instanceof ArrayVal)) {
+				throw new RuntimeException(
+						val1 + " and " + val2 + " are not ArrayVal objects");
+			}
+			double[] array1 = ((ArrayVal) val1).getArray();
+			double[] array2 = ((ArrayVal) val2).getArray();
+			if (array1.length != array2.length) {
+				throw new RuntimeException(
+						val1 + " and " + val2 + " have different dimensions");
+			}
+			double dotproduct = 0.0;
+			for (int i = 0; i < array1.length; i++) {
+				dotproduct += (array1[i] * array2[i]);
+			}
+			double result = 1.0 / (1 + Math.exp(-dotproduct));
+			return ValueFactory.create(result);
+		}
+
 	}
 
 }

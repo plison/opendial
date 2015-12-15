@@ -48,12 +48,8 @@ public class ComplexParameter implements Parameter {
 	 * Constructs a new complex parameter with the given expression, assuming the
 	 * list of parameters is provided as labels within the expression.
 	 * 
-	 * @param expression the expression as a string
+	 * @param expression the expression
 	 */
-	public ComplexParameter(String expression) {
-		this.expression = new MathExpression(expression);
-	}
-
 	public ComplexParameter(MathExpression expression) {
 		this.expression = expression;
 	}
@@ -96,7 +92,8 @@ public class ComplexParameter implements Parameter {
 		for (String u : input.getVariables()) {
 			filled.replaceAll(u, input.getValue(u).toString());
 		}
-		return new ComplexParameter(filled);
+
+		return new ComplexParameter(new MathExpression(filled));
 	}
 
 	/**

@@ -37,9 +37,9 @@ import opendial.bn.values.SetVal;
 import opendial.bn.values.Value;
 import opendial.bn.values.ValueFactory;
 import opendial.datastructs.Assignment;
-import opendial.datastructs.Template;
 import opendial.domains.rules.conditions.ComplexCondition;
 import opendial.domains.rules.conditions.ComplexCondition.BinaryOperator;
+import opendial.templates.Template;
 import opendial.domains.rules.conditions.Condition;
 import opendial.domains.rules.conditions.VoidCondition;
 

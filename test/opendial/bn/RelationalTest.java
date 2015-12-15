@@ -25,146 +25,80 @@ package opendial.bn;
 
 import static org.junit.Assert.*;
 
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
+import java.util.function.Function;
 import java.util.logging.Logger;
 
 import org.junit.Test;
 
+import opendial.DialogueSystem;
 import opendial.bn.values.RelationalVal;
 import opendial.bn.values.Value;
 import opendial.bn.values.ValueFactory;
-import opendial.datastructs.Template;
+import opendial.datastructs.Assignment;
+import opendial.domains.Domain;
+import opendial.readers.XMLDomainReader;
+import opendial.templates.RelationalTemplate;
 
 public class RelationalTest {
 
 	final static Logger log = Logger.getLogger("OpenDial");
 
 	@Test
-	public void relValueTest() throws InterruptedException {
-
-		RelationalVal builder = new RelationalVal();
-		List<String> attrs = new ArrayList<String>();
-		attrs.add("name");
-		builder.addNode("John", attrs);
-		builder.addNode("sees");
-		builder.addNode("Anne", attrs);
-		builder.addNode("with");
-		builder.addNode("a");
-		builder.addNode("red");
-		builder.addNode("telescope");
-		builder.addEdge(1, 0, "subject");
-		builder.addEdge(1, 2, "object");
-		builder.addEdge(1, 6, "instrument");
-		builder.addEdge(6, 5, "colour");
-
-		assertEquals(builder.length(), 7);
-		Value setval = ValueFactory
-				.create("[John/name, sees, Anne/name, with, a, red, telescope]");
-		assertEquals(new HashSet<Value>(builder.getSubValues()),
-				setval.getSubValues());
-		assertTrue(builder.contains(ValueFactory.create("Anne")));
-		assertEquals(3, builder.getRoots().size());
-		builder.pruneIsolatedNodes();
-		assertEquals(builder.length(), 5);
-		assertEquals(1, builder.getRoots().size());
-		setval = ValueFactory.create("[John/name, sees, Anne/name, red, telescope]");
-		assertEquals(new HashSet<Value>(builder.getSubValues()),
-				setval.getSubValues());
-		assertEquals(builder.toString(),
-				"[sees subject>John/name object>Anne/name instrument>[telescope colour>red]]");
-
-		RelationalVal builder2 = new RelationalVal();
-		builder2.addNode("John", attrs);
-		builder2.addNode("sees");
-		builder2.addNode("Anne", attrs);
-		builder2.addNode("red");
-		builder2.addNode("telescope");
-		builder2.addEdge(1, 0, "subject");
-		builder2.addEdge(1, 2, "object");
-		builder2.addEdge(1, 4, "instrument");
-		builder2.addEdge(4, 3, "colour");
-		assertEquals(builder.toString(), builder2.toString());
-		assertEquals(builder, builder2);
-		assertEquals(builder.hashCode(), builder2.hashCode());
-
-		builder = new RelationalVal();
-		builder.addNode("this");
-		builder.addNode("is");
-		builder.addNode("interesting");
-		builder.addEdge(1, 0, "subject");
-		builder.addEdge(1, 2, "pred");
-		Value concatenation = builder2.concatenate(builder);
-		assertEquals(8, concatenation.getSubValues().size());
-		assertEquals(RelationalVal.class, concatenation.getClass());
-		assertEquals(2, ((RelationalVal) concatenation).getRoots().size());
+	public void relationalTest() {
+		RelationalVal rel = (RelationalVal) ValueFactory.create(
+				"[sees|tag:VB subject>John object>Anne instrument>[telescope|tag:NN colour>red|tag:ADJ]]");
+		assertEquals(5, rel.length());
+		assertTrue(rel.getSubValues().contains(ValueFactory.create("telescope")));
+		assertEquals("sees", rel.getNodes().get(0).getContent().toString());
+		RelationalTemplate t = new RelationalTemplate("[sees subject>John]");
+		assertEquals(1, t.getMatches(rel).size());
+		t = new RelationalTemplate("[sees {S}>John]");
+		assertEquals(1, t.getMatches(rel).size());
+		assertEquals("subject", t.getMatches(rel).get(0).getValue("S").toString());
+		t = new RelationalTemplate("[sees {S}>{O}]");
+		assertEquals(3, t.getMatches(rel).size());
+		assertEquals("instrument",
+				t.getMatches(rel).get(0).getValue("S").toString());
+		assertEquals("telescope", t.getMatches(rel).get(0).getValue("O").toString());
+		t = new RelationalTemplate("[{V}|tag:{T} subject>{X} object>{Y}]");
+		assertEquals("sees", t.getMatches(rel).get(0).getValue("V").toString());
+		assertEquals("VB", t.getMatches(rel).get(0).getValue("T").toString());
+		assertEquals("John", t.getMatches(rel).get(0).getValue("X").toString());
+		assertEquals("Anne", t.getMatches(rel).get(0).getValue("Y").toString());
+		t = new RelationalTemplate("[sees +>red|tag:{X}]");
+		assertEquals(1, t.getMatches(rel).size());
+		assertEquals("ADJ", t.getMatches(rel).get(0).getValue("X").toString());
+		RelationalVal rel2 = (RelationalVal) ValueFactory.create(
+				"[sees|tag:VB object>Anne instrument>[telescope|tag:NN colour>red|tag:ADJ] subject>John]");
+		assertEquals(rel, rel2);
+		assertEquals(rel.hashCode(), rel2.hashCode());
+		assertTrue(rel2.contains(ValueFactory.create("Anne")));
+		t = new RelationalTemplate("[sees {S}>John]");
+		assertEquals(1, t.getSlots().size());
+		assertEquals("[sees subject>John]",
+				t.fillSlots(new Assignment("S", "subject")));
 
 	}
 
 	@Test
-	public void relValTest2() {
-		String simpleRel =
-				"[sees subject>John/name object>Anne/name instrument>[telescope colour>red]]";
-		Value val = ValueFactory.create(simpleRel);
-		assertTrue(val instanceof RelationalVal);
-		assertEquals(1, ((RelationalVal) val).getRoots().size());
-		assertEquals(5, val.getSubValues().size());
-		RelationalVal builder2 = new RelationalVal();
-		List<String> attrs = new ArrayList<String>();
-		attrs.add("name");
-		builder2.addNode("John", attrs);
-		builder2.addNode("sees");
-		builder2.addNode("Anne", attrs);
-		builder2.addNode("red");
-		builder2.addNode("telescope");
-		builder2.addEdge(1, 0, "subject");
-		builder2.addEdge(1, 2, "object");
-		builder2.addEdge(1, 4, "instrument");
-		builder2.addEdge(4, 3, "colour");
-		assertEquals(val, builder2);
-		assertEquals(val.hashCode(), builder2.hashCode());
-
-		simpleRel = "[sees\n" + "          subject>John/name\n"
-				+ "          object>Anne/name\n"
-				+ "          instrument>[telescope colour>red]]\n"
-				+ "[is subject>this pred>interesting]";
-		val = ValueFactory.create(simpleRel);
-		assertTrue(val instanceof RelationalVal);
-
-		assertEquals(2, ((RelationalVal) val).getRoots().size());
-		assertEquals(8, val.getSubValues().size());
+	public void functionTest() throws InterruptedException {
+		Domain d = XMLDomainReader.extractDomain("test/domains/relationaltest.xml");
+		DialogueSystem system = new DialogueSystem(d);
+		system.getSettings().showGUI = false;
+		system.startSystem();
+		// assertEquals(0.5, system.getContent("second").getProb("bla"), 0.05);
 	}
 
-	@Test
-	public void newRelationsTest() {
-		RelationalVal test0 = (RelationalVal) ValueFactory.create(
-				"[sees subject>John/name object>Anne/name instrument>[telescope colour>red]]");
-		assertEquals(test0.toString(),
-				"[sees subject>John/name object>Anne/name instrument>[telescope colour>red]]");
-		RelationalVal test = (RelationalVal) ValueFactory
-				.create("[eat argu>Pierre argu2>[apple colour>red]]");
-		assertEquals(test.toString(), "[eat argu>Pierre argu2>[apple colour>red]]");
-		RelationalVal test2 = test.getSubGraph(2);
-		assertEquals(test2.toString(), "[apple colour>red]");
-		RelationalVal test3 = test.getSubGraph(3);
-		assertEquals(test3.toString(), "red");
+	public static final class TestFunction implements Function<List<String>, Value> {
 
+		@Override
+		public Value apply(List<String> t) {
+			String arg = t.get(0);
+			int length = arg.length();
+			int nbWords = arg.split(" ").length;
+			return ValueFactory.create(new double[] { length, nbWords });
+		}
 	}
 
-	@Test
-	public void templateTest() {
-		RelationalVal test0 = new RelationalVal();
-		test0.addNode("Pierre");
-		test0.addNode("likes");
-		test0.addNode("his");
-		test0.addNode("ties");
-		test0.addEdge(1, 0, "subj");
-		test0.addEdge(1, 3, "obj");
-		test0.addEdge(3, 2, "poss");
-		test0.addEdge(2, 0, "ref");
-		Template t = Template.create("likes subj>{Name}");
-		assertEquals("SemgrexTemplate", t.getClass().getSimpleName());
-		assertTrue(t.partialmatch(test0.toString()).isMatching());
-	}
 }

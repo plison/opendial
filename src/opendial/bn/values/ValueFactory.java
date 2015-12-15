@@ -32,6 +32,8 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import opendial.datastructs.Graph;
+
 /**
  * Factory for creating variable values
  *
@@ -92,15 +94,14 @@ public class ValueFactory {
 			Matcher m2 = arrayPattern.matcher(str);
 			if (m2.matches()) {
 				List<Double> subVals = new ArrayList<Double>();
-				for (String subVal : str.replace("[", "").replace("]", "")
-						.split(",")) {
+				for (String subVal : str.substring(1, str.length() - 1).split(",")) {
 					subVals.add(Double.parseDouble(subVal));
 				}
 				return new ArrayVal(subVals);
 			}
 			else if (str.startsWith("[") && str.endsWith("]")) {
 
-				if (str.contains(">")) {
+				if (Graph.isRelational(str)) {
 					RelationalVal relval = new RelationalVal(str);
 					if (!relval.isEmpty()) {
 						return relval;

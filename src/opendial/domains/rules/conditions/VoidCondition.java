@@ -31,8 +31,8 @@ import java.util.Collections;
 import java.util.Set;
 
 import opendial.datastructs.Assignment;
-import opendial.datastructs.Template;
 import opendial.domains.rules.RuleGrounding;
+import opendial.templates.Template;
 
 /**
  * Representation of a void condition, which is always true.

@@ -38,7 +38,7 @@ import opendial.bn.values.StringVal;
 import opendial.bn.values.Value;
 import opendial.bn.values.ValueFactory;
 import opendial.datastructs.Assignment;
-import opendial.datastructs.Template;
+import opendial.templates.Template;
 
 /**
  * Representation of an equivalence distribution (see dissertation p. 78 for details)

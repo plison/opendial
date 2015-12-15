@@ -28,7 +28,7 @@ import java.util.Collection;
 import java.util.logging.*;
 import java.util.stream.Collectors;
 
-import opendial.datastructs.Template;
+import opendial.templates.Template;
 
 /**
  * String value.

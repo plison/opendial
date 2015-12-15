@@ -36,9 +36,9 @@ import opendial.bn.values.SetVal;
 import opendial.bn.values.Value;
 import opendial.bn.values.ValueFactory;
 import opendial.datastructs.Assignment;
-import opendial.datastructs.Template;
-import opendial.datastructs.Template.MatchResult;
 import opendial.domains.rules.RuleGrounding;
+import opendial.templates.Template;
+import opendial.templates.Template.MatchResult;
 
 /**
  * Basic condition between a variable and a value

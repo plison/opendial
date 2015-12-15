@@ -29,9 +29,9 @@ import java.util.logging.*;
 
 import opendial.bn.values.ValueFactory;
 import opendial.datastructs.Assignment;
-import opendial.datastructs.Template;
 import opendial.domains.rules.conditions.BasicCondition;
 import opendial.domains.rules.conditions.BasicCondition.Relation;
+import opendial.templates.Template;
 import opendial.domains.rules.conditions.Condition;
 
 /**

@@ -289,7 +289,8 @@ public class XMLUtils {
 
 			if (!node.getNodeName().equals("#text")
 					&& !node.getNodeName().equals("#comment")) {
-				settings.put(node.getNodeName().trim(), node.getTextContent());
+				String propName = node.getNodeName().trim();
+				settings.put(propName, node.getTextContent());
 			}
 		}
 

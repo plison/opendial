@@ -31,8 +31,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import opendial.datastructs.MathExpression;
-
 /**
  * Various utilities for manipulating strings
  *
@@ -47,19 +45,7 @@ public class StringUtils {
 	final static Pattern nbestRegex =
 			Pattern.compile(".*\\(([-+]?[0-9]*\\.?[0-9]+(?:[eE][-+]?[0-9]+)?)\\).*");
 
-	// regular expression for slots
-	final static Pattern slotRegex = Pattern.compile("\\{(.+?)\\}");
-
-	// complex regular expression with alternative or optional elements
-	final static Pattern altRegex =
-			Pattern.compile("(\\\\\\(((\\(\\?)|[^\\(])+?\\\\\\)\\\\\\?)"
-					+ "|(\\\\\\(((\\(\\?)|[^\\(])+?\\|((\\(\\?)"
-					+ "|[^\\(])+?\\\\\\)(\\\\\\?)?)");
-
-	public final static String delimiters = ",.!?:;()[] \t\n";
-
-	final static Pattern semrelRegex =
-			Pattern.compile("\\b(\\{?\\S+?\\}?)>([\\w\\[\\{])");
+	final static String delimiters = ",.!?:;()[] \t\n";
 
 	/**
 	 * Returns the string version of the double up to a certain decimal point.
@@ -224,6 +210,10 @@ public class StringUtils {
 		return table;
 	}
 
+	public static boolean isDelimiter(char c) {
+		return delimiters.indexOf(c) >= 0;
+	}
+
 	public static boolean isDelimited(String fullString, int start, int end) {
 		if (start > 0) {
 			char prev = fullString.charAt(start - 1);
@@ -257,38 +247,6 @@ public class StringUtils {
 			}
 		}
 		return count;
-	}
-
-	/**
-	 * Returns true if the string corresponds to an arithmetic expression, and false
-	 * otherwise
-	 * 
-	 * @param exp the string to check
-	 * @return true if the string is an arithmetic expression, false otherwise
-	 */
-	public static boolean isFunctionalExpression(String exp) {
-		boolean mathOperators = false;
-		StringBuilder curString = new StringBuilder();
-		for (int i = 0; i < exp.length(); i++) {
-			char c = exp.charAt(i);
-			if (c == '+' || c == '-' || c == '/' || (c == '*' && exp.length() > 2)) {
-				mathOperators = true;
-			}
-			else if (c == '?' || c == '|' || c == '[' || c == '_' || c == '\'') {
-				return false;
-			}
-			else if (Character.isLetter(c)) {
-				curString.append(c);
-			}
-			else if (delimiters.indexOf(c) >= 0) {
-				if (!MathExpression.functions.contains(curString.toString())) {
-					return false;
-				}
-				mathOperators = true;
-				curString = new StringBuilder();
-			}
-		}
-		return (mathOperators);
 	}
 
 	public static String escape(String init) {
@@ -340,174 +298,6 @@ public class StringUtils {
 				builder.append(c);
 			}
 		}
-		return builder.toString();
-	}
-
-	/**
-	 * Checks whether the string could possibly represent a regular expression (this
-	 * is just a first, fast guess, which will need to be verified by actually
-	 * constructing the regex using the constructRegex method below).
-	 * 
-	 * @param str the string
-	 * @return true if the string is likely to be a regular expression, else false
-	 */
-	public static boolean isPossibleRegex(String str) {
-		for (int i = 0; i < str.length(); i++) {
-			switch (str.charAt(i)) {
-			case '*':
-				return true;
-			case '{':
-				if (i < str.length() - 1 && str.charAt(i + 1) != '}') return true;
-				break;
-			case '|':
-				return true;
-			case '?':
-				if (i > 1 && str.charAt(i - 1) == ')') return true;
-				break;
-			default:
-				break;
-			}
-		}
-		return false;
-	}
-
-	public static boolean isPossibleSemgrex(String str) {
-		return semrelRegex.matcher(str).find();
-	}
-
-	/**
-	 * Formats the regular expression corresponding to the provided string
-	 * 
-	 * @param init the initial string
-	 * @return the corresponding expression
-	 */
-	public static String constructRegex(String init) {
-
-		boolean hasStars = false;
-		boolean hasSlots = false;
-		boolean hasAlternatives = false;
-		for (int i = 0; i < init.length(); i++) {
-			switch (init.charAt(i)) {
-			case '*':
-				hasStars = true;
-				break;
-			case '{':
-				hasSlots = true;
-				break;
-			case '|':
-			case '?':
-				hasAlternatives = true;
-				break;
-			default:
-				break;
-			}
-		}
-
-		String result = (hasStars) ? replaceStars(init) : init;
-		result = (hasSlots) ? slotRegex.matcher(result).replaceAll("(.+)") : result;
-		result = (hasAlternatives) ? replaceComplex(result) : result;
-
-		return result;
-	}
-
-	public static String constructSemgrex(String init) {
-		String result = semrelRegex.matcher(init).replaceAll(">$1 $2");
-		result = result.replaceAll("\\{>(.+?)\\}", ">=$1");
-		result = result.replaceAll("\\{(.+?)\\}", "{}=$1");
-		result = result.replaceAll("(^|[\\s\\[])(\\w+)", "$1{word:$2}");
-		result = result.replaceAll("\\[(.+?)\\]", "($1)");
-		return result;
-	}
-
-	/**
-	 * Returns the slots defined in the string as well as their sequential order
-	 * (starting at 1) in the string.
-	 * 
-	 * @param str the string to analyse
-	 * @return the extracted slots
-	 */
-	public static Map<String, Integer> getSlots(String str) {
-		Map<String, Integer> slots = new HashMap<String, Integer>();
-		Matcher m = slotRegex.matcher(str);
-		while (m.find()) {
-			String var = m.group(1);
-			if (!slots.containsKey(var)) {
-				slots.put(var, slots.size() + 1);
-			}
-		}
-		return slots;
-	}
-
-	/**
-	 * Replaces the * characters in the string by a proper regular expression
-	 * 
-	 * @param init the initial string
-	 * @return the formatted expression
-	 */
-	private static String replaceStars(String init) {
-		StringBuilder builder = new StringBuilder();
-		char[] chars = init.toCharArray();
-		for (int i = 0; i < chars.length; i++) {
-			if (chars[i] == '*' && i == 0 && chars.length > 1
-					&& chars[i + 1] == ' ') {
-				builder.append("(?:.+ |)");
-				i++;
-			}
-			else if (chars[i] == '*' && i < (chars.length - 1) && i > 0
-					&& chars[i + 1] == ' ' && chars[i - 1] == ' ') {
-				builder.deleteCharAt(builder.length() - 1);
-				builder.append("(?:.+|)");
-			}
-			else if (chars[i] == '*' && i == (chars.length - 1) && i > 0
-					&& chars[i - 1] == ' ') {
-				builder.deleteCharAt(builder.length() - 1);
-				builder.append("(?: .+|)");
-			}
-			else if (chars[i] == '*') {
-				builder.append("(?:.*)");
-			}
-			else {
-				builder.append(chars[i]);
-			}
-		}
-		return builder.toString();
-	}
-
-	/**
-	 * Replace the alternative or optional elements by a proper regular expression
-	 * 
-	 * @param init the initial string
-	 * @return the formatted expression
-	 */
-	private static String replaceComplex(String init) {
-
-		StringBuilder builder = new StringBuilder(init);
-		Matcher m = altRegex.matcher(builder.toString());
-		while (m.find()) {
-			if (m.group().endsWith("?") && StringUtils.checkForm(m.group())) {
-				String core = m.group().substring(2, m.group().length() - 4);
-				if (m.end() < builder.length() && builder.charAt(m.end()) == ' ') {
-					String replace = "(?:" + core.replaceAll("\\|", " \\|") + " )?";
-					builder = builder.replace(m.start(), m.end() + 1, replace);
-				}
-				else if (m.end() >= builder.length() && m.start() > 0
-						&& builder.charAt(m.start() - 1) == ' ') {
-					String replace = "(?: " + core.replaceAll("\\|", "\\| ") + ")?";
-					builder = builder.replace(m.start() - 1, m.end(), replace);
-				}
-				else {
-					builder =
-							builder.replace(m.start(), m.end(), "(?:" + core + ")?");
-				}
-				m = altRegex.matcher(builder.toString());
-			}
-			else if (StringUtils.checkForm(m.group())) {
-				String core = m.group().substring(2, m.group(0).length() - 2);
-				builder = builder.replace(m.start(), m.end(), "(?:" + core + ")");
-				m = altRegex.matcher(builder.toString());
-			}
-		}
-
 		return builder.toString();
 	}
 

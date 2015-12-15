@@ -30,9 +30,8 @@ import java.util.List;
 import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
 import opendial.bn.values.ValueFactory;
-import opendial.datastructs.Template;
+import opendial.datastructs.MathExpression;
 import opendial.domains.rules.Rule;
 import opendial.domains.rules.Rule.RuleType;
 import opendial.domains.rules.RuleOutput;
@@ -50,6 +49,7 @@ import opendial.domains.rules.parameters.ComplexParameter;
 import opendial.domains.rules.parameters.FixedParameter;
 import opendial.domains.rules.parameters.Parameter;
 import opendial.domains.rules.parameters.SingleParameter;
+import opendial.templates.Template;
 import opendial.utils.XMLUtils;
 
 import org.w3c.dom.NamedNodeMap;
@@ -512,7 +512,7 @@ public class XMLRuleReader {
 			// if we have a complex expression of parameters
 			if (paramStr.contains("{") || paramStr.contains("+")
 					|| paramStr.contains("*") || paramStr.contains("-")) {
-				return new ComplexParameter(paramStr);
+				return new ComplexParameter(new MathExpression(paramStr));
 			}
 
 			// else, we extract a stochastic parameter

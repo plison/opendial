@@ -38,7 +38,6 @@ import opendial.bn.distribs.ProbDistribution;
 import opendial.bn.distribs.UtilityFunction;
 import opendial.bn.values.Value;
 import opendial.datastructs.Assignment;
-import opendial.datastructs.Template;
 import opendial.datastructs.ValueRange;
 import opendial.domains.rules.Rule;
 import opendial.domains.rules.Rule.RuleType;
@@ -46,6 +45,7 @@ import opendial.domains.rules.RuleOutput;
 import opendial.domains.rules.conditions.Condition;
 import opendial.domains.rules.effects.Effect;
 import opendial.domains.rules.parameters.Parameter;
+import opendial.templates.Template;
 
 /**
  * Representation of a probabilistic rule anchored in a particular dialogue state.
@@ -115,7 +115,7 @@ public final class AnchoredRule implements ProbDistribution, UtilityFunction {
 		inputs = new ValueRange();
 		for (Template t : rule.getInputVariables()) {
 			if (t.isFilledBy(filledSlots)) {
-				String t2 = t.fillSlots(filledSlots);
+				String t2 = t.fillSlots(filledSlots).toString();
 				if (state.hasChanceNode(t2)) {
 					inputs.addValues(t2, state.getChanceNode(t2).getValues());
 				}

@@ -30,8 +30,8 @@ import java.util.LinkedList;
 import java.util.List;
 
 import opendial.DialogueState;
-import opendial.datastructs.Template;
 import opendial.domains.rules.Rule;
+import opendial.templates.Template;
 
 /**
  * Representation of a rule model -- that is, a collection of rules of identical

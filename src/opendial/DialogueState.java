@@ -29,6 +29,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.logging.Logger;
+import java.util.stream.Stream;
 
 import opendial.bn.BNetwork;
 import opendial.bn.distribs.CategoricalTable;
@@ -44,7 +45,6 @@ import opendial.bn.nodes.ChanceNode;
 import opendial.bn.nodes.UtilityNode;
 import opendial.bn.values.ValueFactory;
 import opendial.datastructs.Assignment;
-import opendial.datastructs.Template;
 import opendial.datastructs.ValueRange;
 import opendial.domains.rules.Rule;
 import opendial.domains.rules.distribs.AnchoredRule;
@@ -53,6 +53,7 @@ import opendial.domains.rules.distribs.OutputDistribution;
 import opendial.inference.SwitchingAlgorithm;
 import opendial.inference.approximate.SamplingAlgorithm;
 import opendial.modules.StatePruner;
+import opendial.templates.Template;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -666,9 +667,9 @@ public class DialogueState extends BNetwork {
 		ChanceNode ruleNode = new ChanceNode(ruleId, arule);
 		ruleNode.getValues();
 
-		arule.getInputVariables()
+		Stream.concat(arule.getInputVariables().stream(),
+				arule.getParameters().stream()).distinct()
 				.forEach(i -> ruleNode.addInputNode(getChanceNode(i)));
-		arule.getParameters().forEach(i -> ruleNode.addInputNode(getChanceNode(i)));
 		addNode(ruleNode);
 
 		// looping on each output variable

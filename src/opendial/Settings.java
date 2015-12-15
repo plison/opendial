@@ -32,10 +32,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import javax.sound.sampled.Mixer;
 
+import opendial.bn.values.Value;
 import opendial.modules.Module;
 import opendial.utils.AudioUtils;
 import opendial.utils.StringUtils;
@@ -122,6 +124,10 @@ public class Settings {
 
 	/** whether the role of user and system are inverted */
 	public boolean invertedRole = false;
+
+	/** List of custom functions that can be used in the rules */
+	public static Map<String, CustomFunction> functions =
+			new HashMap<String, CustomFunction>();
 
 	/**
 	 * Creates new settings with the default values
@@ -269,6 +275,33 @@ public class Settings {
 		explicitSettings.addAll(mapping.stringPropertyNames());
 	}
 
+	public static void addFunction(String name,
+			Function<List<String>, Value> function, int dimensionality) {
+		CustomFunction cf = new CustomFunction(name, function, dimensionality);
+		functions.put(name, cf);
+	}
+
+	public static boolean isFunction(String string) {
+		for (String funct : functions.keySet()) {
+			string = string.trim();
+			if (string.startsWith(funct) && string.charAt(funct.length()) == '('
+					&& string.charAt(string.length() - 1) == ')') {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public static CustomFunction getFunction(String functionName) {
+		if (functions.containsKey(functionName)) {
+			return functions.get(functionName);
+		}
+		else {
+			throw new RuntimeException(
+					"No function named " + functionName + " integrated");
+		}
+	}
+
 	/**
 	 * Returns a representation of the settings in terms of a mapping between
 	 * property labels and values
@@ -348,6 +381,34 @@ public class Settings {
 	@Override
 	public String toString() {
 		return getFullMapping().toString();
+	}
+
+	public static final class CustomFunction {
+
+		final String functionName;
+
+		final int dimensionality;
+
+		final Function<List<String>, Value> function;
+
+		public CustomFunction(String name, Function<List<String>, Value> function,
+				int dimensionality) {
+			this.functionName = name;
+			this.function = function;
+			this.dimensionality = dimensionality;
+		}
+
+		public Value apply(List<String> input) {
+			return function.apply(input);
+		}
+
+		public String getName() {
+			return functionName;
+		}
+
+		public int getDimensionality() {
+			return dimensionality;
+		}
 	}
 
 }

@@ -25,10 +25,13 @@ package opendial.plugins;
 
 import java.util.logging.*;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -36,15 +39,17 @@ import opendial.DialogueState;
 import opendial.DialogueSystem;
 import opendial.bn.distribs.ConditionalTable;
 import opendial.bn.values.NoneVal;
+import opendial.bn.values.RelationalVal;
 import opendial.bn.values.Value;
 import opendial.bn.values.ValueFactory;
 import opendial.datastructs.Assignment;
-import opendial.datastructs.Template;
 import opendial.modules.Module;
+import opendial.templates.Template;
 
 import org.maltparser.concurrent.ConcurrentMaltParserModel;
 import org.maltparser.concurrent.ConcurrentMaltParserService;
 import org.maltparser.concurrent.graph.ConcurrentDependencyGraph;
+import org.maltparser.concurrent.graph.ConcurrentDependencyNode;
 import org.maltparser.core.exception.MaltChainedException;
 
 import edu.stanford.nlp.tagger.maxent.MaxentTagger;
@@ -64,12 +69,12 @@ import edu.stanford.nlp.tagger.maxent.MaxentTagger;
  * 
  * <p>
  * The module is triggered upon each new user input, and outputs a set of alternative
- * parses in the variable "p_u". The parses are represented as ParseValue objects.
- * Probabilistic rules can be applied to such ParseValue objects by checking the
+ * parses in the variable "p_u". The parses are represented as RelationalVal objects.
+ * Probabilistic rules can be applied to such RelationalVal objects by checking the
  * existence of particular dependency relations in the parse. For instance, the
  * following condition will check whether the parse contains a dependency relation
  * between the head word "move" and the dependent "to" of label "prep": {@code 
- * <if var="p_u" value="(move,prep,to)" relation="contains"/>}
+ * <if var="p_u" value="move prep> to" relation="contains"/>}
  * 
  * @author Pierre Lison (plison@ifi.uio.no)
  *
@@ -161,7 +166,7 @@ public class MaltParser implements Module {
 				for (Value v : state.queryProb(updatedVar).toDiscrete()
 						.getValues()) {
 					if (!(v instanceof NoneVal)) {
-						ParseValue parse = parse(v.toString());
+						RelationalVal parse = parse(v.toString());
 						builder.addRow(new Assignment(updatedVar, v), parse, 1.0);
 					}
 					else {
@@ -183,13 +188,13 @@ public class MaltParser implements Module {
 	}
 
 	/**
-	 * Parses the provided input and returns its corresponding ParseValue after
+	 * Parses the provided input and returns its corresponding RelationalVal after
 	 * tokenisation, POS-tagging and dependency parsing.
 	 * 
 	 * @param raw_input the raw input to analyse
-	 * @return the corresponding ParseValue
+	 * @return the corresponding RelationalVal
 	 */
-	public ParseValue parse(String raw_input) {
+	public RelationalVal parse(String raw_input) {
 		raw_input = raw_input.trim();
 		if (Character.isLetter(raw_input.charAt(raw_input.length() - 1))) {
 			raw_input += ".";
@@ -206,10 +211,70 @@ public class MaltParser implements Module {
 		}
 		try {
 			ConcurrentDependencyGraph graph = maltparser.parse(lines);
-			return new ParseValue(graph);
+			Map<Integer, FactoredNode> nodes = new HashMap<Integer, FactoredNode>();
+			for (int i = 1; i < graph.nTokenNodes(); i++) {
+				ConcurrentDependencyNode node = graph.getTokenNode(i);
+				int index = node.getIndex();
+				String word = node.getLabel(1);
+				String posTag = node.getLabel(3);
+				nodes.put(index, new FactoredNode(word, posTag));
+			}
+			FactoredNode root = null;
+			for (int i = 1; i < graph.nTokenNodes(); i++) {
+				ConcurrentDependencyNode node = graph.getTokenNode(i);
+				int index = node.getIndex();
+				int head = node.getHeadIndex();
+				String headRelation = node.getLabel(7);
+				if (head == 0) {
+					root = nodes.get(index);
+				}
+				else {
+					nodes.get(head).addChild(nodes.get(index), headRelation);
+				}
+			}
+
+			if (root != null) {
+				return new RelationalVal(root.toString());
+			}
+			else {
+				throw new RuntimeException("root could not be found");
+			}
 		}
 		catch (MaltChainedException e) {
 			throw new RuntimeException("Could not start the malt parser: " + e);
+		}
+	}
+
+	final class FactoredNode {
+
+		public List<FactoredNode> children;
+		public List<String> relations;
+		public String content;
+
+		public FactoredNode(String word, String posTag) {
+			content = word + "|pos:" + posTag;
+			children = new ArrayList<FactoredNode>();
+			relations = new ArrayList<String>();
+		}
+
+		public void addChild(FactoredNode child, String relation) {
+			children.add(child);
+			relations.add(relation);
+		}
+
+		@Override
+		public String toString() {
+			String str = content;
+			if (children.isEmpty()) {
+				return str;
+			}
+			else {
+				for (int i = 0; i < relations.size(); i++) {
+					str += " " + relations.get(i) + ">";
+					str += children.get(i).toString();
+				}
+				return "[" + str + "]";
+			}
 		}
 	}
 

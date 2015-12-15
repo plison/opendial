@@ -31,11 +31,11 @@ import java.util.Random;
 import java.util.Set;
 
 import opendial.datastructs.Assignment;
-import opendial.datastructs.Template;
 import opendial.domains.rules.conditions.Condition;
 import opendial.domains.rules.conditions.VoidCondition;
 import opendial.domains.rules.effects.Effect;
 import opendial.domains.rules.parameters.FixedParameter;
+import opendial.templates.Template;
 
 /**
  * Generic representation of a probabilistic rule, with an identifier and an ordered
@@ -143,7 +143,6 @@ public class Rule {
 
 		RuleOutput output = new RuleOutput(ruleType);
 		RuleGrounding groundings = getGroundings(input);
-
 		for (Assignment g : groundings.getAlternatives()) {
 
 			Assignment full = !(g.isEmpty()) ? new Assignment(input, g) : input;

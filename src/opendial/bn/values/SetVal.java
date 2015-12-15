@@ -27,7 +27,7 @@ import java.util.logging.*;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 /**
@@ -52,7 +52,7 @@ public final class SetVal implements Value {
 	 * @param values the values
 	 */
 	protected SetVal(Collection<Value> values) {
-		this.set = new HashSet<Value>();
+		this.set = new LinkedHashSet<Value>();
 		for (Value v : values) {
 			if (v instanceof SetVal) {
 				this.set.addAll(((SetVal) v).getSubValues());
@@ -142,7 +142,7 @@ public final class SetVal implements Value {
 	@Override
 	public Value concatenate(Value v) {
 		if (v instanceof SetVal) {
-			Set<Value> newSet = new HashSet<Value>(set);
+			Set<Value> newSet = new LinkedHashSet<Value>(set);
 			newSet.addAll(((SetVal) v).getSubValues());
 			return new SetVal(newSet);
 		}
@@ -150,7 +150,7 @@ public final class SetVal implements Value {
 			return this;
 		}
 		else {
-			Set<Value> newSet = new HashSet<Value>(set);
+			Set<Value> newSet = new LinkedHashSet<Value>(set);
 			newSet.add(v);
 			return new SetVal(newSet);
 		}

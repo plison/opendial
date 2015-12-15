@@ -33,9 +33,13 @@ import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import opendial.Settings;
+import opendial.Settings.CustomFunction;
 import opendial.bn.values.ArrayVal;
 import opendial.bn.values.DoubleVal;
 import opendial.bn.values.Value;
+import opendial.templates.FunctionalTemplate;
+import opendial.templates.Template;
 import net.objecthunter.exp4j.Expression;
 import net.objecthunter.exp4j.function.Function;
 import net.objecthunter.exp4j.operator.Operator;
@@ -61,9 +65,11 @@ public final class MathExpression {
 	final static Pattern varlabelRegex = Pattern.compile("([a-zA-Z][\\w_\\.]*)");
 
 	// list of predefined functions in exp4j
-	public final static List<String> functions = Arrays.asList("abs", "acos", "asin",
-			"atan", "cbrt", "ceil", "cos", "cosh", "exp", "floor", "log", "log10",
-			"log2", "sin", "sinh", "sqrt", "tan", "tanh");
+	public final static List<String> fixedFunctions = Arrays.asList("abs", "acos",
+			"asin", "atan", "cbrt", "ceil", "cos", "cosh", "exp", "floor", "log",
+			"log10", "log2", "sin", "sinh", "sqrt", "tan", "tanh");
+
+	static Pattern functionPattern = Pattern.compile("\\w+\\(");
 
 	/** The original string for the expression */
 	final String expression;
@@ -74,6 +80,9 @@ public final class MathExpression {
 	/** The unknown variable labels */
 	final Set<String> variables;
 
+	/** Functions used in the expression */
+	final Set<FunctionalTemplate> functions;
+
 	/**
 	 * Creates a new mathematical expression from the string
 	 * 
@@ -81,11 +90,52 @@ public final class MathExpression {
 	 */
 	public MathExpression(String expression) {
 		this.expression = expression;
-		this.variables = getVariableLabels(expression);
-		String local = expression.replaceAll("[\\[\\]\\{\\}]", "");
+		this.functions = getFunctions(expression);
+		this.variables = new HashSet<String>();
+		String local = new String(expression);
+		for (FunctionalTemplate ft : this.functions) {
+			this.variables.addAll(ft.getSlots());
+			local = local.replace(ft.toString(), ft.getFunction().getName());
+		}
+		this.variables.addAll(getVariableLabels(local));
+		functions.stream().map(ft -> ft.getFunction().getName())
+				.forEach(f -> variables.remove(f));
+		local = local.replaceAll("[\\[\\]\\{\\}]", "");
 		local = local.replaceAll("\\.([a-zA-Z])", "_$1");
 		tokens = ShuntingYard.convertToRPN(local, new HashMap<String, Function>(),
 				new HashMap<String, Operator>(), getVariableLabels(local));
+	}
+
+	private static Set<FunctionalTemplate> getFunctions(String expression) {
+		Set<FunctionalTemplate> functions = new HashSet<FunctionalTemplate>();
+		Matcher m = functionPattern.matcher(expression);
+		while (m.find()) {
+			String function = m.group(0);
+			if (functions.stream()
+					.anyMatch(t -> t.toString().contains(m.group(0)))) {
+				continue;
+			}
+			int nbOpenParentheses = 0;
+			for (int k = m.end(); k < expression.length(); k++) {
+				char c = expression.charAt(k);
+				if (c == '(') {
+					nbOpenParentheses++;
+				}
+				else if (c == ')' && nbOpenParentheses > 0) {
+					nbOpenParentheses--;
+				}
+				else if (c == ')') {
+					function = function + expression.substring(m.end(), k + 1);
+					if (Settings.isFunction(function)) {
+						FunctionalTemplate ft =
+								(FunctionalTemplate) Template.create(function);
+						functions.add(ft);
+					}
+					break;
+				}
+			}
+		}
+		return functions;
 	}
 
 	/**
@@ -97,6 +147,7 @@ public final class MathExpression {
 		this.expression = existing.expression;
 		this.variables = existing.variables;
 		this.tokens = existing.tokens;
+		this.functions = existing.functions;
 	}
 
 	/**
@@ -129,9 +180,16 @@ public final class MathExpression {
 	 * @return the result
 	 */
 	public double evaluate(Assignment input) {
+		Assignment input2 = (functions.isEmpty()) ? input : input.copy();
+		for (FunctionalTemplate f : functions) {
+			CustomFunction fu = f.getFunction();
+			Value result = f.getValue(input2);
+			input2.addPair(fu.getName(), result);
+		}
 		Expression exp = new Expression(tokens);
-		exp.setVariables(getDoubles(input));
-		return exp.evaluate();
+		exp.setVariables(getDoubles(input2));
+		double result = exp.evaluate();
+		return result;
 	}
 
 	/**
@@ -162,7 +220,7 @@ public final class MathExpression {
 		Matcher m = varlabelRegex.matcher(str);
 		while (m.find()) {
 			String varlabel = m.group(1);
-			if (!functions.contains(varlabel)) {
+			if (!fixedFunctions.contains(varlabel)) {
 				indexedVars.add(varlabel);
 			}
 		}

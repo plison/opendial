@@ -868,6 +868,7 @@ public class DialogueSystem {
 			}
 			catch (RuntimeException e) {
 				system.displayComment("Cannot load domain: " + e);
+				e.printStackTrace();
 				domain = XMLDomainReader.extractEmptyDomain(domainFile);
 			}
 			system.changeDomain(domain);

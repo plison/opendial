@@ -25,12 +25,16 @@ package opendial.readers;
 
 import java.util.logging.*;
 import java.io.File;
+import java.util.List;
 import java.util.Properties;
+import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import opendial.DialogueState;
+import opendial.Settings;
 import opendial.bn.BNetwork;
+import opendial.bn.values.Value;
 import opendial.domains.Domain;
 import opendial.domains.Model;
 import opendial.domains.rules.Rule;
@@ -60,6 +64,7 @@ public class XMLDomainReader {
 	 * @param topDomainFile the filename of the top XML file
 	 * @return the extracted dialogue domain
 	 */
+
 	public static Domain extractDomain(String topDomainFile) {
 		return extractDomain(topDomainFile, true);
 
@@ -141,10 +146,31 @@ public class XMLDomainReader {
 			}
 		}
 
-		// extracting rule-based probabilistic model
+		// extracting settings
 		else if (fullExtract && mainNode.getNodeName().equals("settings")) {
 			Properties settings = XMLUtils.extractMapping(mainNode);
 			domain.getSettings().fillSettings(settings);
+		}
+		// extracting custom functions
+		else if (fullExtract && mainNode.getNodeName().equals("function")
+				&& mainNode.getAttributes().getNamedItem("name") != null) {
+			String name =
+					mainNode.getAttributes().getNamedItem("name").getNodeValue();
+			Node dimAttr = mainNode.getAttributes().getNamedItem("dimensionality");
+			int dimensionality =
+					(dimAttr != null) ? Integer.parseInt(dimAttr.getNodeValue()) : 1;
+			String functionStr = mainNode.getTextContent().trim();
+			try {
+				Class<?> clazz = Class.forName(functionStr);
+				@SuppressWarnings("unchecked")
+				Function<List<String>, Value> f =
+						(Function<List<String>, Value>) clazz.newInstance();
+				domain.getSettings();
+				Settings.addFunction(name, f, dimensionality);
+			}
+			catch (Exception e) {
+				log.warning("cannot load function : " + e);
+			}
 		}
 
 		// extracting initial state

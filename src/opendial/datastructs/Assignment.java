@@ -33,6 +33,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.Stack;
+import java.util.function.Predicate;
 
 import opendial.bn.values.ArrayVal;
 import opendial.bn.values.DoubleVal;
@@ -525,6 +527,25 @@ public class Assignment {
 		}
 
 		return a;
+	}
+
+	/**
+	 * Filter the assignment by removing all pairs that do not satisfy the given
+	 * predicate
+	 * 
+	 * @param predicate the predicate to apply for the filtering
+	 */
+	public void filterValues(Predicate<Value> predicate) {
+		Stack<String> toRemove = new Stack<String>();
+		for (String var : map.keySet()) {
+			if (!predicate.test(map.get(var))) {
+				toRemove.add(var);
+			}
+		}
+		while (!toRemove.isEmpty()) {
+			map.remove(toRemove.pop());
+		}
+		cachedHash = 0;
 	}
 
 	/**

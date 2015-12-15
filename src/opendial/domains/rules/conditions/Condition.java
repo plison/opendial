@@ -27,8 +27,8 @@ import java.util.Collection;
 import java.util.Set;
 
 import opendial.datastructs.Assignment;
-import opendial.datastructs.Template;
 import opendial.domains.rules.RuleGrounding;
+import opendial.templates.Template;
 
 /**
  * Generic interface for a condition used in a probability or utility rule.

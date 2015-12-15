@@ -32,8 +32,8 @@ import java.util.List;
 import java.util.Set;
 
 import opendial.datastructs.Assignment;
-import opendial.datastructs.Template;
 import opendial.domains.rules.RuleGrounding;
+import opendial.templates.Template;
 
 /**
  * Complex condition made up of a collection of sub-conditions connected with a

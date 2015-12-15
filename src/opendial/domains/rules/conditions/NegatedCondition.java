@@ -29,8 +29,8 @@ import java.util.Collection;
 import java.util.Set;
 
 import opendial.datastructs.Assignment;
-import opendial.datastructs.Template;
 import opendial.domains.rules.RuleGrounding;
+import opendial.templates.Template;
 
 /**
  * Negated condition, which is satisfied when the included condition is not.
