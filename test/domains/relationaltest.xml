@@ -1,0 +1,37 @@
+
+<domain>
+
+<initialstate>
+<variable id="first">
+<value>this is an utterance</value>
+</variable>
+</initialstate>
+
+<function name="feature">opendial.bn.RelationalTest$TestFunction</function>
+<function name="logistic">opendial.utils.MathUtils$LogisticFunction</function>
+
+<parameters>
+<variable id="theta">
+<distrib type="gaussian">
+<mean>[0.0,0.0]</mean>
+<variance>[1.0, 1.0]</variance>
+</distrib>
+</variable>
+</parameters>
+ 
+
+<model trigger="first">
+
+<rule>
+<case>
+<condition>
+<if var="first" value="{X}"/>
+</condition>
+<effect prob="logistic({theta},feature({first}))">
+<set var="second" value="bla"/>
+</effect>
+</case>
+</rule>
+
+</model>
+</domain>
