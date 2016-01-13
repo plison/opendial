@@ -275,9 +275,8 @@ public class Settings {
 		explicitSettings.addAll(mapping.stringPropertyNames());
 	}
 
-	public static void addFunction(String name,
-			Function<List<String>, Value> function, int dimensionality) {
-		CustomFunction cf = new CustomFunction(name, function, dimensionality);
+	public static void addFunction(String name, Function<List<String>, Value> function) {
+		CustomFunction cf = new CustomFunction(name, function);
 		functions.put(name, cf);
 	}
 
@@ -383,19 +382,17 @@ public class Settings {
 		return getFullMapping().toString();
 	}
 
+	
+	
 	public static final class CustomFunction {
 
 		final String functionName;
 
-		final int dimensionality;
-
 		final Function<List<String>, Value> function;
 
-		public CustomFunction(String name, Function<List<String>, Value> function,
-				int dimensionality) {
+		public CustomFunction(String name, Function<List<String>, Value> function) {
 			this.functionName = name;
 			this.function = function;
-			this.dimensionality = dimensionality;
 		}
 
 		public Value apply(List<String> input) {
@@ -406,9 +403,6 @@ public class Settings {
 			return functionName;
 		}
 
-		public int getDimensionality() {
-			return dimensionality;
-		}
 	}
 
 }

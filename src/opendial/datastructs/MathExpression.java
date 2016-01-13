@@ -95,10 +95,10 @@ public final class MathExpression {
 		String local = new String(expression);
 		for (FunctionalTemplate ft : this.functions) {
 			this.variables.addAll(ft.getSlots());
-			local = local.replace(ft.toString(), ft.getFunction().getName());
+			local = local.replace(ft.toString(), ft.getFunction().getName() + ft.hashCode());
 		}
 		this.variables.addAll(getVariableLabels(local));
-		functions.stream().map(ft -> ft.getFunction().getName())
+		functions.stream().map(ft -> (ft.getFunction().getName() + ft.hashCode()))
 				.forEach(f -> variables.remove(f));
 		local = local.replaceAll("[\\[\\]\\{\\}]", "");
 		local = local.replaceAll("\\.([a-zA-Z])", "_$1");
@@ -111,10 +111,10 @@ public final class MathExpression {
 		Matcher m = functionPattern.matcher(expression);
 		while (m.find()) {
 			String function = m.group(0);
-			if (functions.stream()
+		/**	if (functions.stream()
 					.anyMatch(t -> t.toString().contains(m.group(0)))) {
 				continue;
-			}
+			} */
 			int nbOpenParentheses = 0;
 			for (int k = m.end(); k < expression.length(); k++) {
 				char c = expression.charAt(k);
@@ -184,7 +184,7 @@ public final class MathExpression {
 		for (FunctionalTemplate f : functions) {
 			CustomFunction fu = f.getFunction();
 			Value result = f.getValue(input2);
-			input2.addPair(fu.getName(), result);
+			input2.addPair((fu.getName()+f.hashCode()), result);
 		}
 		Expression exp = new Expression(tokens);
 		exp.setVariables(getDoubles(input2));

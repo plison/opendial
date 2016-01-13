@@ -334,7 +334,6 @@ public final class AnchoredRule implements ProbDistribution, UtilityFunction {
 
 		// creating the distribution
 		CategoricalTable.Builder builder = new CategoricalTable.Builder(id);
-
 		for (Effect e : output.getEffects()) {
 			Parameter param = output.getParameter(e);
 			double paramValue = param.getValue(input);

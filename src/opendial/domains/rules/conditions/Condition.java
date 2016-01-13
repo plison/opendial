@@ -36,7 +36,7 @@ import opendial.templates.Template;
  * <p>
  * A condition operates on a number of (possibly underspecified) input variables, and
  * can be applied to any input assignment to determine if it satisfies the condition
- * or not. In addition, the condition can also produce some local output, for
+ * or not. In addition, the condition can also produce some local groundings, for
  * instance based on slots filled via string matching.
  *
  * @author Pierre Lison (plison@ifi.uio.no)

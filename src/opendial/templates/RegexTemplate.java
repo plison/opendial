@@ -74,7 +74,7 @@ class RegexTemplate implements Template {
 	 * @param rawString the string
 	 */
 	public RegexTemplate(String rawString) {
-		this.rawString = rawString;
+		this.rawString = rawString.trim();
 		String escaped = StringUtils.escape(rawString);
 		String regex = constructRegex(escaped);
 

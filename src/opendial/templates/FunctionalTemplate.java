@@ -123,7 +123,7 @@ public class FunctionalTemplate implements Template {
 
 	@Override
 	public int hashCode() {
-		return function.hashCode() + parameters.hashCode();
+		return Math.abs(function.hashCode() + parameters.hashCode());
 	}
 
 	@Override

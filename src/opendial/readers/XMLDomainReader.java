@@ -156,9 +156,6 @@ public class XMLDomainReader {
 				&& mainNode.getAttributes().getNamedItem("name") != null) {
 			String name =
 					mainNode.getAttributes().getNamedItem("name").getNodeValue();
-			Node dimAttr = mainNode.getAttributes().getNamedItem("dimensionality");
-			int dimensionality =
-					(dimAttr != null) ? Integer.parseInt(dimAttr.getNodeValue()) : 1;
 			String functionStr = mainNode.getTextContent().trim();
 			try {
 				Class<?> clazz = Class.forName(functionStr);
@@ -166,7 +163,7 @@ public class XMLDomainReader {
 				Function<List<String>, Value> f =
 						(Function<List<String>, Value>) clazz.newInstance();
 				domain.getSettings();
-				Settings.addFunction(name, f, dimensionality);
+				Settings.addFunction(name, f);
 			}
 			catch (Exception e) {
 				log.warning("cannot load function : " + e);
