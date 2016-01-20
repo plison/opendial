@@ -140,7 +140,7 @@ public class Rule {
 	 * @return the matched rule output.
 	 */
 	public RuleOutput getOutput(Assignment input) {
-
+ 
 		RuleOutput output = new RuleOutput(ruleType);
 		RuleGrounding groundings = getGroundings(input);
 		for (Assignment g : groundings.getAlternatives()) {
@@ -313,6 +313,7 @@ public class Rule {
 					else {
 						Set<String> slots = e.getValueSlots();
 						slots.removeAll(input.getVariables());
+						condition.getInputVariables().forEach(v -> slots.remove(v.toString()));
 						groundings.add(Assignment.createOneValue(slots, ""));
 					}
 				}
