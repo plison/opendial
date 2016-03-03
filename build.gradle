@@ -20,12 +20,7 @@ repositories {
     maven {
         url "https://jcenter.bintray.com"
     }
-    
-     // for Mary TTS
-    maven {
-        url 'https://oss.jfrog.org/artifactory/repo'
-    }
-    
+   
     // for Sphinx ASR
     maven {
     	url 'https://oss.sonatype.org/content/repositories/repositories/snapshots' 
@@ -52,7 +47,7 @@ sourceSets {
 	}
 }
 
-
+ 
 /**
  * Transitive dependencies
  */
@@ -63,8 +58,8 @@ dependencies {
 	compile group:'org.jfree', name:'jfreechart', version:'1.0.19+'
 	compile group:'net.sf.jung', name:'jung-graph-impl', version:'2.0.1'
 	compile group:'net.sf.jung', name:'jung-visualization', version:'2.0.1'
- 	compile group: 'de.dfki.mary', name: 'marytts-runtime', version: '5.1.1'
- //	compile group: 'de.dfki.mary', name: 'voice-cmu-slt-hsmm', version: '5.1.1'
+ 	compile group: 'de.dfki.mary', name: 'marytts-runtime', version: '5.2-beta2'
+// 	compile group: 'de.dfki.mary', name: 'voice-cmu-slt-hsmm', version: '5.2-beta2'
     compile group: 'org.apache.commons', name: 'commons-math3', version: '3.2'
     compile group: 'edu.cmu.sphinx', name: 'sphinx4-core', version:'1.0-SNAPSHOT'
     compile group: 'org.maltparser', name: 'maltparser', version:'1.8.1'
