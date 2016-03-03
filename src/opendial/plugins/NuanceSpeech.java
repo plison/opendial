@@ -195,6 +195,9 @@ public class NuanceSpeech implements Module {
 			httppost.addHeader("Content-Type", format);
 			httppost.addHeader("Accept", "application/xml");
 			httppost.addHeader("Accept-Language", lang);
+			httppost.addHeader("Content-Language", lang);
+			httppost.addHeader("Accept-Topic", "Dictation");
+
 			InputStreamEntity reqEntity = new InputStreamEntity(stream);
 			reqEntity.setContentType(format);
 			httppost.setEntity(reqEntity);
@@ -203,8 +206,8 @@ public class NuanceSpeech implements Module {
 			HttpEntity resEntity = response.getEntity();
 			if (resEntity == null) {
 				log.warning("Response entity is null, aborting");
-			}
-
+			} 
+			
 			BufferedReader reader = new BufferedReader(
 					new InputStreamReader(resEntity.getContent()));
 
@@ -340,8 +343,7 @@ public class NuanceSpeech implements Module {
 					system.getSettings().params.getProperty("id"));
 			builder.setParameter("appKey",
 					system.getSettings().params.getProperty("key"));
-			builder.setParameter("id",
-					system.getSettings().params.getProperty("0000"));
+			builder.setParameter("id", "0000"); 
 			asrURI = builder.build();
 			builder.setHost("tts.nuancemobility.net");
 			builder.setPath("/NMDPTTSCmdServlet/tts");
