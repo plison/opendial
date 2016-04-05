@@ -1,0 +1,94 @@
+<domain>
+
+<initialstate>
+<variable id="u_m">
+	<value prob="1">Which floor do you want?</value>
+</variable>
+
+</initialstate>
+
+<model trigger="u_u">
+<rule>
+	<case>
+		<condition>
+			<if var="X" relation="in" value="[first,second,third]"/>
+			<if var="u_u" relation="contains" value="{X} (floor)?"/>
+		</condition>
+		<effect prob="1">
+			<set var="a_u" value="Ask({X})"/>
+		</effect>
+	</case>
+	<case>
+		<condition>
+			<if var="u_u" relation="contains" value="(yes|yeah|exactly)"/>
+			<if var="a_m" relation="=" value="Verify({X})"/>
+		</condition>
+		<effect prob="1">
+			<set var="a_u" value="Confirm({X})"/>
+		</effect>
+	</case>
+</rule>
+
+</model>
+
+<model trigger="a_u">
+	
+	<rule>
+		<case>
+			<condition operator="or">
+				<if var="a_u" relation="=" value="Ask({X})"/>
+				<if var="a_u" relation="=" value="Confirm({X})"/>
+			</condition>
+			<effect util="1">
+				<set var="a_m" value="GoTo({X})"/>
+			</effect>
+			<effect util="0.5">
+				<set var="a_m" value="Verify({X})"/>
+			</effect>
+		</case>
+		<case>
+			<effect util="-2">
+				<set var="a_m" value="GoTo({X})"/>
+			</effect>
+		</case>
+	</rule>
+
+</model>
+
+<model trigger="a_m">
+	
+	<rule>
+		<case>
+			<condition>
+				<if var="a_m" relation="=" value="GoTo({X})"/>
+			</condition>
+			<effect util="1">
+				<set var="u_m" value="Ok, going to {X} floor"/>
+			</effect>
+		</case>
+		<case>
+			<condition>
+				<if var="a_m" relation="=" value="Verify({X})"/>
+			</condition>
+			<effect util="1">
+				<set var="u_m" value="Do you want to go to the {X} floor?"/>
+			</effect>
+		</case>
+	</rule> 
+	
+	<rule>
+		<case>
+			<condition>
+				<if var="a_m" relation="=" value="Verify({X})"/>
+				<if var="a_u" relation="=" value="Ask({X})"/>
+			</condition>
+			<effect prob="0.9">
+				<set var="a_u^p" value="Confirm({X})"/>
+			</effect>
+		</case>
+	</rule>
+
+
+
+</model>
+</domain>
