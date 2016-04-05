@@ -74,7 +74,7 @@ import opendial.readers.XMLDialogueReader;
  *
  * @author Pierre Lison (plison@ifi.uio.no)
  *
- */
+ */ 
 public class DialogueSystem {
 
 	// logger

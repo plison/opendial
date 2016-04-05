@@ -341,7 +341,7 @@ public class TemplateStringTest {
 	public void realFunctionTest() {
 		Function<List<String>, Value> add = l -> ValueFactory
 				.create(l.stream().mapToDouble(v -> Double.parseDouble(v)).sum());
-		Settings.addFunction("add", add, 1);
+		Settings.addFunction("add", add);
 
 		Function<List<String>, Value> substract = l -> {
 			double result = Double.parseDouble(l.get(0));
@@ -350,7 +350,7 @@ public class TemplateStringTest {
 			}
 			return ValueFactory.create(result);
 		};
-		Settings.addFunction("substract", substract, 1);
+		Settings.addFunction("substract", substract);
 
 		Template t = Template.create("add({X},{Y})");
 

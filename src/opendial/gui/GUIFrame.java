@@ -540,7 +540,7 @@ public class GUIFrame implements Module {
 	 */
 	public void resetInteraction() {
 		chatTab.reset();
-		addComment("Reinitialiting interaction...");
+		addComment("Reinitialising interaction...");
 		system.changeDomain(system.getDomain());
 		refresh();
 		stateMonitorTab.reset(system.getState());

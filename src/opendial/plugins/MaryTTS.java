@@ -70,12 +70,14 @@ public class MaryTTS implements Module {
 			tts = new LocalMaryInterface();
 		}
 		catch (MaryConfigurationException e) {
+			e.printStackTrace();
 			throw new RuntimeException("Cannot start Mary TTS: " + e);
+			
 		}
 		this.system = system;
 		system.enableSpeech(true);
 	}
-
+ 
 	/**
 	 * Starts the TTS engine.
 	 */
