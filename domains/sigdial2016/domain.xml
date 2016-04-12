@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+ 
+<domain>
+	<initialstate>
+
+		<variable id="new_intent^t">
+			<value>true</value>
+		</variable> 
+		
+		 <variable id="obj_43">
+			<value>[43 colour>red type>cylinder]</value>
+		</variable>
+
+		<variable id="obj_56">
+			<value>[56 colour>blue type>cylinder]</value>
+		</variable>
+
+		<variable id="obj_74">
+			<value>[74 colour>yellow type>landmark]</value>
+		</variable>
+		
+	</initialstate>
+
+
+	<import href="tabletop_nlu.xml" />
+	
+	<import href="domain_intent.xml" />
+	
+	<import href="tabletop_nlg.xml" />
+
+	<import href="domain_rewards.xml" />
+	
+	<import href="domain_effects.xml" />
+		
+	<import href="domain_prior.xml" />
+
+
+  <settings>
+<nao_ip>192.168.0.100</nao_ip>
+<grammar>/home/nao/grammar.bnf</grammar>
+<modules>opendial.plugins.NaoMemory,opendial.plugins.NaoASR,opendial.plugins.NaoButton, opendial.plugins.NaoPerception, opendial.plugins.NaoBehaviour,opendial.plugins.NaoTTS</modules>
+</settings>  
+
+</domain>

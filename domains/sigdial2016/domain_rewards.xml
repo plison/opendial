@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<model trigger="i_u">
+
+	<rule id="basic-decision">
+		<case>
+			<condition>
+				<if var="i_u" value="Stop" />
+			</condition>
+			<effect util="10">
+				<set var="a_m" value="Do(Stop)" />
+			</effect>
+		</case>
+		<case>
+			<condition operator="and">
+				<if var="i_u" value="Move(*)" />
+			</condition>
+			<effect util="10">
+				<set var="a_m" value="Do({i_u})" />
+			</effect>
+		</case>
+		<case>
+			<condition>
+				<if var="i_u" value="WhatDoYouSee" />
+			</condition>
+			<effect util="10">
+				<set var="a_m" value="Say(DescribeObjects)" />
+			</effect>
+		</case>
+		<case>
+			<condition operator="and">
+				<if var="i_u" value="Greeting" />
+			</condition>
+			<effect util="15">
+				<set var="a_m" value="Say(Greet)" />
+			</effect>
+		</case>
+		<case>
+			<condition operator="and">
+				<if var="i_u" value="Ask(Name)" />
+			</condition>
+			<effect util="15">
+				<set var="a_m" value="Say(NameIsLenny)" />
+			</effect>
+		</case>
+		<case>
+			<condition operator="and">
+				<if var="i_u" value="Closing" />
+			</condition>
+			<effect util="15">
+				<set var="a_m" value="Say(Goodbye)" />
+			</effect>
+		</case>	
+		<case>
+			<condition operator="and">
+				<if var="i_u" value="DoYouSee(obj_{ID})" />
+			</condition>
+			<effect util="10">
+				<set var="a_m" value="Say(Confirm)" />
+			</effect>
+		</case>
+		<case>
+			<condition operator="and">
+				<if var="i_u" value="DoYouSee(Other)" />
+			</condition>
+			<effect util="10">
+				<set var="a_m" value="Say(Disconfirm)" />
+			</effect>
+		</case>
+	</rule>
+	
+
+	<rule id="pickup-decision">
+		<case>
+			<condition>
+					<if var="i_u" value="PickUp(Other)" />			
+			</condition>
+			<effect util="10">
+				<set var="a_m" value="Say(DoNotSeeObject)" />
+			</effect>	
+		</case>
+		<case>	
+			<condition>
+				<if var="i_u" value="PickUp(*)" />
+				<if var="carried" value="None" relation="!=" />
+			</condition>
+			<effect util="10">
+				<set var="a_m" value="Say(AlreadyCarryObject)" />
+			</effect>
+		</case>
+		<case>
+			<condition>
+				<if var="i_u" value="PickUp(*)" />
+			</condition>
+			<effect util="10">
+				<set var="a_m" value="Do({i_u})" />
+			</effect>
+		</case>
+	</rule>
+					
+	<rule id="release-decision">
+		<case>
+			<condition>
+				<if var="i_u" value="Release" />
+				<if var="carried" value="None" />					
+			</condition>
+			<effect util="10">
+				<set var="a_m" value="Say(DoNotCarryObject)" />
+			</effect>
+		</case>
+		<case>
+			<condition operator="and">
+				<if var="i_u" value="Release" />
+			</condition>
+			<effect util="10">
+				<set var="a_m" value="Do({i_u})" />
+			</effect>
+		</case>
+	</rule>
+
+	<rule id="allnegs-decision">
+		<case>
+			<effect util="-5">
+				<set var="a_m" value="Do(*)" />
+			</effect>
+			<effect util="-3">
+				<set var="a_m" value="Say(*)" />
+			</effect>
+		</case>
+	</rule>
+
+	<rule id="inmove">
+		<case>
+			<condition>
+				<if var="motion" value="true" />
+			</condition>
+			<effect util="-10">
+				<set var="a_m" value="None" relation="!=" />
+			</effect>
+		</case>
+	</rule>
+
+	<rule id="repeat-decision">
+		<case>
+			<condition>
+				<if var="last(a_m)" value="AskRepeat" relation="!=" />
+				<if var="a_u" value="None" relation="!=" />
+				<if var="a_u" value="Confirm" relation="!=" />
+				<if var="a_u" value="Disconfirm" relation="!=" />
+				<if var="a_u" value="Grounding" relation="!=" />
+			</condition>
+			<effect util="1">
+				<set var="a_m" value="Ask(Repeat)" />
+			</effect>
+		</case>
+		<case>
+			<effect util="-0.5">
+				<set var="a_m" value="Ask(Repeat)" />
+			</effect>
+		</case>
+	</rule>
+
+	<rule id="confirm-decision">
+		<case>
+			<condition operator="and">
+				<if var="i_u" value="DoYouSee(*)" relation="!=" />
+				<if var="i_u" value="WhatDoYouSee" relation="!=" />
+				<if var="i_u" value="Greeting" relation="!=" />
+				<if var="i_u" value="Closing" relation="!=" />
+				<if var="i_u" value="Ask(Name)" relation="!=" />
+				<if var="i_u" value="None" relation="!=" />
+			</condition>
+			<effect util="2">
+				<set var="a_m" value="Ask(Confirm({i_u}))" />
+			</effect>
+		</case>
+		<case>
+			<effect util="-1">
+				<set var="a_m" value="Ask(Confirm(*))" />
+			</effect>
+		</case>
+	</rule>
+
+
+	
+
+</model>

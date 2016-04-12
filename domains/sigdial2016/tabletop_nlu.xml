@@ -1,0 +1,264 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<model trigger="u_u">
+
+	<rule>
+		<case>
+			<condition operator="and">
+				<if var="u_u" value="(forward|forwards|straight)" relation="contains" />
+				<if var="u_u" value="a * bit" relation="contains" />
+			</condition>
+			<effect>
+				<set var="a_u" value="Move(Forward,Short)" />
+			</effect>
+		</case>
+		<case>
+			<condition operator="and">
+				<if var="u_u" value="(forward|forwards|straight)" relation="contains" />
+			</condition>
+			<effect>
+				<set var="a_u" value="Move(Forward)" />
+			</effect>
+		</case>
+	</rule>
+	
+	<rule>
+		<case>
+			<condition operator="and">
+				<if var="u_u" value="(backward|backwards|move back)" relation="contains" />
+				<if var="u_u" value="a * bit" relation="contains" />
+			</condition>
+			<effect>
+				<set var="a_u" value="Move(Backward,Short)" />
+			</effect>
+		</case>
+		<case>
+			<condition operator="and">
+				<if var="u_u" value="(backward|backwards|move back)" relation="contains" />
+			</condition>
+			<effect>
+				<set var="a_u" value="Move(Backward)" />
+			</effect>
+		</case>
+	</rule>
+
+
+	<rule>
+		<case>
+			<condition operator="and">
+				<if var="u_u" value="left" relation="contains" />
+				<if var="u_u" value="(bit|thirty degrees)" relation="contains" />
+			</condition>
+			<effect>
+				<set var="a_u" value="Move(Left,Short)" />
+			</effect>
+		</case>
+		<case>
+			<condition operator="and">
+				<if var="u_u" value="left" relation="contains" />
+			</condition>
+			<effect>
+				<set var="a_u" value="Move(Left)" />
+			</effect>
+		</case>
+	</rule>
+	
+	
+	<rule>
+		<case>
+			<condition operator="and">
+				<if var="u_u" value="(go|turn|move|rotate) * right" relation="contains" />
+				<if var="u_u" value="(bit|thirty degrees)" relation="contains" />
+			</condition>
+			<effect>
+				<set var="a_u" value="Move(Right,Short)" />
+			</effect>
+		</case>
+		<case>
+			<condition operator="and">
+				<if var="u_u" value="(go|turn|move|rotate) * right" relation="contains" />
+			</condition>
+			<effect>
+				<set var="a_u" value="Move(Right)" />
+			</effect>
+		</case>
+	</rule>
+	
+
+	<rule>
+		<case>
+			<condition operator="or">
+				<if var="u_u" value="turn (back|around|one hundred eighty degrees)" relation="contains" />
+				<if var="u_u" value="u turn" relation="contains" />
+			</condition>
+			<effect>
+				<set var="a_u" value="Move(Turn)" />
+			</effect>
+		</case>
+	</rule>
+
+	<rule>
+		<case>
+			<condition>
+				<if var="u_u" value="(pick|pick|take|grasp) (up)? {X} (up)?" relation="contains" />
+			</condition>
+			<effect>
+				<set var="a_u" value="PickUp({X})" />
+			</effect>
+		</case>
+	</rule>
+	
+	<rule priority="2">
+		<case>
+			<condition>
+				<if var="u_u" value="(pick up|take|grasp) {X}" relation="contains" />
+			</condition>
+			<effect>
+				<set var="a_u" value="PickUp(Other)" />
+			</effect>
+		</case>	
+	</rule>
+
+
+	<rule>
+		<case>
+			<condition operator="or">
+				<if var="u_u" value="release" relation="contains" />
+				<if var="u_u" value="put * (down|on the floor|on the table)" relation="contains" />
+			</condition>
+			<effect>
+				<set var="a_u" value="Release" />
+			</effect>
+		</case>
+	</rule>
+
+	<rule id="whatdoyousee">
+		<case>
+			<condition operator="or">
+				<if var="u_u" value="what * you see" relation="contains" />
+				<if var="u_u" value="what * you perceive" relation="contains" />
+			</condition>
+			<effect>
+				<set var="a_u" value="WhatDoYouSee" />
+			</effect>
+		</case>
+	</rule>
+
+	<rule>
+		<case>
+			<condition>
+				<if var="u_u" value="you (see|perceive) {X}" relation="contains" />
+			</condition>
+			<effect>
+				<set var="a_u" value="DoYouSee({X})" />
+			</effect>
+		</case>
+	</rule>
+
+	<rule>
+		<case>
+			<condition>
+				<if var="u_u" value="(yes|exactly|correct)" relation="contains" />
+			</condition>
+			<effect>
+				<set var="a_u" value="Confirm" />
+			</effect>
+		</case>
+	</rule>
+
+	<rule>
+		<case>
+			<condition operator="or">
+				<if var="u_u" value="(thanks|thank you)" relation="contains" />
+				<if var="u_u" value="(correct|perfect|great|ok|good)" relation="contains" />
+				<and>
+					<if var="u_u" value="right" relation="contains" />
+					<if var="u_u" value="(turn|rotate|move|go)" relation="!contains" />
+				</and>
+			</condition>
+			<effect>
+				<set var="a_u" value="Grounding" />
+			</effect>
+		</case>
+	</rule>
+
+	<rule>
+		<case>
+			<condition>
+				<if var="u_u" value="(no|wrong|incorrect)" relation="contains" />
+			</condition>
+			<effect>
+				<set var="a_u" value="Disconfirm" />
+			</effect>
+		</case>
+	</rule>
+
+
+	<rule>
+		<case>
+			<condition>
+				<if var="u_u" value="(repeat|again|once more|one more time)" relation="contains" />
+			</condition>
+			<effect>
+				<set var="a_u" value="RepeatLast" />
+			</effect>
+		</case>
+	</rule>
+
+
+	<rule>
+		<case>
+			<condition>
+				<if var="u_u" value="(hi|hello|good evening|good afternoon|good morning)" relation="contains" />
+			</condition>
+			<effect>
+				<set var="a_u" value="Greeting" />
+			</effect>
+		</case>
+	</rule>
+
+	<rule>
+		<case>
+			<condition>
+				<if var="u_u" value="(goodbye|bye)" relation="contains" />
+			</condition>
+			<effect>
+				<set var="a_u" value="Closing" />
+			</effect>
+		</case>
+	</rule>
+
+
+	<rule>
+		<case>
+			<condition operator="or">
+				<if var="u_u" value="your name" relation="contains" />
+			</condition>
+			<effect>
+				<set var="a_u" value="Ask(Name)" />
+			</effect>
+		</case>
+	</rule>
+
+
+	<rule>
+		<case>
+			<condition operator="or">
+				<if var="u_u" value="stop" relation="contains" />
+			</condition>
+			<effect>
+				<set var="a_u" value="Stop" />
+			</effect>
+		</case>
+	</rule>
+
+	<rule priority="3">
+		<case>
+			<effect>
+				<clear var="a_u" />
+			</effect>
+		</case>
+	</rule>
+
+
+</model>

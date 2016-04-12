@@ -1,0 +1,137 @@
+
+<model trigger="a_u">
+	
+	<rule>
+		<case>
+			<condition operator="or">
+				<if var="a_u" relation="=" value="Move(*)"/>
+				<if var="a_u" relation="=" value="Release"/>
+				<if var="a_u" relation="=" value="Stop"/>
+				<if var="a_u" relation="=" value="WhatDoYouSee"/>
+				<if var="a_u" relation="=" value="Ask(Name)"/>
+				<if var="a_u" relation="=" value="(Greeting|Closing)"/>
+			</condition>
+			<effect prob="1">
+				<set var="i_u" value="{a_u}"/>
+			</effect>
+		</case>
+		<case>
+			<condition>
+				<if var="a_u" relation="=" value="Confirm"/>
+				<if var="a_m" relation="=" value="Ask(Confirm({X}))"/>
+			</condition>
+			<effect prob="1">
+				<set var="i_u" value="{X}"/>
+			</effect>
+		</case>
+		<case>
+			<condition>
+				<if var="a_u" relation="=" value="Disconfirm"/>
+				<if var="a_m" relation="=" value="Ask(Confirm({X}))"/>
+			</condition>
+			<effect prob="1">
+				<set var="i_u" value="None"/>
+			</effect>
+		</case>
+		<case>
+			<condition>
+				<if var="a_u" relation="=" value="Disconfirm"/>
+				<if var="motion" relation="=" value="true"/>
+			</condition>
+			<effect prob="1">
+				<set var="i_u" value="Stop"/>
+			</effect>
+		</case>
+		<case>
+			<condition>
+				<if var="a_u" relation="=" value="RepeatLast"/>
+				<if var="lastMove" relation="=" value="{X}"/>
+			</condition>
+			<effect prob="1">
+				<set var="i_u" value="{X}"/>
+			</effect>
+		</case>
+	</rule>
+	
+	
+	<rule>
+		<case>
+			<condition>
+				<if var="a_u" relation="=" value="PickUp({X})"/>
+				<if var="X" relation="contains" value="feet"/>
+			</condition>
+			<effect prob="1">
+				<set var="i_u" value="PickUp(AtFeet)"/>
+			</effect>
+		</case>
+		<case>
+			<condition>
+				<if var="a_u" relation="=" value="PickUp(it)"/>
+				<or>
+					<if var="i_u" value="*(obj_{ID})"/>
+					<if var="last(a_m)" value="*(obj_{ID})"/>
+				</or>
+			</condition>
+			<effect prob="1">
+				<set var="i_u" value="PickUp(obj_{ID})"/>
+			</effect>
+		</case>
+		<case>
+			<condition>
+				<if var="a_u" relation="=" value="PickUp({X})"/>
+				<if var="obj_{ID}" relation="contains" value="[{ID} colour>{C} type>{T}]"/>
+				<or>
+					<if var="X" relation="contains" value="{C}"/>
+					<if var="X" relation="!contains" value="(red|green|blue|yellow|black|orange|white)"/>
+				</or>
+				<or>
+					<if var="X" relation="contains" value="{T}"/>
+					<if var="X" relation="!contains" value="(cylinder|landmark|wall)"/>
+				</or>
+			</condition>
+			<effect>
+				<set var="i_u" value="PickUp(obj_{ID})" />
+			</effect>
+		</case>
+		<case>
+			<condition>
+				<if var="a_u" relation="=" value="DoYouSee({X})"/>
+				<if var="obj_{ID}" relation="contains" value="[{ID} colour>{C} type>{T}]"/>
+				<or>
+					<if var="X" relation="contains" value="{C}"/>
+					<if var="X" relation="!contains" value="(red|green|blue|yellow|black|orange|white)"/>
+				</or>
+				<or>
+					<if var="X" relation="contains" value="{T}"/>
+					<if var="X" relation="!contains" value="(cylinder|landmark|wall)"/>
+				</or>
+			</condition>
+			<effect prob="1">
+				<set var="i_u" value="DoYouSee(obj_{ID})"/>
+			</effect>
+		</case>
+	</rule>
+	
+	
+	<rule priority="2">
+		<case>
+			<condition operator="or">
+				<if var="a_u" relation="=" value="PickUp(*)"/>				
+			</condition>
+			<effect>
+				<set var="i_u" value="PickUp(Other)" />
+			</effect>
+		</case>	
+		<case>
+			<condition operator="or">
+				<if var="a_u" relation="=" value="DoYouSee(*)"/>				
+			</condition>
+			<effect>
+				<set var="i_u" value="DoYouSee(Other)" />
+			</effect>
+		</case>	
+	</rule>
+	
+
+
+</model>

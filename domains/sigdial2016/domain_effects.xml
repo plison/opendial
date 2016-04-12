@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<model trigger="a_m">
+	  
+	<rule id="effects">
+		<case>
+			<condition>
+				<if var="a_m" relation="=" value="Do({X})"/>
+			</condition>
+			<effect prob="1">
+				<set var="lastMove" value="{X}" />
+				<set var="last(a_m)" value="{a_m}"/>
+				<set var="new_intent^t" value="true"/>
+			</effect>
+		</case>
+		<case>
+			<condition>
+				<if var="a_m" relation="=" value="Say(*)"/>
+			</condition>
+			<effect prob="1">
+				<set var="last(a_m)" value="{a_m}"/>
+				<set var="new_intent^t" value="true"/>
+			</effect>
+		</case>
+	</rule>
+	
+	
+	<rule id="usermodel">
+		<case>
+			<condition>
+				<if var="a_m" relation="=" value="Ask(Confirm(*))"/>
+			</condition>
+			<effect prob="0.5">
+				<set var="a_u^p" value="Confirm" />
+			</effect>
+			<effect prob="0.3">
+				<set var="a_u^p" value="Disconfirm" />
+			</effect>
+			<effect prob="0.1">
+				<set var="a_u^p" value="{i_u}" />
+			</effect>
+		</case>
+		<case>
+			<condition>
+				<if var="a_m" relation="!=" value="Do(*)"/>
+				<if var="a_m" relation="!=" value="Say(*)"/>
+			</condition>
+			<effect prob="0.9">
+				<set var="a_u^p" value="{i_u}" />
+			</effect>
+		</case>
+	</rule>
+
+
+</model>
+
+
+
