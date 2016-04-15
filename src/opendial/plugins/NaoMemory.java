@@ -1,6 +1,6 @@
 // =================================================================                                                                   
 // Copyright (C) 2011-2015 Pierre Lison (plison@ifi.uio.no)
-                                                                            
+
 // Permission is hereby granted, free of charge, to any person 
 // obtaining a copy of this software and associated documentation 
 // files (the "Software"), to deal in the Software without restriction, 
@@ -44,41 +44,32 @@ import opendial.modules.Module;
 public class NaoMemory implements Module {
 
 	final static Logger log = Logger.getLogger("OpenDial");
-	 
+
 	Session session;
 	ALMemory memory;
 
 	DialogueSystem system;
 	boolean paused = true;
-	
+
 	List<String> varsToMonitor = Arrays.asList("carried");
 
 	public NaoMemory(DialogueSystem system) {
 		this.system = system;
 		try {
-		session = NaoUtils.grabSession(system.getSettings());
-		memory = new ALMemory(session);
-		memory.subscribeToEvent("KeyAdded", e -> reactToEvent(e));
+			session = NaoUtils.grabSession(system.getSettings());
+			memory = new ALMemory(session);
 		}
 		catch (Exception e) {
 			log.warning("Could not initialise NaoMemory: " + e.toString());
 		}
 	}
-	
+
 	@Override
 	public void start() {
 		paused = false;
 		trigger(system.getState(), system.getState().getChanceNodeIds());
 	}
-	
-	private void reactToEvent(Object event) throws CallError, InterruptedException {
-		log.info("Reacting to memory event : " + event);
-		if (varsToMonitor.contains(event.toString())) {
-			Value v = ValueFactory.create(memory.getData(event.toString()).toString());
-			system.addContent(event.toString(), v);
-		}
-		
-	}
+
 
 	@Override
 	public void trigger(DialogueState state, Collection<String> updatedVars) {
@@ -86,25 +77,44 @@ public class NaoMemory implements Module {
 			return;
 		}
 		for (String var : updatedVars) {
+			if (varsToMonitor.contains(var)) {
+				continue;
+			}
 			try {
-			if (!state.hasChanceNode(var) && memory.getDataListName().contains(var)) {
+				if (!state.hasChanceNode(var) && memory.getDataListName().contains(var)) {
 					memory.removeData(var);
 					continue;
-			}
-			Value v = system.getContent(var).getBest();
-			if (v instanceof BooleanVal) {
-				memory.insertData(var, ((BooleanVal)v).getBoolean()? 1 : 0);
-			}
-			else if (v instanceof DoubleVal) {
-				memory.insertData(var, ((DoubleVal)v).getDouble());		
-			}
-			else {
-				memory.insertData(var, v.toString());	
-			}
+				}
+				Value v = system.getContent(var).getBest();
+				if (v instanceof BooleanVal) {
+					memory.insertData(var, ((BooleanVal)v).getBoolean()? 1 : 0);
+				}
+				else if (v instanceof DoubleVal) {
+					memory.insertData(var, ((DoubleVal)v).getDouble());		
+				}
+				else {
+					memory.insertData(var, v.toString());	
+				}
 			}
 			catch (Exception e) {
 				e.printStackTrace();
 				log.warning("Could not update memory for variable " + var + ": " + e);
+			}
+		}
+		for (String var : varsToMonitor) {		
+			try {
+				if (memory.getDataListName().contains(var)) {
+					Value v = ValueFactory.create(memory.getData(var).toString());
+					if (!state.hasChanceNode(var) || !v.equals(system.getContent(var).getBest())) {
+						system.addContent(var, v);
+					}
+				}
+				else if (state.hasChanceNode(var) && !memory.getDataListName().contains(var)) {
+					system.removeContent(var);
+				}
+			}
+			catch (CallError | InterruptedException e) {
+				e.printStackTrace();
 			}
 		}
 	}
@@ -118,6 +128,6 @@ public class NaoMemory implements Module {
 	public boolean isRunning() {
 		return !paused;
 	}
-	
+
 
 }
