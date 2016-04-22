@@ -5,7 +5,7 @@
      		<modules>opendial.modules.nlu.NLUMultiFormFilling</modules>
      		<numforms>1</numforms>
      		<nlu_0>Watson</nlu_0>
-     		<server_0>http://scorpion-4.som.ma:8880/nlp-next-hotel/understandHotel</server_0>
+     		<server_0>http://scorpion-5.2-3-5-7-11.com:8880/nlp-next-hotel/understandHotel</server_0>
      		<fieldnames_0>Location,Person,Date</fieldnames_0>
      		<fieldtypes_0>location,person,date</fieldtypes_0>
      		<fieldmodel_0>NLUGeneric,NLUGeneric,NLUGeneric</fieldmodel_0>
