@@ -1,0 +1,234 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<domain>
+
+
+	<model trigger="Domain">
+	     <rule id="InitHotelDomain">
+              <case>
+                  <condition><if var="Domain"  value="HotelForm" /> </condition>
+		     
+		     <effect> 	      	
+		      <set var="HotelForm_a_m" value="AskForm" />
+			</effect>
+			</case>
+		</rule>
+	</model>       
+	
+	
+	
+	<model trigger="HotelForm_u_u">       
+
+             
+                    <rule id="HotelForm_NLU">
+                      <!--  <case>
+                                 <condition>
+                                        <if var="u_u" relation="contains" value="show" />
+                                  </condition>
+                                <effect util="1">
+                                       
+                                        <set var="HotelForm_a_m" value="PresentResult" />
+                                </effect> 
+                        </case>-->
+                        <case> 
+	                        <effect util="1">
+	                               <set var="statNLU" value="0" />
+	                         </effect>
+                        </case>  
+                   </rule> 
+                   
+    </model>
+	
+  
+	<model trigger="HotelForm_a_u">    
+
+
+      
+                  <rule id="HotelForm_DMAskLocation">
+                       <case>
+                                <condition>
+                                        <if var="HotelForm_Location" relation="=" value="none"  />
+                                   </condition>
+                                <effect util="4">
+                                        <set var="HotelForm_a_m" value="AskLocation" />
+                                </effect>
+                        </case>        
+                   </rule>     
+                   
+                   <rule id="HotelForm_DMAskStartDate">       
+                       <case>
+                                <condition>
+                                        <if var="HotelForm_StartDate" relation="=" value="none" />
+                                   </condition>
+                                <effect util="3">
+                                        <set var="HotelForm_a_m" value="AskStartDate" />
+                                </effect>
+                        </case>
+                   </rule>
+                   
+                   <rule id="HotelForm_DMAskDuration">               
+                        <case>
+                                <condition relation="and">
+                                        <if var="HotelForm_EndDate" relation="=" value="none" />
+                                        <if var="HotelForm_Duration" relation="=" value="none" />
+                                   </condition>
+                                <effect util="2">
+                                        <set var="HotelForm_a_m" value="AskDuration" />
+                                </effect>
+                        </case>
+                    </rule>    
+                    
+                        
+                       <rule id="HotelForm_DMPresentResultFinal">                                     	
+                        
+                        <case>                
+                                <condition operator="and">
+                                        <if var="HotelForm_StartDate" relation="!=" value="none" />
+                                        <if var="HotelForm_EndDate" relation="!=" value="none" />
+                                        <if var="HotelForm_Location" relation="!=" value="" />
+                                </condition>
+                                <effect util="1">
+                                         <set var="Domain" value="HotelForm_finished"/>
+                                </effect>
+                         </case>
+                         <case>                
+                                <condition operator="and">
+                                        <if var="HotelForm_StartDate" relation="!=" value="none" />
+                                        <if var="HotelForm_Duration" relation="!=" value="none" />
+                                        <if var="HotelForm_Location" relation="!=" value="" />
+                                </condition>
+                                <effect util="1">
+                                         <set var="Domain" value="HotelForm_finished"/>
+                                </effect>
+                         </case>                         
+
+                </rule>         
+
+
+	</model>
+
+
+	<!-- NLG model -->
+  	<model trigger="HotelForm_a_m">
+		     <rule id="HotelForm_NLGAskForm">
+
+                        <case>
+                                <condition>
+                                        <if var="HotelForm_a_m" value="AskForm" />
+                                </condition>
+                                <effect util="1">
+                                        <set var="u_m" value="Welcome to the hotel reservation. When and where do you need a hotel?" />
+                                </effect>
+                                </case>
+                </rule>
+                
+                <rule id="HotelForm_NLGAskStartDate">                
+                        <case>
+                                <condition>
+                                        <if var="HotelForm_a_m" value="AskStartDate" />
+                                </condition>
+                                <effect util="1">
+                                        <set var="u_m" value="What day would you like to arrive?" />
+                                </effect>
+                                </case>
+                 </rule>
+                 
+                 <rule id="HotelForm_NLGAskDuration">               
+                        <case>
+                                <condition>
+                                        <if var="HotelForm_a_m" value="AskDuration" />
+                                        <if var="HotelForm_Location"  relation="!=" value="" />
+                                </condition>
+                                <effect util="1">
+                                        <set var="u_m" value="How many nights will you stay in {HotelForm_Location}?" />
+                                </effect>
+                                </case>
+                 </rule>
+                 
+                 <rule id="HotelForm_NLGAskLocation">                      
+                         <case>
+                                <condition>
+                                        <if var="HotelForm_a_m" value="AskLocation" />
+                                </condition>
+                                <effect util="1">
+                                        <set var="u_m" value="Which city?" />
+                                </effect>
+                                </case>
+                </rule>
+                                
+                <!-- <rule id="HotelForm_NLGPresentResultEndDate">                                              
+                         <case>
+                                <condition operator="and"> 
+                                        <if var="HotelForm_a_m" value="PresentResult"/>
+                                        <if var="HotelForm_Location" relation="!=" value="none"/>
+                                        <if var="HotelForm_StartDate" relation="!=" value="none"/>
+                                        <if var="HotelForm_EndDate" relation="!=" value="none"/>
+                                </condition>
+                                <effect util="10">
+                                       <set var="Domain" value="HotelForm_finished"/>
+                                </effect>
+                          </case>
+                 </rule>
+                 <rule id="HotelForm_NLGPresentResultEndDuration">         
+                          <case>      
+                                <condition  operator="and"> 
+                                        <if var="HotelForm_a_m" value="PresentResult"/>
+                                        <if var="HotelForm_Location" relation="!=" value="none"/>
+                                        <if var="HotelForm_StartDate" relation="!=" value="none"/>                                        
+                                        <if var="HotelForm_Duration" relation="!=" value="none"/>
+                                </condition>
+                                <effect util="10">
+                                        
+                                        <set var="Domain" value="HotelForm_finished"/>
+                                </effect>
+                          </case> 
+                                                                    
+                </rule>
+                 -->
+              
+                <rule id='HotelForm_PresentResultdefault'>
+                           <case>
+                                <condition> 
+                                        <if var="HotelForm_a_m" value="PresentResult"/>
+                                </condition>                          
+                                <effect util="1">
+                                        <set var="u_m" value="You have not finished filling the form!" />
+                                </effect>
+                          </case>                                                                      
+                </rule>
+
+	</model>
+	
+		  <!--  This will prepend non-understanding message to the next statement -->
+   <model trigger="NotUnderstand">
+    	          <rule id="NLGNotUnderstand">
+ 		 	       <case>
+				         <condition>
+					           <if var="Domain"  value="HotelForm" /> 
+				         </condition>
+				         <effect util="1">
+					           <set var="u_m" value="I did not understand, we are talking about hotels"/>
+					           <set var="HotelForm_a_u" value="None"/>
+			 	         </effect>
+			</case>                         
+                </rule>   
+    	</model>
+
+   <!--  <model trigger = "a_u">
+                    <rule id="DMPresentResultAsked">                                     	
+                        <case>
+                                <condition>
+                                        <if var="a_u"  value="GetInfo" />
+                                </condition>
+                                <effect util="20">
+                                        <set var="a_m" value="PresentResult" />
+                                </effect>                                        
+                        </case>
+                        </rule>
+
+    </model>
+     -->
+
+
+
+  
+</domain>

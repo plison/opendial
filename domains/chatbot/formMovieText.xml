@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<domain>
+
+
+	<model trigger="Domain">
+	     <rule id="InitMovieDomain">
+              <case>
+                  <condition><if var="Domain"  value="MovieForm" /> </condition>
+		     
+		     <effect> 	      	
+		      <set var="MovieForm_a_m" value="AskForm" />
+			</effect>
+			</case>
+		</rule>
+	</model>       
+	
+	
+	
+	<model trigger="MovieForm_u_u">       
+
+             
+                    <rule id="MovieForm_NLU">
+                      <!--  <case>
+                                 <condition>
+                                        <if var="u_u" relation="contains" value="show" />
+                                  </condition>
+                                <effect util="1">
+                                       
+                                        <set var="MovieForm_a_m" value="PresentResult" />
+                                </effect> 
+                        </case>-->
+                        <case> 
+	                        <effect util="1">
+	                               <set var="statNLU" value="2" />
+	                         </effect>
+                        </case>  
+                   </rule> 
+                   
+    </model>
+	
+  
+	<model trigger="MovieForm_a_u">    
+
+
+      
+                  <rule id="MovieForm_DMAskDirector">
+                       <case>
+                                <condition>
+                                        <if var="MovieForm_Director" relation="=" value="none"  />
+                                   </condition>
+                                <effect util="4">
+                                        <set var="MovieForm_a_m" value="AskDirector" />
+                                </effect>
+                        </case>        
+                   </rule>     
+                   
+                   <rule id="MovieForm_DMAskMovie">       
+                       <case>
+                                <condition>
+                                        <if var="MovieForm_Movie" relation="=" value="none" />
+                                   </condition>
+                                <effect util="3">
+                                        <set var="MovieForm_a_m" value="AskMovie" />
+                                </effect>
+                        </case>
+                   </rule>
+                   
+                   <rule id="MovieForm_DMAskYear">               
+                        <case>
+                                <condition relation="and">
+                                        <if var="MovieForm_Year" relation="=" value="none" />
+                                   </condition>
+                                <effect util="2">
+                                        <set var="MovieForm_a_m" value="AskYear" />
+                                </effect>
+                        </case>
+                    </rule>    
+                    
+                        
+                       <rule id="MovieForm_DMFinished">                                     	
+                        
+                        <case>                
+                                <condition operator="and">
+                                        <if var="MovieForm_Director" relation="!=" value="none" />
+                                        <if var="MovieForm_Movie" relation="!=" value="none" />
+                                        <if var="MovieForm_Year" relation="!=" value="none" />
+                                </condition>
+                                <effect util="1">
+                                         <set var="Domain" value="MovieForm_finished"/>
+                                </effect>
+                         </case>
+  
+                </rule>         
+
+
+	</model>
+
+
+	<!-- NLG model -->
+  	<model trigger="MovieForm_a_m">
+		     <rule id="MovieForm_NLGAskForm">
+
+                        <case>
+                                <condition>
+                                        <if var="MovieForm_a_m" value="AskForm" />
+                                </condition>
+                                <effect util="1">
+                                        <set var="u_m" value="Welcome to the movie trivia. Say a director, film, and a year" />
+                                </effect>
+                                </case>
+                </rule>
+                
+                <rule id="MovieForm_NLGAskDirector">                
+                        <case>
+                                <condition>
+                                        <if var="MovieForm_a_m" value="AskAskDirector" />
+                                </condition>
+                                <effect util="1">
+                                        <set var="u_m" value="Who is the director?" />
+                                </effect>
+                                </case>
+                 </rule>
+                 
+                 <rule id="MovieForm_NLGAskMovie">               
+                        <case>
+                                <condition>
+                                        <if var="MovieForm_a_m" value="AskMovie" />
+                                        <if var="MovieForm_Director"  relation="!=" value="" />
+                                </condition>
+                                <effect util="1">
+                                        <set var="u_m" value="What movie did {MovieForm_Director} direct?" />
+                                </effect>
+                        </case>
+                        <case>
+                                <condition>
+                                        <if var="MovieForm_a_m" value="AskMovie" />
+                                </condition>
+                                <effect util="1">
+                                        <set var="u_m" value="Which film?" />
+                                </effect>
+                        </case>                        
+                 </rule>
+                 
+                 <rule id="MovieForm_NLGAskYear">                      
+                         <case>
+                                <condition>
+                                        <if var="MovieForm_a_m" value="AskYear" />
+                                </condition>
+                                <effect util="1">
+                                        <set var="u_m" value="What year?" />
+                                </effect>
+                          </case>
+                </rule>
+                                
+
+              
+                <rule id='MovieForm_PresentResultdefault'>
+                           <case>
+                                <condition> 
+                                        <if var="MovieForm_a_m" value="PresentResult"/>
+                                </condition>                          
+                                <effect util="1">
+                                        <set var="u_m" value="You have not finished filling the form!" />
+                                </effect>
+                          </case>                                                                      
+                </rule>
+
+	</model>
+	
+		  <!--  This will prepend non-understanding message to the next statement -->
+   <model trigger="NotUnderstand">
+    	          <rule id="NLGNotUnderstand">
+ 		 	       <case>
+				         <condition>
+					           <if var="Domain"  value="MovieForm" /> 
+				         </condition>
+				         <effect util="1">
+					           <set var="u_m" value="I did not understand, we are talking about movies"/>
+					           <set var="MovieForm_a_u" value="None"/>
+			 	         </effect>
+			</case>                         
+                </rule>   
+    	</model>
+
+   <!--  <model trigger = "a_u">
+                    <rule id="DMPresentResultAsked">                                     	
+                        <case>
+                                <condition>
+                                        <if var="a_u"  value="GetInfo" />
+                                </condition>
+                                <effect util="20">
+                                        <set var="a_m" value="PresentResult" />
+                                </effect>                                        
+                        </case>
+                        </rule>
+
+    </model>
+     -->
+
+
+
+  
+</domain>

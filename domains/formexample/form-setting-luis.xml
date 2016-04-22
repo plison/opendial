@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<domain>
+	
+     <settings>
+     	 <modules>opendial.modules.nlu.NLUmultiFormFilling</modules>
+     	    <numforms>1</numforms>
+     		<nlu_0>Luis</nlu_0>
+     		<genericModel_0>fb1cb71a-07c4-4f8b-bb0a-61369e90f4ec</genericModel_0>
+     		<fieldnames_0>Location,Person,Date</fieldnames_0>
+     		<fieldtypes_0>builtin.geography,builtin.encyclopedia.people,builtin.datetime</fieldtypes_0>
+     	</settings>
+</domain>

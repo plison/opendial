@@ -1,0 +1,268 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+
+<domain>
+
+	<!-- 
+	Dialog system that handles a collection of forms
+	 -->
+	 
+	<initialstate>
+
+		<!-- Starting prompt -->
+		<variable id="u_m">
+			<value>Hello, do you want to reserve a hotel, play movie trivia, or find a restaurant?</value>
+		</variable>
+		<variable id="a_m">
+			<value>AskForm</value>	
+		</variable>
+		
+
+          
+          <variable id="Domain">
+			<value>none</value>
+          </variable>    
+	</initialstate>
+	
+	
+		<!-- NLU model -->
+	<model trigger="u_u">
+
+  	 	<rule id="ProcessU_U">
+  		
+			<case>
+				<condition >
+					<if var="Domain" value="HotelForm"  />
+				</condition>
+				<effect prob="1">
+					<set var="HotelForm_u_u" value="1" />
+				</effect>
+			</case>
+			<case>
+				<condition >
+					<if var="Domain" value="RestaurantForm"  />
+				</condition>
+				<effect prob="1">
+					<set var="RestaurantForm_u_u" value="1" />
+				</effect>
+			</case>
+			 <case>
+				<condition >
+					<if var="Domain" value="MovieForm"  />
+				</condition>
+				<effect prob="1">
+					<set var="MovieForm_u_u" value="1" />
+				</effect>
+			</case>
+			<!-- if we are not in a domain, choose a new domain -->	
+			<case>
+				<condition operator="or">
+					<if var="u_u" value="hotel" relation="contains" />
+					<if var="u_u" value="reservation" relation="contains" />
+					<if var="u_u" value="booking" relation="contains" />
+				</condition>
+				<effect prob="1">
+					<set var="Domain" value="HotelForm" />
+				</effect>
+			</case>
+			<case>
+				<condition operator="or">
+					<if var="u_u" value="food" relation="contains" />
+					<if var="u_u" value="restaurant" relation="contains" />
+					<if var="u_u" value="eat" relation="contains" />
+				</condition>
+				<effect prob="1">
+					<set var="Domain" value="RestaurantForm" />
+				</effect>
+			</case>	
+			<case>
+				<condition operator="or">
+					<if var="u_u" value="movie" relation="contains" />
+					<if var="u_u" value="film" relation="contains" />
+					<if var="u_u" value="trivia" relation="contains" />
+				</condition>
+				<effect prob="1">
+					<set var="Domain" value="MovieForm" />
+				</effect>
+			</case>				
+			</rule>
+	
+	</model>
+	
+	<!-- TODO: merge the 2 rules and move to new opendial -->
+	<model trigger="Domain">
+	  	 	<rule id="FinishedDomain0">
+  		
+			<case>
+				<condition  operator="and">
+					<if var="Domain" value="HotelForm_finished"  />
+					<if var="HotelForm_Duration" relation="!=" value="none"  />
+				</condition>
+				<effect prob="1">
+					<set var="Domain" value="none" />
+					<set var="u_m" value="I made a reservation in {HotelForm_Location} on {HotelForm_StartDate} for {HotelForm_Duration}. What else?" />
+				</effect>
+			</case>
+			<case>
+				<condition  operator="and">
+					<if var="Domain" value="HotelForm_finished"  />
+					<if var="HotelForm_EndDate" relation="!=" value="none"  />
+				</condition>
+				<effect prob="1">
+					<set var="Domain" value="none" />
+					<set var="u_m" value="I made a reservation in {HotelForm_Location} on {HotelForm_StartDate} till {HotelForm_EndDate}. What else?" />
+				</effect>
+			</case>
+			<case>
+				<condition>
+					<if var="Domain" value="HotelForm_finished"  />
+                </condition>            
+            <effect>
+					<set var="u_m" value="Please reset." />
+            </effect>
+            </case>				
+			</rule>	
+	  	 	
+	  	 	<rule id="FinishedDomain1">
+  		
+			<case>
+				<condition   operator="and">
+					<if var="Domain" value="RestaurantForm_finished"  />
+					<if var="RestaurantForm_Price" relation="!=" value="none"  />
+					<if var="RestaurantForm_Area" relation="!=" value="none"  />
+				</condition>
+				<effect prob="1">
+					<set var="Domain" value="none" />
+					<set var="u_m" value="Let me check for {RestaurantForm_Price} {RestaurantForm_Cuisine} restaurant  {RestaurantForm_Area}...  Please reset." />
+				</effect>
+			</case>
+<!-- 			<case>
+				<condition   operator="and">
+					<if var="Domain" value="RestaurantForm_finished"  />
+					<if var="RestaurantForm_Price" relation="!=" value="none"  />
+				</condition>
+				<effect prob="1">
+					<set var="Domain" value="none" />
+					<set var="u_m" value="Let me check for {RestaurantForm_Price} {RestaurantForm_Cuisine} restaurant...  Please reset." />
+				</effect>
+			</case>	
+			<case>
+				<condition   operator="and">
+					<if var="Domain" value="RestaurantForm_finished"  />
+					<if var="RestaurantForm_Area" relation="!=" value="none"  />
+				</condition>
+				<effect prob="1">
+					<set var="Domain" value="none" />
+					<set var="u_m" value="Let me check for  {RestaurantForm_Cuisine} restaurant {RestaurantForm_Area}...  Please reset." />
+				</effect>
+			</case>		
+ -->
+			<case>
+				<condition   operator="or">
+					<if var="Domain" value="RestaurantForm_finished"  />
+                </condition>            
+            <effect>
+					<set var="u_m" value="Please reset." />
+            </effect>
+            </case>				
+		    </rule>
+		    
+	  	 	<rule id="FinishedDomain2">
+  		
+			<case>
+				<condition  operator="and">
+					<if var="Domain" value="MovieForm_finished"  />
+				</condition>
+				<effect prob="1">
+					<set var="Domain" value="none" />
+					<set var="u_m" value="Good job!  {MovieForm_Director} made {MovieForm_Movie} for {MovieForm_Year}. What else?" />
+				</effect>
+			</case>
+			<case>
+				<condition>
+					<if var="Domain" value="MovieForm_finished"  />
+                </condition>            
+            <effect>
+					<set var="u_m" value="Please reset." />
+            </effect>
+            </case>				
+			</rule>		
+	
+	</model>
+	
+
+	<!-- Action selection model -->
+	<model trigger="a_u">
+	
+  	 	<rule id="ForwardToDomainA_U">
+  		
+			<case>
+				<condition >
+					<if var="Domain" value="HotelForm" />
+				</condition>
+				<effect prob="1">
+					<set var="HotelForm_a_u" value="1" />
+				</effect>
+			</case>
+			<case>
+				<condition >
+					<if var="Domain" value="RestaurantForm" />
+				</condition>
+				<effect prob="1">
+					<set var="RestaurantForm_a_u" value="1" />
+				</effect>				
+			</case>
+			<case>
+				<condition >
+					<if var="Domain" value="MovieForm" />
+				</condition>
+				<effect prob="1">
+					<set var="MovieForm_a_u" value="1" />
+				</effect>				
+			</case>
+			
+		</rule>
+
+	</model>
+
+
+
+	<!-- NLG model -->
+	<model trigger="a_m">
+	
+		<rule id="chatbot_NLGAskForm">
+
+              <case>
+                  <condition>
+                      <if var="a_m" value="AskForm" />
+                  </condition>
+                  <effect util="1">
+                      <set var="u_m" value="Hello there, what form would you like to fill (hotel, food, movie)?" />
+                  </effect>
+              </case>
+        </rule>
+
+		<rule id="chatbot_NLGAskRepeat">
+			<case>
+				<condition>
+					<if var="a_m" value="AskRepeat" />
+				</condition>
+				<effect util="1">
+					<set var="u_m" value="Sorry, could you repeat?" />
+				</effect>
+			</case>
+		</rule>
+	</model>
+	
+	
+
+
+	<!-- Natural language understanding models -->
+	<import href="formHotelText.xml"/>  
+    <import href="formRestaurantText.xml"/> 
+    <import href="formMovieText.xml"/> 
+
+	<!--  Dialogue management models (action selection and transition) -->
+	 <import href="form-setting.xml"/> 
+
+
+</domain>

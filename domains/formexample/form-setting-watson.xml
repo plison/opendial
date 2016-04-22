@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<domain>
+	
+     <settings>
+     		<modules>opendial.modules.nlu.NLUMultiFormFilling</modules>
+     		<numforms>1</numforms>
+     		<nlu_0>Watson</nlu_0>
+     		<server_0>http://scorpion-4.som.ma:8880/nlp-next-hotel/understandHotel</server_0>
+     		<fieldnames_0>Location,Person,Date</fieldnames_0>
+     		<fieldtypes_0>location,person,date</fieldtypes_0>
+     		<fieldmodel_0>NLUGeneric,NLUGeneric,NLUGeneric</fieldmodel_0>
+     	</settings>
+</domain>

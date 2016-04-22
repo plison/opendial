@@ -1,0 +1,263 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<domain>
+	
+	<initialstate>
+      <!--  Starting prompt  -->
+      	<variable id="u_m">
+			<value>Welcome to the form Filling!</value>	
+		</variable>
+		<!--
+		 We start the dialogue by asking for the product
+		-->		
+      	<variable id="a_m">
+			<value>AskForm</value>	
+		</variable>
+			
+          <!-- these variables correspond to fieldNames in NLUformfilling -->
+          	
+
+		<variable id="Location">
+			<value>none</value>
+          </variable>
+          <variable id="StartDate">
+			<value>none</value>
+          </variable>
+          	<variable id="EndDate">
+			<value>none</value>
+          </variable>
+          <variable id="Duration">
+			<value>none</value>
+          </variable>          
+
+	</initialstate>
+	
+	<!-- Text matching NLU model to get commands orm reset and form show; oherwise default to a statistical NLU  -->
+	<model trigger="u_u">       
+
+             
+                    <rule id="NLU">
+                       <case>
+                                <condition>
+                                        <if var="u_u" relation="contains" value="show" />
+                                  </condition>
+                                <effect util="1">
+                                       
+                                        <set var="a_m" value="PresentResult" />
+                                </effect>
+                        </case>
+                        <case> 
+	                        <effect util="1">
+	                               <set var="statNLU" value="1" />
+	                         </effect>
+                        </case>  
+                   </rule> 
+                      
+<!--                      <rule id="DMstatNLU">     
+                       <case> 
+	                        <effect util="1">
+	                               <set var="statNLU" value="1" />
+	                         </effect>
+                         </case>     
+                   </rule>   -->  
+    </model>
+	
+
+	<!-- Action selection model; triggers when any of the variables is updated -->
+	<!--  <model trigger="Location,StartDate,EndDate,Duration">     --> 
+	<model trigger="a_u">    
+
+
+                <!-- test if all form fields are filled -->
+                  <rule id="DMAskLocation">
+                       <case>
+                                <condition>
+                                        <if var="Location" relation="=" value="none" />
+                                   </condition>
+                                <effect util="4">
+                                        <set var="a_m" value="AskLocation" />
+                                </effect>
+                        </case>        
+                   </rule>     
+                   
+                   <rule id="DMAskStartDate">       
+                       <case>
+                                <condition>
+                                        <if var="StartDate" relation="=" value="none" />
+                                   </condition>
+                                <effect util="3">
+                                        <set var="a_m" value="AskStartDate" />
+                                </effect>
+                        </case>
+                   </rule>
+                   
+                   <rule id="DMAskDuration">               
+                        <case>
+                                <condition relation="and">
+                                        <if var="EndDate" relation="=" value="none" />
+                                        <if var="Duration" relation="=" value="none" />
+                                   </condition>
+                                <effect util="2">
+                                        <set var="a_m" value="AskDuration" />
+                                </effect>
+                        </case>
+                    </rule>    
+                    
+                        
+                       <rule id="DMPresentResultFinal">                                     	
+                        
+                        <case>                
+                                <condition operator="and">
+                                        <if var="StartDate" relation="!=" value="none" />
+                                        <if var="EndDate" relation="!=" value="none" />
+                                        <if var="Location" relation="!=" value="none" />
+                                </condition>
+                                <effect util="1">
+                                        <set var="a_m" value="PresentResult" />
+                                </effect>
+                         </case>
+                         <case>                
+                                <condition operator="and">
+                                        <if var="StartDate" relation="!=" value="none" />
+                                        <if var="Duration" relation="!=" value="none" />
+                                        <if var="Location" relation="!=" value="none" />
+                                </condition>
+                                <effect util="1">
+                                        <set var="a_m" value="PresentResult" />
+                                </effect>
+                         </case>                         
+                        <!--  <case>
+    					     <effect util="1">
+   					             <set var="a_m" value="AskForm" />
+   					     </effect>  
+   					</case> -->
+                </rule>         
+
+
+	</model>
+
+
+	<!-- NLG model -->
+	<model trigger="a_m">
+		     <rule id="NLGAskForm">
+
+                        <case>
+                                <condition>
+                                        <if var="a_m" value="AskForm" />
+                                </condition>
+                                <effect util="1">
+                                        <set var="u_m" value="Welcome to the hotel reservation. When and where do you need a hotel?" />
+                                </effect>
+                                </case>
+                </rule>
+                
+                <rule id="NLGAskStartDate">                
+                        <case>
+                                <condition>
+                                        <if var="a_m" value="AskStartDate" />
+                                </condition>
+                                <effect util="1">
+                                        <set var="u_m" value="What day would you like to arrive?" />
+                                </effect>
+                                </case>
+                 </rule>
+                 
+                 <rule id="NLGAskDuration">               
+                        <case>
+                                <condition>
+                                        <if var="a_m" value="AskDuration" />
+                                </condition>
+                                <effect util="1">
+                                        <set var="u_m" value="How many nights will you stay in {Location}?" />
+                                </effect>
+                                </case>
+                 </rule>
+                 
+                 <rule id="NLGAskLocation">                      
+                         <case>
+                                <condition>
+                                        <if var="a_m" value="AskLocation" />
+                                </condition>
+                                <effect util="1">
+                                        <set var="u_m" value="Which city?" />
+                                </effect>
+                                </case>
+                </rule>
+                                
+                <rule id="NLGPresentResultEndDate">                                              
+                         <case>
+                                <condition operator="and"> 
+                                        <if var="a_m" value="PresentResult"/>
+                                        <if var="Location" relation="!=" value="none"/>
+                                        <if var="StartDate" relation="!=" value="none"/>
+                                        <if var="EndDate" relation="!=" value="none"/>
+                                </condition>
+                                <effect util="10">
+                                        <set var="u_m" value="I made a reservation at {Location} from {StartDate} to {EndDate}" />
+                                </effect>
+                          </case>
+                 </rule>
+                 <rule id="NLGPresentResultEndDuration">         
+                          <case>      
+                                <condition  operator="and"> 
+                                        <if var="a_m" value="PresentResult"/>
+                                        <if var="Location" relation="!=" value="none"/>
+                                        <if var="StartDate" relation="!=" value="none"/>                                        
+                                        <if var="Duration" relation="!=" value="none"/>
+                                </condition>
+                                <effect util="10">
+                                        <set var="u_m" value="I made a reservation at {Location} on {StartDate} for {Duration} nights" />
+                                </effect>
+                          </case> 
+                                                                    
+                </rule>
+                
+                <!--  default NLG -->
+                <rule id='PresentResultdefault'>
+                           <case>
+                                <condition> 
+                                        <if var="a_m" value="PresentResult"/>
+                                </condition>                          
+                                <effect util="1">
+                                        <set var="u_m" value="You have not finished filling the form!" />
+                                </effect>
+                          </case>                                                                      
+                </rule>
+
+	</model>
+
+   <!--  <model trigger = "a_u">
+                    <rule id="DMPresentResultAsked">                                     	
+                        <case>
+                                <condition>
+                                        <if var="a_u"  value="GetInfo" />
+                                </condition>
+                                <effect util="20">
+                                        <set var="a_m" value="PresentResult" />
+                                </effect>                                        
+                        </case>
+                        </rule>
+
+    </model>
+     -->
+  <!--  This will prepend non-understanding message to the next statement -->
+    <model trigger="NotUnderstand">
+    	          <rule id="NLGNotUnderstand">
+ 		 	       <case>
+				         <condition>
+					            
+				         </condition>
+				         <effect util="1">
+					           <set var="u_m" value="I did not understand"/>
+					           <set var="a_u" value="None"/>
+			 	         </effect>
+			</case>                         
+                </rule>   
+    	</model>
+
+
+
+
+       <import href="form-setting-watson.xml"/>
+
+  
+</domain>

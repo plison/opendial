@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<domain>
+
+
+	<model trigger="Domain">
+	     <rule id="InitRestaurantDomain">
+              <case>
+                  <condition><if var="Domain"  value="RestaurantForm" /> </condition>
+		     
+		     <effect> 	      	
+		      <set var="RestaurantForm_a_m" value="AskForm" />
+			</effect>
+			</case>
+		</rule>
+	</model>       
+	
+	
+	
+	<model trigger="RestaurantForm_u_u">       
+
+             
+                    <rule id="RestaurantForm_NLU">
+                      <!--  <case>
+                                 <condition>
+                                        <if var="u_u" relation="contains" value="show" />
+                                  </condition>
+                                <effect util="1">
+                                       
+                                        <set var="RestaurantForm_a_m" value="PresentResult" />
+                                </effect> 
+                        </case>-->
+                        <case> 
+	                        <effect util="1">
+	                               <set var="statNLU" value="1" />
+	                         </effect>
+                        </case>  
+                   </rule> 
+                   
+    </model>
+	
+  
+	<model trigger="RestaurantForm_a_u">    
+
+
+      
+                  <rule id="RestaurantForm_DMAskCuisine">
+                       <case>
+                                <condition>
+                                        <if var="RestaurantForm_Cuisine" relation="=" value="none"  />
+                                   </condition>
+                                <effect util="4">
+                                        <set var="RestaurantForm_a_m" value="AskCuisine" />
+                                </effect>
+                       </case>
+                   </rule>
+                   <rule id="RestaurantForm_DMAskArea">
+                         <case>
+                                 <condition>
+                                        <if var="RestaurantForm_Area" relation="=" value="none"  />
+                                 </condition>
+                                <effect util="3">
+                                        <set var="RestaurantForm_a_m" value="AskArea" />
+                                </effect>
+                           </case>
+                   </rule>
+                   <rule>
+                          <case>
+                                 <condition>
+                                        <if var="RestaurantForm_Price" relation="=" value="none"  />
+                                   </condition>
+                                <effect util="2">
+                                        <set var="RestaurantForm_a_m" value="AskPrice" />
+                                </effect>
+                        </case>        
+                   </rule>     
+                   
+                          
+                       <rule id="RestaurantForm_DMPresentResultFinal">                                     	
+                        
+                        <case>                
+                                <condition operator="and">
+                                         <if var="RestaurantForm_Cuisine" relation="!=" value="none" />
+                                        <!--  NLU does not work for area or price alone <if var="RestaurantForm_Area" relation="!=" value="none" />
+                                         <if var="RestaurantForm_Price" relation="!=" value="none" /> -->
+                                </condition>
+                                <effect util="1">
+                                         <set var="Domain" value="RestaurantForm_finished"/>
+                                </effect>
+                         </case>
+
+                </rule>         
+
+
+	</model>
+
+
+	<!-- NLG model -->
+  	<model trigger="RestaurantForm_a_m">
+		     <rule id="RestaurantForm_NLGAskForm">
+
+                        <case>
+                                <condition>
+                                        <if var="RestaurantForm_a_m" value="AskForm" />
+                                </condition>
+                                <effect util="1">
+                                        <set var="u_m" value="Welcome to the Restaurant reservation.  What kind of food do you like?" />
+                                </effect>
+                                </case>
+                </rule>
+                
+                    
+                 <rule id="RestaurantForm_NLGAskCuisine">                      
+                         <case>
+                                <condition>
+                                        <if var="RestaurantForm_a_m" value="AskCuisine" />
+                                </condition>
+                                <effect util="1">
+                                        <set var="u_m" value="Which cuisine would you like?" />
+                                </effect>
+                                </case>
+                         <case>
+                                <condition>
+                                        <if var="RestaurantForm_a_m" value="AskArea" />
+                                </condition>
+                                <effect util="1">
+                                        <set var="u_m" value="Which part of town?" />
+                                </effect>
+                                </case>      
+                         <case>
+                                <condition>
+                                        <if var="RestaurantForm_a_m" value="AskPrice" />
+                                </condition>
+                                <effect util="1">
+                                        <set var="u_m" value="What price range?" />
+                                </effect>
+                                </case>                                                           
+                </rule>
+                                
+
+              
+                <rule id='RestaurantForm_PresentResultdefault'>
+                           <case>
+                                <condition> 
+                                        <if var="RestaurantForm_a_m" value="PresentResult"/>
+                                </condition>                          
+                                <effect util="1">
+                                        <set var="u_m" value="You have not finished filling the form!" />
+                                </effect>
+                          </case>                                                                      
+                </rule>
+
+	</model>
+	
+		  <!--  This will prepend non-understanding message to the next statement -->
+   <model trigger="NotUnderstand">
+    	          <rule id="NLGNotUnderstand">
+ 		 	       <case>
+				         <condition>
+					          <if var="Domain"  value="RestaurantForm" />  
+				         </condition>
+				         <effect util="1">
+					           <set var="u_m" value="I did not understand. We are talking about food"/>
+					           <set var="RestaurantForm_a_u" value="None"/> 
+			 	         </effect>
+			</case>                         
+                </rule>   
+    	</model>
+
+  
+
+  
+</domain>

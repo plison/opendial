@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+Form Specification
+Location:GPE
+StartDate:CI
+   EndDate:CO
+   Duration:NN
+ -->
+<domain>
+	
+     <settings>
+     		<modules>opendial.modules.nlu.NLUmultiFormFilling</modules>
+     		<numforms>1</numforms>
+     		<nlu_0>Watson</nlu_0>
+     		<server_0>http://scorpion-5.2-3-5-7-11.com:8880/nlp-next-hotel/understandHotel</server_0>
+     		<fieldnames_0>Location,StartDate,EndDate,Duration</fieldnames_0>
+     		<fieldtypes_0>GPE,CI,CO,NN</fieldtypes_0>
+     	</settings>
+</domain>

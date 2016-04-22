@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+Form Specification
+Location:GPE
+StartDate:CI
+   EndDate:CO
+   Duration:NN
+ -->
+<domain>	
+     <settings>
+     		<modules>opendial.modules.nlu.NLUmultiFormFilling</modules>
+     		<numforms>3</numforms>
+     		<nlu_0>Watson</nlu_0>
+     		<fieldnames_0>HotelForm_Location,HotelForm_StartDate,HotelForm_EndDate,HotelForm_Duration</fieldnames_0>
+     		<fieldtypes_0>GPE,CI,CO,NN</fieldtypes_0>
+     		<nlu_1>Mva</nlu_1>
+     		<fieldnames_1>RestaurantForm_Cuisine,RestaurantForm_Price,RestaurantForm_Area</fieldnames_1>
+     		<fieldtypes_1>_CUISINE,_PRICE,_LOC</fieldtypes_1>       		
+    		<nlu_2>Luis</nlu_2>
+     		<fieldnames_2>MovieForm_Director,MovieForm_Movie,MovieForm_Year</fieldnames_2>
+     		<fieldtypes_2>builtin.encyclopedia.film.director,builtin.encyclopedia.film.film,builtin.datetime.date</fieldtypes_2>
+     		
+     	</settings>
+</domain>
