@@ -68,6 +68,10 @@ dependencies {
 //	compile name: 'qimessaging'
 	compile name: 'exp4j' 
 	testCompile group:'junit', name: 'junit',  version: '4.+'
+        //SS added
+	compile 'com.squareup.okhttp:okhttp:2.6.0'
+	compile 'org.apache.commons:commons-lang3:3.0'
+        compile 'com.google.code.gson:gson:2.3.1'
  }
 
 
