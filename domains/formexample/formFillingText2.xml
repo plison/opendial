@@ -1,0 +1,296 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<domain>
+	
+	<initialstate>
+      <!--  Starting prompt  -->
+      	<variable id="u_m">
+			<value>Welcome to the form Filling!</value>	
+		</variable>
+
+
+      	<variable id="grounded">
+			<value>[]</value>	
+		</variable>
+		
+	</initialstate>
+	
+	<!-- Text matching NLU model to get commands orm reset and form show; oherwise default to a statistical NLU  -->
+	<model trigger="u_u">       
+             
+                    <rule id="responses">
+                        <case>
+                        	<condition>
+                        		<if var="u_u" relation="contains" value="(yes|exactly|that's right)"/>
+                        	</condition>
+                        	<effect prob="1">
+                        		<set var="a_u" value="Confirm"/>
+                        	</effect>
+                        </case>
+                        <case>
+                        	<condition>
+                        		<if var="u_u" relation="=" value="(no|that's wrong)"/>
+                        	</condition>
+                        	<effect prob="1">
+                        		<set var="a_u" value="Disconfirm"/>
+                        	</effect>
+                        </case>
+                   </rule> 
+               
+    </model>
+    
+    <model trigger="a_u">
+    	
+    		<rule>
+    			<case>
+    				<condition>
+    					<if var="a_u" relation="contains" value="({Entity},builtin.geography.*)"/>
+    					<if var="grounded" relation="!contains" value="Location"/>
+    				</condition>
+    				<effect prob="1">
+    					<set var="Location" value="{Entity}"/>
+    				</effect>
+    			</case>
+    		</rule>
+
+		<rule>
+    			<case>
+    				<condition>
+    					<if var="a_u" relation="contains" value="({Entity},builtin.encyclopedia.people.*)"/>
+    					<if var="grounded" relation="!contains" value="Person"/>
+    				</condition>
+    				<effect prob="1">
+    					<set var="Person" value="{Entity}"/>
+    				</effect>
+    			</case>
+    		</rule>
+    	
+    		<rule>
+    			<case>
+    				<condition>
+    					<if var="a_u" relation="contains" value="({Entity},builtin.datetime.*)"/>
+    					<if var="grounded" relation="!contains" value="Date"/>
+    				</condition>
+    				<effect prob="1">
+    					<set var="Date" value="{Entity}"/>
+    				</effect>
+    			</case>
+    		</rule>
+    		
+    		<rule priority="2">
+    			<case>
+    				<condition>
+    					<if var="Slot" relation="in" value="[Person,Date,Location}"/>	
+    					<if var="grounded" relation="!contains" value="{Slot}"/>
+    					<if var="{Slot}" relation="=" value="{SlotValue}"/>
+    				</condition>
+    				<effect prob="1">
+    					<set var="{Slot}" value="{SlotValue}"/>
+    				</effect> 
+    			</case>
+    		</rule>
+    		
+    		<rule>
+    			<case>
+    				<condition>
+    					<if var="a_m" relation="=" value="AskConfirm({Slot},{SlotValue})"/>
+    					<if var="a_u" relation="=" value="Confirm"/>
+    				</condition>
+    				<effect prob="1">
+    					<set var="{Slot}" value="{SlotValue}"/>
+    				</effect>
+    			</case>
+    			<case>
+    				<condition>
+    					<if var="a_m" relation="=" value="AskConfirm({Slot},{SlotValue})"/>
+    					<if var="a_u" relation="=" value="Disconfirm"/>
+    				</condition>
+    				<effect prob="1">
+    					<set var="{Slot}" value="None"/>
+    				</effect>
+    			</case>
+    		</rule>
+ 
+
+    </model>
+	
+
+    <model trigger="Person,Date,Location,grounded" blocking="true">   
+    	   
+             <rule id="Ground">                                     	           
+                 <case>
+                 	<condition>
+                          <if var="Slot" relation="in" value="[Person,Date,Location]"/>
+                          <if var="{Slot}" relation="=" value="{SlotValue}"/>
+                          <if var="grounded" relation="!contains" value="{Slot}"/>
+                          <if var="SlotValue" relation="!=" value="None"/>
+                 	</condition>
+                 	<effect util="2">
+                 		<set var="a_m" value="Ground({Slot},{SlotValue})"/>
+                 	</effect>
+                 	<effect util="1">
+                 		<set var="a_m" value="AskConfirm({Slot},{SlotValue})"/>
+                 	</effect>
+                 </case>
+                 <case>
+                 	<condition>
+                          <if var="Slot" relation="in" value="[Person,Date,Location]"/>                 		
+                          <if var="SlotValue" relation="!=" value="None"/>
+                   	</condition>
+                 	<effect util="-2">
+                 		<set var="a_m" value="Ground({Slot},{SlotValue})"/>
+                 	</effect>
+                 	<effect util="-0.2">
+                 		<set var="a_m" value="AskConfirm({Slot},{SlotValue})"/>
+                 	</effect>
+                 </case>
+                </rule>
+                
+	</model>
+
+
+	<model trigger="a_m">
+           
+                <rule>
+                	<case>
+                		<condition>
+                			<if var="a_m" relation="=" value="Ground({Slot},{SlotValue})"/>
+                		</condition>
+                		<effect prob="1">
+                			<set var="grounded" value="{grounded}+{Slot}"/>
+                		</effect>
+                	</case>
+                </rule>
+
+	</model>
+	
+	
+	<model trigger="grounded">       
+
+
+                <!-- test if all form fields are filled -->
+                  <rule id="AskSlot">
+                  	  <case>
+                  	  	<condition>
+                  	  		<if var="grounded" relation="=" value="[]"/>
+                  	  	</condition>
+                  	  	<effect util="2">
+                  	  		<set var="a_m" value="Ask(AllSlots)"/>
+                  	  	</effect>
+                  	  </case>
+                       <case>
+                                <condition>
+                                	    <if var="Slot" relation="in" value="[Person,Date,Location]"/>
+                                        <if var="grounded" relation="!contains" value="{Slot}"/>
+                                   </condition>
+                                <effect util="2">
+                                        <set var="a_m" value="Ask({Slot})" />
+                                </effect>
+                        </case>  
+                        <case> 
+                                <effect util="-2">
+                                        <set var="a_m" value="Ask({Slot})" />
+                                </effect>
+                        </case> 
+                   </rule>
+                   
+                   <rule id="groundedslots">
+                   	<case>
+                   		<condition>
+                   			<if var="grounded" relation="=" value="[Person,Date,Location]"/>
+                   		</condition>
+                   		<effect util="2">
+                   			<set var="a_m" value="PresentResult"/>
+                   		</effect>
+                   	</case>
+                   	<case>
+                   		<effect util="-2">
+                   			<set var="a_m" value="PresentResult"/>
+                   		</effect>
+                   	</case>
+                   </rule>
+     
+                   
+    </model>
+    
+	<!-- NLG model -->
+	<model trigger="a_m">
+                
+                <rule id="nlg">
+                	   <case>
+                	   	<condition>
+                	   		<if var="a_m" relation="=" value="Ask(AllSlots)"/>
+                	   	</condition>
+                	   	<effect util="1">
+                	   		<set var="u_m" value="Please fill the form. Specify name, location, and date in any order!"/>
+                	   	</effect>
+                	   </case>                
+                        <case>
+                                <condition>
+                                        <if var="a_m" value="Ask(Person)" />
+                                </condition>
+                                <effect util="1">
+                                        <set var="u_m" value="Please say a person's name" />
+                                </effect>
+                                </case>            
+                        <case>
+                                <condition>
+                                        <if var="a_m" value="Ask(Date)" />
+                                </condition>
+                                <effect util="1">
+                                        <set var="u_m" value="Please specify the date" />
+                                </effect>
+                                </case>                   
+                         <case>
+                                <condition>
+                                        <if var="a_m" value="Ask(Location)" />
+                                </condition>
+                                <effect util="1">
+                                        <set var="u_m" value="Please specify the location" />
+                                </effect>
+                                </case>                                            
+                        <case>
+                                <condition> 
+                                        <if var="a_m" value="PresentResult"/>
+                                </condition>
+                                <effect util="1">
+                                        <set var="u_m" value="Form filled: Person is {Person}, Location is  {Location} and  Date is {Date}" />
+                                </effect>
+                          </case>
+                          <case>
+                          	<condition>
+                          		<if var="a_m" relation="=" value="Ground({Slot},{SlotValue})"/>
+                          		<if var="u_m" relation="!contains" value="(Ok, the|... and)"/>
+                          	</condition>
+                          	<effect util="1">
+                          		<set var="u_m" value="Ok, the {Slot} is {SlotValue}"/>
+                          	</effect>
+                          </case>
+                          <case>
+                          	<condition>
+                          		<if var="a_m" relation="=" value="Ground({Slot},{SlotValue})"/>
+                          	</condition>
+                          	<effect util="1">
+                          		<set var="u_m" value="... and the {Slot} is {SlotValue}"/>
+                          	</effect>
+                          </case>
+                           <case>
+                          	<condition>
+                          		<if var="a_m" relation="=" value="AskConfirm({Slot},{SlotValue})"/>
+                          	</condition>
+                          	<effect util="1">
+                          		<set var="u_m" value="I think you said that the {Slot} is {SlotValue}. Is that correct?"/>
+                          	</effect>
+                          </case>
+                </rule>
+                
+	</model>
+
+
+   <settings>
+     	 <modules>opendial.plugins.NLULuis</modules>
+     	 <key_luis>ee81a5dae9cd44ebbfb8a682acbacd0a</key_luis>
+     	 <model_luis>fb1cb71a-07c4-4f8b-bb0a-61369e90f4ec</model_luis>
+     	 <fieldtypes_luis>builtin.geography,builtin.encyclopedia.people,builtin.datetime</fieldtypes_luis>
+     	</settings>
+  
+</domain>
