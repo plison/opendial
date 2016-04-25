@@ -81,6 +81,20 @@
     			</case>
     		</rule>
     		
+    		<!-- SS added to handle no match -->
+    		<rule id='nomatch'>
+		        <case>
+		              <condition>               		
+		                     <if var="a_u" relation="!contains" value="({Entity},builtin.geography.*)"/>
+		                     <if var="a_u" relation="!contains" value="({Entity},builtin.encyclopedia.people.*)"/>
+		                     <if var="a_u" relation="!contains" value="({Entity},builtin.datetime.*)"/>
+		                  </condition>
+		                 	<effect util="1">
+		                 		<set var="a_m" value="Noentry"/>
+		                 	</effect>
+		         </case>
+		    </rule>  
+    		
     		<!-- Accumulates evidence about the slot values -->
     		<rule priority="2">
     			<case>
@@ -151,6 +165,7 @@
                  		<set var="a_m" value="AskConfirm({Slot},{SlotValue})"/>
                  	</effect>
                  </case>
+                               
                 </rule>
                 
 	</model>
@@ -177,6 +192,7 @@
 			  <!-- Asks the user for the slot value, or present the results if all slots are filled -->
                   <rule id="nextquestion">
                   	  <case>
+                  	  <!--  If nothing is grounded, as generic question for all slots -->
                   	  	<condition>
                   	  		<if var="grounded" relation="=" value="[]"/>
                   	  	</condition>
@@ -185,6 +201,7 @@
                   	  	</effect>
                   	  </case>
                    	<case>
+                   	 <!-- else: If everything is grounded, present all results (return control to caller) -->
                    		<condition>
                    			<if var="grounded" relation="=" value="[Person,Date,Location]"/>
                    		</condition>
@@ -192,6 +209,7 @@
                    			<set var="a_m" value="PresentResult"/>
                    		</effect>
                    	</case>
+                   	<!-- else: if a slot is not grounded, ask about this slot -->
                        <case>
                                 <condition>
                                 	    <if var="Slot" relation="in" value="[Person,Date,Location]"/>
@@ -201,6 +219,7 @@
                                         <set var="a_m" value="Ask({Slot})" />
                                 </effect>
                         </case>  
+                        <!-- else: SS: what does this do? -->
                         <case> 
                                 <effect util="-2">
                                         <set var="a_m" value="Ask(*)" />
@@ -209,6 +228,8 @@
                                         <set var="a_m" value="PresentResult" />
                                 </effect>
                         </case> 
+                        
+     
                    </rule>
                    
      
@@ -282,6 +303,15 @@
                           	</condition>
                           	<effect util="1">
                           		<set var="u_m" value="I think you said that the {Slot} is {SlotValue}. Is that correct?"/>
+                          	</effect>
+                          </case>
+                          <!--  else: default handler if we did not understand or ground the user.  -->
+                          <case>
+                          	<condition>
+                          		<if var="a_m" relation="=" value="Noentry"/>
+                          	</condition>
+                          	<effect util="1">
+                          		<set var="u_m" value="I am not sure what you just said"/>
                           	</effect>
                           </case>
                 </rule>
