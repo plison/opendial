@@ -2,21 +2,22 @@
 <domain>
 	
 	<initialstate>
-      <!--  Starting prompt  -->
+      	<!--  Starting prompt  -->
       	<variable id="u_m">
 			<value>Welcome to the form Filling!</value>	
 		</variable>
 
-
+		<!-- slots that have been grounded so far -->
       	<variable id="grounded">
 			<value>[]</value>	
 		</variable>
 		
 	</initialstate>
 	
-	<!-- Text matching NLU model to get commands orm reset and form show; oherwise default to a statistical NLU  -->
+	<!-- Simple patterns for recognising the user intent. Defaults to a statistical NLU otherwise -->
 	<model trigger="u_u">       
              
+             		<!-- Recognises positive and negative polar responses -->
                     <rule id="responses">
                         <case>
                         	<condition>
@@ -38,8 +39,10 @@
                
     </model>
     
+    <!-- Fills the form slots according to the values produced by the statistical NLU engine -->
     <model trigger="a_u">
     	
+    		<!-- Fills the location slot -->
     		<rule>
     			<case>
     				<condition>
@@ -52,6 +55,7 @@
     			</case>
     		</rule>
 
+		<!-- Fills the people slot -->
 		<rule>
     			<case>
     				<condition>
@@ -64,6 +68,7 @@
     			</case>
     		</rule>
     	
+    		<!-- Fills the date slot -->
     		<rule>
     			<case>
     				<condition>
@@ -76,6 +81,7 @@
     			</case>
     		</rule>
     		
+    		<!-- Accumulates evidence about the slot values -->
     		<rule priority="2">
     			<case>
     				<condition>
@@ -89,6 +95,7 @@
     			</case>
     		</rule>
     		
+    		<!-- Handles the user responses following a clarification question -->
     		<rule>
     			<case>
     				<condition>
@@ -110,12 +117,13 @@
     			</case>
     		</rule>
  
-
     </model>
 	
 
+	<!-- Action selection model (ground or clarify the slots?) -->
     <model trigger="Person,Date,Location,grounded" blocking="true">   
     	   
+    	   	  <!-- Utilities for grounding or requesting a clarification -->
              <rule id="Ground">                                     	           
                  <case>
                  	<condition>
@@ -147,7 +155,7 @@
                 
 	</model>
 
-
+	<!-- If a slot is to be grounded, update the grounded variable -->
 	<model trigger="a_m">
            
                 <rule>
@@ -163,12 +171,11 @@
 
 	</model>
 	
-	
+	<!-- If a new slot is grounded, asks a new question, or present the results -->
 	<model trigger="grounded">       
-
-
-                <!-- test if all form fields are filled -->
-                  <rule id="AskSlot">
+ 
+			  <!-- Asks the user for the slot value, or present the results if all slots are filled -->
+                  <rule id="nextquestion">
                   	  <case>
                   	  	<condition>
                   	  		<if var="grounded" relation="=" value="[]"/>
@@ -177,6 +184,14 @@
                   	  		<set var="a_m" value="Ask(AllSlots)"/>
                   	  	</effect>
                   	  </case>
+                   	<case>
+                   		<condition>
+                   			<if var="grounded" relation="=" value="[Person,Date,Location]"/>
+                   		</condition>
+                   		<effect util="2">
+                   			<set var="a_m" value="PresentResult"/>
+                   		</effect>
+                   	</case>
                        <case>
                                 <condition>
                                 	    <if var="Slot" relation="in" value="[Person,Date,Location]"/>
@@ -188,26 +203,14 @@
                         </case>  
                         <case> 
                                 <effect util="-2">
-                                        <set var="a_m" value="Ask({Slot})" />
+                                        <set var="a_m" value="Ask(*)" />
+                                </effect>
+                                <effect util="-2">
+                                        <set var="a_m" value="PresentResult" />
                                 </effect>
                         </case> 
                    </rule>
                    
-                   <rule id="groundedslots">
-                   	<case>
-                   		<condition>
-                   			<if var="grounded" relation="=" value="[Person,Date,Location]"/>
-                   		</condition>
-                   		<effect util="2">
-                   			<set var="a_m" value="PresentResult"/>
-                   		</effect>
-                   	</case>
-                   	<case>
-                   		<effect util="-2">
-                   			<set var="a_m" value="PresentResult"/>
-                   		</effect>
-                   	</case>
-                   </rule>
      
                    
     </model>
