@@ -42,6 +42,9 @@ public class StringTemplate implements Template {
 
 	// the string corresponding to the template
 	final String string;
+	
+	// lower case version
+	final String stringLower;
 
 	// whether the string represents a whole word or phrase (and not a
 	// punctuation)
@@ -57,6 +60,7 @@ public class StringTemplate implements Template {
 	 */
 	protected StringTemplate(String str) {
 		this.string = str;
+		this.stringLower = str.toLowerCase();
 		whole = (str.length() != 1 || !StringUtils.isDelimiter(str.charAt(0)));
 	}
 
@@ -100,13 +104,13 @@ public class StringTemplate implements Template {
 	@Override
 	public List<MatchResult> find(String str, int maxResults) {
 
-		str = str.trim();
+		str = str.trim().toLowerCase();
 		List<MatchResult> results = new ArrayList<MatchResult>();
 		int start = 0;
 		while (start != -1) {
-			start = str.indexOf(string, start);
+			start = str.indexOf(stringLower, start);
 			if (start != -1) {
-				int end = start + string.length();
+				int end = start + stringLower.length();
 				if (!whole || StringUtils.isDelimited(str, start, end)) {
 					results.add(new MatchResult(start, end));
 				}

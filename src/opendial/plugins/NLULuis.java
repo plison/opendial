@@ -139,7 +139,9 @@ public class NLULuis implements Module {
 					for (Entity e : json.entities) {
 						entities.add(ValueFactory.create("("+e.entity +"," + e.type + ")"));
 					}
-					Value outputVal = ValueFactory.create(entities);
+					
+					Value outputVal = (entities.isEmpty())? 
+							ValueFactory.none() : ValueFactory.create(entities);
 					
 					// adding the conditional probability in the table
 					Assignment condition = new Assignment(userVar,hypothesis);

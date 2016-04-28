@@ -59,6 +59,7 @@ public class Model {
 
 	// collection of rules for the model
 	Collection<Rule> rules;
+	
 
 	// ===================================
 	// MODEL CONSTRUCTION
@@ -127,7 +128,7 @@ public class Model {
 	public void setBlocking(boolean blocking) {
 		this.blocking = blocking;
 	}
-
+	
 	// ===================================
 	// GETTERS
 	// ===================================
@@ -168,7 +169,7 @@ public class Model {
 				e.printStackTrace();
 			}
 		}
-		return !state.getNewVariables().isEmpty();
+		return !state.getNewVariables().isEmpty() || !state.getNewActionVariables().isEmpty();
 	}
 
 	/**
@@ -231,7 +232,7 @@ public class Model {
 	public boolean isBlocking() {
 		return blocking;
 	}
-
+	
 	// ===================================
 	// UTILITY METHODS
 	// ===================================

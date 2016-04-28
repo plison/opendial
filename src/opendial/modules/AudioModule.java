@@ -180,7 +180,7 @@ public class AudioModule implements Module {
 	 * inserted immediately.
 	 * 
 	 */
-	public void startRecording() {
+	public synchronized void startRecording() {
 		if (!isPaused) {
 
 			// creates a new SpeechData object
@@ -217,7 +217,7 @@ public class AudioModule implements Module {
 	/**
 	 * Stops the recording of the current speech segment.
 	 */
-	public void stopRecording() {
+	public synchronized void stopRecording() {
 		if (inputSpeech != null) {
 			inputSpeech.setAsFinal();
 
@@ -243,9 +243,9 @@ public class AudioModule implements Module {
 				&& state.hasChanceNode(systemSpeech)) {
 			Value v = state.queryProb(systemSpeech).getBest();
 			if (v instanceof SpeechData) {
+				playSpeech((SpeechData) v);
 				system.addContent(
 						new Assignment(system.getSettings().floor, "system"));
-				playSpeech((SpeechData) v);
 			}
 		}
 	}
@@ -255,7 +255,7 @@ public class AudioModule implements Module {
 	 * 
 	 * @param sound the sound to play
 	 */
-	public void playSpeech(SpeechData sound) {
+	public synchronized void playSpeech(SpeechData sound) {
 
 		sound.rewind();
 
@@ -404,7 +404,7 @@ public class AudioModule implements Module {
 				int nBytesRead = 0;
 				byte[] abData = new byte[512 * 16];
 				while (!outputSpeech.isFinal() && outputSpeech.length() < 500) {
-					Thread.sleep(100);
+					Thread.sleep(50);
 				}
 				while (nBytesRead != -1) {
 					nBytesRead = outputSpeech.read(abData, 0, abData.length);
@@ -417,10 +417,10 @@ public class AudioModule implements Module {
 						line.write(abData, 0, nBytesRead);
 					}
 				}
+				outputSpeech = null;
 				if (speechPanel != null) {
 					speechPanel.setSystemTalking(false);
 				}
-				outputSpeech = null;
 				line.drain();
 				if (line.isOpen()) {
 					line.close();

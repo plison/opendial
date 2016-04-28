@@ -103,7 +103,7 @@
                     </rule>    
                     
                         
-                       <rule id="DMPresentResultFinal">                                     	
+                    <rule id="DMPresentResultFinal">                                     	
                         
                         <case>                
                                 <condition operator="and">

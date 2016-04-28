@@ -13,7 +13,7 @@ import com.google.gson.annotations.SerializedName;
  * This class mirrors watson's json output that is relevant for NLU
  * (OutAPINLU portion)
  * @author sstoyanchev
- *
+ * 
  */
 public class NLUWatsonJson extends NLUAbstractJson{
 

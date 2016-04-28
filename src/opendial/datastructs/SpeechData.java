@@ -313,6 +313,7 @@ public class SpeechData extends InputStream implements Value {
 					Thread.sleep(50);
 				}
 				catch (InterruptedException e) {
+					e.printStackTrace();
 				}
 			}
 

@@ -25,6 +25,7 @@ package opendial.templates;
 
 import java.util.Collection;
 
+import opendial.bn.values.SetVal;
 import opendial.bn.values.Value;
 import opendial.bn.values.ValueFactory;
 import opendial.datastructs.Assignment;
@@ -73,6 +74,13 @@ class ArithmeticTemplate extends RegexTemplate {
 			merge = merge.concatenate(ValueFactory.create(negation[0]));
 			for (int i = 1; i < negation.length; i++) {
 				Collection<Value> values = merge.getSubValues();
+				Value valToRemove = ValueFactory.create(negation[i]);
+				if (valToRemove instanceof SetVal) {
+					values.removeAll(valToRemove.getSubValues());
+				}
+				else {
+					values.remove(valToRemove);
+				}
 				values.remove(ValueFactory.create(negation[i]));
 				merge = ValueFactory.create(values);
 			}

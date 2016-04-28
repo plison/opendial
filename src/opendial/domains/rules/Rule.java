@@ -336,6 +336,7 @@ public class Rule {
 		public Set<Template> getInputVariables() {
 			Set<Template> inputVars = new HashSet<Template>();
 			inputVars.addAll(condition.getInputVariables());
+			condition.getSlots().stream().map(s -> Template.create(s)).forEach(t -> inputVars.add(t));
 			for (Effect effect : getEffects()) {
 				for (String inputVariable : effect.getValueSlots()) {
 					inputVars.add(Template.create(inputVariable));
