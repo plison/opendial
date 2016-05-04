@@ -11,6 +11,10 @@
 		<variable id="toground">
 			<value>[Person,Location,Date]</value>
 		</variable>
+		
+		<variable id="constraints">
+			<value>[Before(Location,Date)]</value>
+		</variable>
 
 	</initialstate>
 	
@@ -241,7 +245,7 @@
 				</effect>
 			</case>
 		</rule>
-
+ 
 		<!-- Removing the grounded value from the 'toground' variable -->
 		<rule>
 			<case>
@@ -250,6 +254,19 @@
 				</condition>
 				<effect prob="1">
 					<set var="toground" value="{toground}-{Slot}" />
+				</effect>
+			</case>
+		</rule>
+		
+		<rule>
+			<case>
+				<condition>
+					<if var="a_m" relation="=" value="Ground({Slot},{SlotValue})" />
+					<if var="constraint" relation="in" value="{constraints}"/>
+					<if var="constraint" relation="=" value="Before({Slot},{Slot2})"/>
+				</condition>
+				<effect prob="1">
+					<set var="constraints" value="{constraints}-{constraint}" />
 				</effect>
 			</case>
 		</rule>
@@ -267,6 +284,7 @@
 				<condition>
 					<if var="Slot" relation="in" value="{toground}" />
 					<if var="u_m" relation="!=" value="Welcome*"/>
+					<if var="constraints" relation="!contains" value="Before(*,{Slot})"/>
 				</condition>
 				<effect util="2">
 					<set var="u_m" value="Please specify the {Slot}." />
