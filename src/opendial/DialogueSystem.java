@@ -649,7 +649,6 @@ public class DialogueSystem {
 
 			// finding the new variables that must be processed
 			Set<String> toProcess = curState.getNewVariables();
-
 			synchronized (curState) {
 
 				// reducing the dialogue state to its relevant nodes

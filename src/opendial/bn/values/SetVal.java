@@ -173,7 +173,13 @@ public final class SetVal implements Value {
 	 */
 	@Override
 	public boolean contains(Value subvalue) {
-		return set.contains(subvalue);
+		if (subvalue instanceof SetVal) {
+			boolean allcontains = set.containsAll(subvalue.getSubValues());
+			return allcontains || set.contains(subvalue);
+		}
+		else {
+			return set.contains(subvalue) || set.toString().contains(subvalue.toString());
+		}
 	}
 
 	public boolean isEmpty() {

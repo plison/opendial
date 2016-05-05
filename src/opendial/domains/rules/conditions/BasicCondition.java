@@ -31,6 +31,7 @@ import java.util.List;
 import java.util.Set;
 
 import opendial.bn.values.ArrayVal;
+import opendial.bn.values.DoubleVal;
 import opendial.bn.values.NoneVal;
 import opendial.bn.values.SetVal;
 import opendial.bn.values.Value;
@@ -84,6 +85,9 @@ public final class BasicCondition implements Condition {
 		groundValue = (templateValue.isUnderspecified()) ? null
 				: ValueFactory.create(value);
 		this.relation = relation;
+		if (relation == Relation.LENGTH && !(groundValue instanceof DoubleVal)) {
+			throw new RuntimeException("length must be a number");
+		}
 	}
 
 	/**
@@ -215,7 +219,7 @@ public final class BasicCondition implements Condition {
 			case NOT_CONTAINS:
 				return !actualValue.contains(groundValue);
 			case LENGTH:
-				return actualValue.length() == groundValue.length();
+				return actualValue.length() == ((DoubleVal)groundValue).getDouble();
 			case IN:
 				return groundValue.contains(actualValue);
 			case NOT_IN:

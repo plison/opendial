@@ -159,8 +159,9 @@ public class Model {
 	 * @return true if the state has been changed, false otherwise
 	 */
 	public boolean trigger(DialogueState state) {
+		int initNbNodes = state.getNodeIds().size();
 		for (Rule r : rules) {
-			try {
+			try {				
 				state.applyRule(r);
 			}
 			catch (RuntimeException e) {
@@ -169,7 +170,7 @@ public class Model {
 				e.printStackTrace();
 			}
 		}
-		return !state.getNewVariables().isEmpty() || !state.getNewActionVariables().isEmpty();
+		return (initNbNodes != state.getNodeIds().size());
 	}
 
 	/**

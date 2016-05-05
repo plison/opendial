@@ -24,12 +24,20 @@
 package opendial.utils;
 
 import java.util.logging.*;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+
+import opendial.bn.values.Value;
+import opendial.bn.values.ValueFactory;
 
 /**
  * Various utilities for manipulating strings
@@ -301,4 +309,37 @@ public class StringUtils {
 		return builder.toString();
 	}
 
+	/**
+	 * External function to convert a list [X,Y,Z] into a enumeration such as "X, Y and Z".
+	 * 
+	 */
+	public final static class Enumerate implements Function<List<String>,Value> {
+
+		@Override
+		public Value apply(List<String> values) {
+			if (values.size() !=1) {
+				return ValueFactory.none();
+			}
+			List<Value> subvalues =  new ArrayList<Value>(ValueFactory.create(values.get(0)).getSubValues());
+			String result = "";
+			if (subvalues.size()==1) {
+				result += subvalues.get(0);
+			}
+			else if (subvalues.size()==2) {
+				result += subvalues.get(0) + " and " + subvalues.get(1);
+			}
+			else if (subvalues.size()>2) {
+				for (int i = 0 ; i < subvalues.size() ; i++) {
+					result += subvalues.get(i);
+					if (i < subvalues.size()-2) {
+						result += ", ";
+					}
+					else if (i < subvalues.size()-1){
+						result += " and ";
+					}
+				}
+			}
+			return ValueFactory.create(result);
+		}
+	}
 }

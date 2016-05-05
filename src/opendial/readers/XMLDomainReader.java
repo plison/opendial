@@ -159,6 +159,7 @@ public class XMLDomainReader {
 			String functionStr = mainNode.getTextContent().trim();
 			try {
 				Class<?> clazz = Class.forName(functionStr);
+
 				@SuppressWarnings("unchecked")
 				Function<List<String>, Value> f =
 						(Function<List<String>, Value>) clazz.newInstance();

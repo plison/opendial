@@ -24,6 +24,7 @@
 package opendial.templates;
 
 import java.util.Collection;
+import java.util.regex.Pattern;
 
 import opendial.bn.values.SetVal;
 import opendial.bn.values.Value;
