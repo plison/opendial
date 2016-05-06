@@ -23,8 +23,8 @@
 
 package opendial.templates;
 
+import java.util.Arrays;
 import java.util.Collection;
-import java.util.regex.Pattern;
 
 import opendial.bn.values.SetVal;
 import opendial.bn.values.Value;
@@ -98,13 +98,14 @@ class ArithmeticTemplate extends RegexTemplate {
 	 */
 	public static boolean isArithmeticExpression(String exp) {
 		boolean mathOperators = false;
+		boolean stringElements = false;
 		StringBuilder curString = new StringBuilder();
 		for (int i = 0; i < exp.length(); i++) {
 			char c = exp.charAt(i);
 			if (c == '+' || c == '-' || c == '/' || (c == '*' && exp.length() > 2)) {
 				mathOperators = true;
 			}
-			else if (c == '?' || c == '|' || c == '[' || c == '_' || c == '\'') {
+			else if (c == '?' || c == '|' || c == '[' || c == '\'') {
 				return false;
 			}
 			else if (Character.isLetter(c)) {
@@ -112,13 +113,23 @@ class ArithmeticTemplate extends RegexTemplate {
 			}
 			else if (StringUtils.isDelimiter(c)) {
 				if (!MathExpression.fixedFunctions.contains(curString.toString())) {
-					return false;
+					stringElements = true;
 				}
 				mathOperators = true;
 				curString = new StringBuilder();
 			}
 		}
-		return (mathOperators);
+
+		if (stringElements && mathOperators) {
+			String[] splits = exp.split("[\\+\\-]");
+			boolean setOp = splits.length > 1 
+					&& (splits[0].startsWith("{") && !splits[0].startsWith("["))
+					&& Arrays.stream(splits).noneMatch(s -> s.contains(" "));
+			return setOp;
+		}
+		else {
+			return mathOperators;
+		}
 	}
 
 }

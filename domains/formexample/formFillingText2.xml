@@ -45,8 +45,8 @@
 					<if var="FocusSlot" relation="=" value="Location" />					
 				</condition>
 				<effect prob="1">
+					<set var="a_u" value="FillSlot(Location)" exclusive="false"/>/>
 					<set var="Location" value="{Entity}" />
-					<set var="newinputs" value="Location" exclusive="false"/>
 				</effect>
 			</case>
 			<case>
@@ -57,20 +57,20 @@
 					<if var="enabled" relation="contains" value="Location"/>
 				</condition>
 				<effect prob="0.8">
+					<set var="a_u" value="FillSlot(Location)" exclusive="false"/>/>
 					<set var="Location" value="{Entity}" />
-					<set var="newinputs" value="Location" exclusive="false"/>
 				</effect>
 			</case>
 			<case>
-				<!-- Third case, the 'Location' has been grounded, but the user wants to cancel it -->
+				<!-- Third case, the 'Location' has been grounded, but the user wishes to cancel it -->
 				<condition>
 					<if var="entities" relation="contains" value="({Entity},builtin.geography.*)" />
 					<if var="u_u" relation="contains" value="no" />		
 					<if var="enabled" relation="contains" value="Location"/>
 				</condition>
 				<effect prob="0.7">
+					<set var="a_u" value="FillSlot(Location)" exclusive="false"/>/>
 					<set var="Location" value="{Entity}" />
-					<set var="newinputs" value="Location" exclusive="false"/>
 				</effect>
 			</case>
 		</rule>
@@ -84,8 +84,8 @@
 					<if var="FocusSlot" relation="=" value="Person" />					
 				</condition>
 				<effect prob="1">
+					<set var="a_u" value="FillSlot(Person)"  exclusive="false"/>
 					<set var="Person" value="{Entity}" />
-					<set var="newinputs" value="Person" exclusive="false"/>
 				</effect>
 			</case>
 			<case>
@@ -96,8 +96,8 @@
 					<if var="enabled" relation="contains" value="Person"/>
 				</condition>
 				<effect prob="0.8">
+					<set var="a_u" value="FillSlot(Person)" exclusive="false" />
 					<set var="Person" value="{Entity}" />
-					<set var="newinputs" value="Person" exclusive="false"/>
 				</effect>
 			</case>
 			<case>
@@ -108,13 +108,13 @@
 					<if var="enabled" relation="contains" value="Person"/>
 				</condition>
 				<effect prob="0.7">
+					<set var="a_u" value="FillSlot(Person)"  exclusive="false"/>
 					<set var="Person" value="{Entity}" />
-					<set var="newinputs" value="Person" exclusive="false"/>
 				</effect>
 			</case>
 		</rule>
 
-		<!-- Fills the date slot -->
+		<!-- Fills the start date slot -->
 		<rule>
 			<case>
 				<condition>
@@ -122,8 +122,8 @@
 					<if var="FocusSlot" relation="=" value="StartDate"/>				
 				</condition>
 				<effect prob="1">
+					<set var="a_u" value="FillSlot(StartDate)" exclusive="false"/>
 					<set var="StartDate" value="{Entity}" />
-					<set var="newinputs" value="StartDate" exclusive="false"/>
 				</effect>
 			</case>
 			<case>
@@ -133,8 +133,8 @@
 					<if var="enabled" relation="contains" value="StartDate"/>
 				</condition>
 				<effect prob="0.8">
+					<set var="a_u" value="FillSlot(StartDate)" exclusive="false"/>
 					<set var="StartDate" value="{Entity}" />
-					<set var="newinputs" value="StartDate" exclusive="false"/>
 				</effect>
 			</case>
 			<case>
@@ -144,14 +144,14 @@
 					<if var="enabled" relation="contains" value="StartDate"/>
 				</condition>
 				<effect prob="0.7">
+					<set var="a_u" value="FillSlot(StartDate)" exclusive="false"/>
 					<set var="StartDate" value="{Entity}" />
-					<set var="newinputs" value="StartDate" exclusive="false"/>
 				</effect>
 			</case>
 		</rule>
 
 
-		<!-- Fills the date slot -->
+		<!-- Fills the end date slot -->
 		<rule>
 			<case>
 				<condition>
@@ -159,8 +159,8 @@
 					<if var="FocusSlot" relation="=" value="EndDate"/>				
 				</condition>
 				<effect prob="1">
+					<set var="a_u" value="FillSlot(EndDate)" exclusive="false"/>
 					<set var="EndDate" value="{Entity}" />
-					<set var="newinputs" value="EndDate" exclusive="false"/>
 				</effect>
 			</case>
 			<case>
@@ -170,8 +170,8 @@
 					<if var="enabled" relation="contains" value="EndDate"/>
 				</condition>
 				<effect prob="0.8">
+					<set var="a_u" value="FillSlot(EndDate)" exclusive="false"/>
 					<set var="EndDate" value="{Entity}" />
-					<set var="newinputs" value="EndDate" exclusive="false"/>
 				</effect>
 			</case>
 			<case>
@@ -181,8 +181,8 @@
 					<if var="enabled" relation="contains" value="EndDate"/>
 				</condition>
 				<effect prob="0.7">
+					<set var="a_u" value="FillSlot(EndDate)" exclusive="false"/>
 					<set var="EndDate" value="{Entity}" />
-					<set var="newinputs" value="EndDate" exclusive="false"/>
 				</effect>
 			</case>
 		</rule>
@@ -210,7 +210,7 @@
 				</condition>
 				<effect prob="1">
 					<set var="{Slot}" value="{SlotValue}" />
-					<set var="newinputs" value="{Slot}" exclusive="false"/>
+					<set var="a_u" value="FillSlot({Slot})" exclusive="false"/>
 				</effect>
 			</case>
 			<case>
@@ -223,13 +223,46 @@
 				</effect>
 			</case>
 		</rule>
+		
+		
+		<!-- Additional dialogue acts such as skipping an optional slot,
+			restarting the interaction or uttering something out-of-coverage -->
+		<rule>
+			<case>
+				<condition>
+					<if var="u_u" relation="contains" value="skip"/>
+					<if var="FocusSlot" relation="=" value="{Slot}"/>
+				</condition>
+				<effect>
+					<set var="a_u" value="Skip({Slot})" exclusive="false"/>
+				</effect>
+			</case>	
+			<case>
+				<condition>
+					<if var="u_u" relation="contains" value="restart"/>
+				</condition>
+				<effect>
+					<set var="a_u" value="Restart" exclusive="false"/>
+				</effect>
+			</case>	
+			<case>
+				<condition>
+					<if var="u_u" relation="!=" value="None"/>
+					<if var="u_u" relation="!contains" value="(yes|correct|exactly|no)"/>
+					<if var="entities" value="None" />
+				</condition>
+				<effect>
+					<set var="a_u" value="Other" exclusive="false"/>
+				</effect>
+			</case>
+		</rule>
 	
 		
-		<!-- Dummy rule to trigger the update of 'newinputs' -->
+		<!-- Dummy rule to trigger the update of 'a_u' -->
 		<rule priority="2">
 			<case>
 				<effect>
-					<set var="newinputs" value="[]"/>	
+					<set var="a_u" value="[]"/>	
 				</effect>
 			</case>
 		</rule>
@@ -239,14 +272,14 @@
 
  
 	<!-- Action selection model (essentially grounding or clarify the slots?) -->
-	<model trigger="newinputs">
+	<model trigger="a_u">
 
 
 		<!-- Relative utilities for grounding vs . requesting a confirmation for a slot -->
 		<rule>
 			<case>
 				<condition>
-					<if var="newinputs" relation="contains" value="{Slot}" />
+					<if var="a_u" relation="contains" value="FillSlot({Slot})" />
 					<if var="{Slot}" relation="=" value="{SlotValue}"/>
 					<if var="SlotValue" relation="!=" value="None" />
 				</condition>
@@ -275,8 +308,7 @@
 		<rule>
 			<case>
 				<condition>
-					<if var="u_u" relation="contains" value="skip"/>
-					<if var="FocusSlot" relation="=" value="{Slot}"/>
+					<if var="a_u" relation="contains" value="Skip({Slot})"/>
 					<if var="optional" relation="contains" value="{Slot}"/>
 				</condition>
 				<effect util="1">
@@ -285,7 +317,7 @@
 			</case>	
 			<case>
 				<condition>
-					<if var="u_u" relation="contains" value="restart"/>
+					<if var="a_u" relation="contains" value="Restart"/>
 				</condition>
 				<effect util="1.0">
 					<set var="a_m" value="Start" />
@@ -293,12 +325,10 @@
 			</case>	
 			<case>
 				<condition>
-					<if var="u_u" relation="!=" value="None"/>
-					<if var="u_u" relation="!contains" value="(yes|correct|exactly|no)"/>
-					<if var="entities" value="None" />
+					<if var="a_u" relation="contains" value="Other"/>
 				</condition>
 				<effect util="0.5">
-					<set var="a_m" value="NotUnderstood" />
+					<set var="a_m" value="AskRepeat" />
 				</effect>
 			</case>
 			<case>
@@ -309,7 +339,7 @@
 					<set var="a_m" value="Skip(*)"/>
 				</effect>
 				<effect util="-0.2">
-					<set var="a_m" value="NotUnderstood" />
+					<set var="a_m" value="AskRepeat" />
 				</effect>
 			</case>
 		</rule>
@@ -328,7 +358,6 @@
 				</condition>
 				<effect prob="1">
 					<set var="grounded" value="{grounded}+{Slot}"/>
-					<set var="newinputs" value="{newinputs}-{Slot}"/>
 				</effect>
 			</case>
 			<case>
@@ -340,7 +369,22 @@
 				</effect>
 			</case>
 		</rule>
+
+		<!-- If the user dialogue act has more than one element, executes 
+		 	the action selection model again (to e.g. ground another slot) -->
+		<rule>
+			<case>
+				<condition>
+					<if var="a_m" relation="=" value="Ground({Slot},*)" />
+					<not><if var="a_u" relation="length" value="1"/></not>
+				</condition>
+				<effect prob="1">
+					<set var="a_u" value="{a_u}-FillSlot({Slot})"/>
+				</effect>
+			</case>
+		</rule>	
 		
+			
 		<!-- Initialises the slots and the 'grounded' variable when (re)starting the dialogue -->
 		<rule> 
 			<case>
@@ -516,7 +560,7 @@
 			</case>
 			<case>
 				<condition>
-					<if var="a_m" relation="=" value="NotUnderstood" />
+					<if var="a_m" relation="=" value="AskRepeat" />
 					<if var="u_m" relation="contains" value="repeat?"/>
 				</condition>
 				<effect util="1">
@@ -526,7 +570,7 @@
 			</case>
 			<case>
 				<condition>
-					<if var="a_m" relation="=" value="NotUnderstood" />
+					<if var="a_m" relation="=" value="AskRepeat" />
 				</condition>
 				<effect util="1">
 					<set var="u_m" value="I am not sure what you just said. Could you repeat?" />
