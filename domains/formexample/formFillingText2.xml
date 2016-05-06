@@ -34,14 +34,14 @@
 
 	<!-- Fills the form slots according to the values produced by the 
 		statistical NLU engine -->
-	<model trigger="a_u">
+	<model trigger="entities">
 		
 		<!-- Fills the location slot  -->
 		<rule>
 			<case>
 				<!-- First case: the 'Location' slot is in focus and a value is provided -->
 				<condition>
-					<if var="a_u" relation="contains" value="({Entity},builtin.geography.*)" />
+					<if var="entities" relation="contains" value="({Entity},builtin.geography.*)" />
 					<if var="FocusSlot" relation="=" value="Location" />					
 				</condition>
 				<effect prob="1">
@@ -52,7 +52,7 @@
 			<case>
 				<!-- Second case: the 'Location' is not in focus but is not yet grounded -->
 				<condition>
-					<if var="a_u" relation="contains" value="({Entity},builtin.geography.*)" />
+					<if var="entities" relation="contains" value="({Entity},builtin.geography.*)" />
 					<if var="grounded" relation="!contains" value="Location" />	
 					<if var="enabled" relation="contains" value="Location"/>
 				</condition>
@@ -64,7 +64,7 @@
 			<case>
 				<!-- Third case, the 'Location' has been grounded, but the user wants to cancel it -->
 				<condition>
-					<if var="a_u" relation="contains" value="({Entity},builtin.geography.*)" />
+					<if var="entities" relation="contains" value="({Entity},builtin.geography.*)" />
 					<if var="u_u" relation="contains" value="no" />		
 					<if var="enabled" relation="contains" value="Location"/>
 				</condition>
@@ -79,7 +79,7 @@
 		<rule>
 			<case>
 				<condition>
-					<if var="a_u" relation="contains"
+					<if var="entities" relation="contains"
 						value="({Entity},builtin.encyclopedia.people.*)" />
 					<if var="FocusSlot" relation="=" value="Person" />					
 				</condition>
@@ -90,7 +90,7 @@
 			</case>
 			<case>
 				<condition>
-					<if var="a_u" relation="contains"
+					<if var="entities" relation="contains"
 						value="({Entity},builtin.encyclopedia.people.*)" />
 					<if var="grounded" relation="!contains" value="Person" />					
 					<if var="enabled" relation="contains" value="Person"/>
@@ -102,7 +102,7 @@
 			</case>
 			<case>
 				<condition>
-					<if var="a_u" relation="contains"
+					<if var="entities" relation="contains"
 						value="({Entity},builtin.encyclopedia.people.*)" />
 					<if var="u_u" relation="contains" value="no" />		
 					<if var="enabled" relation="contains" value="Person"/>
@@ -118,7 +118,7 @@
 		<rule>
 			<case>
 				<condition>
-					<if var="a_u" relation="contains" value="({Entity},builtin.datetime.*)" />
+					<if var="entities" relation="contains" value="({Entity},builtin.datetime.*)" />
 					<if var="FocusSlot" relation="=" value="StartDate"/>				
 				</condition>
 				<effect prob="1">
@@ -128,7 +128,7 @@
 			</case>
 			<case>
 				<condition>
-					<if var="a_u" relation="contains" value="({Entity},builtin.datetime.*)" />
+					<if var="entities" relation="contains" value="({Entity},builtin.datetime.*)" />
 					<if var="grounded" relation="!contains" value="StartDate" />	
 					<if var="enabled" relation="contains" value="StartDate"/>
 				</condition>
@@ -139,7 +139,7 @@
 			</case>
 			<case>
 				<condition>
-					<if var="a_u" relation="contains" value="({Entity},builtin.datetime.*)" />
+					<if var="entities" relation="contains" value="({Entity},builtin.datetime.*)" />
 					<if var="u_u" relation="contains" value="no"/>	
 					<if var="enabled" relation="contains" value="StartDate"/>
 				</condition>
@@ -155,7 +155,7 @@
 		<rule>
 			<case>
 				<condition>
-					<if var="a_u" relation="contains" value="({Entity},builtin.datetime.*)" />
+					<if var="entities" relation="contains" value="({Entity},builtin.datetime.*)" />
 					<if var="FocusSlot" relation="=" value="EndDate"/>				
 				</condition>
 				<effect prob="1">
@@ -165,7 +165,7 @@
 			</case>
 			<case>
 				<condition>
-					<if var="a_u" relation="contains" value="({Entity},builtin.datetime.*)" />
+					<if var="entities" relation="contains" value="({Entity},builtin.datetime.*)" />
 					<if var="grounded" relation="!contains" value="EndDate"/>				
 					<if var="enabled" relation="contains" value="EndDate"/>
 				</condition>
@@ -176,7 +176,7 @@
 			</case>
 			<case>
 				<condition>
-					<if var="a_u" relation="contains" value="({Entity},builtin.datetime.*)" />
+					<if var="entities" relation="contains" value="({Entity},builtin.datetime.*)" />
 					<if var="u_u" relation="contains" value="no"/>	
 					<if var="enabled" relation="contains" value="EndDate"/>
 				</condition>
@@ -295,7 +295,7 @@
 				<condition>
 					<if var="u_u" relation="!=" value="None"/>
 					<if var="u_u" relation="!contains" value="(yes|correct|exactly|no)"/>
-					<if var="a_u" value="None" />
+					<if var="entities" value="None" />
 				</condition>
 				<effect util="0.5">
 					<set var="a_m" value="NotUnderstood" />

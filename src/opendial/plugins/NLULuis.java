@@ -61,7 +61,7 @@ public class NLULuis implements Module {
 
 	boolean paused = true;
 
-	public static String userActVar = "a_u";
+	public static String entitiesVar = "entities";
 	
 	public static String serverURL = "https://api.projectoxford.ai/luis/v1/application";		
 	public static String charset = "UTF-8";
@@ -114,7 +114,7 @@ public class NLULuis implements Module {
 			return;
 		}
 		String userVar = system.getSettings().userInput;
-		String newVar = userActVar + "'";
+		String newVar = entitiesVar + "'";
 		if (updatedVars.contains(userVar) && state.hasChanceNode(userVar)) {
 			
 			// if the user action is already specified with good confidence by another model/module,
@@ -124,7 +124,7 @@ public class NLULuis implements Module {
 			}
 			
 			// creating the conditional probability distribution
-			ConditionalTable.Builder builder = new ConditionalTable.Builder(userActVar);
+			ConditionalTable.Builder builder = new ConditionalTable.Builder(entitiesVar);
 
 			// looping on the possible user utterances
 			Set<Value> hypotheses = state.queryProb(userVar).getValues();
