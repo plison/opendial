@@ -3,7 +3,7 @@
 
 	<!-- Initial state of the interaction -->
 	<initialstate>
-	
+	 
 		<!-- Starts the dialogue with the system prompt -->
 		<variable id="a_m">
 			<value>Start</value>
@@ -16,12 +16,12 @@
 		
 		<!-- List of optional slots (that may be left unfilled) -->
 		<variable id="optional">
-			<value prob="1">[]</value>
+			<value prob="1">[Person]</value>
 		</variable>
 
 		<!-- List of precedence relations between slots -->
 		<variable id="precedence">
-			<value>[]</value>
+			<value>[(StartDate,EndDate)]</value>
 		</variable>
 		
 		<!-- List of mutually exclusive slots -->
@@ -35,20 +35,40 @@
 	<!-- Fills the form slots according to the values produced by the 
 		statistical NLU engine -->
 	<model trigger="a_u">
-
-		<!-- Fills the location slot (either when the slot is not filled yet, or the utterance 
-		contains a 'no', usually to correct a previous misunderstanding) -->
+		
+		<!-- Fills the location slot  -->
 		<rule>
 			<case>
+				<!-- First case: the 'Location' slot is in focus and a value is provided -->
 				<condition>
 					<if var="a_u" relation="contains" value="({Entity},builtin.geography.*)" />
-					<or>
-						<if var="toground" relation="contains" value="Location" />					
-						<if var="u_u" relation="contains" value="no" />
-					</or>
-
+					<if var="FocusSlot" relation="=" value="Location" />					
 				</condition>
 				<effect prob="1">
+					<set var="Location" value="{Entity}" />
+					<set var="newinputs" value="Location" exclusive="false"/>
+				</effect>
+			</case>
+			<case>
+				<!-- Second case: the 'Location' is not in focus but is not yet grounded -->
+				<condition>
+					<if var="a_u" relation="contains" value="({Entity},builtin.geography.*)" />
+					<if var="grounded" relation="!contains" value="Location" />	
+					<if var="enabled" relation="contains" value="Location"/>
+				</condition>
+				<effect prob="0.8">
+					<set var="Location" value="{Entity}" />
+					<set var="newinputs" value="Location" exclusive="false"/>
+				</effect>
+			</case>
+			<case>
+				<!-- Third case, the 'Location' has been grounded, but the user wants to cancel it -->
+				<condition>
+					<if var="a_u" relation="contains" value="({Entity},builtin.geography.*)" />
+					<if var="u_u" relation="contains" value="no" />		
+					<if var="enabled" relation="contains" value="Location"/>
+				</condition>
+				<effect prob="0.7">
 					<set var="Location" value="{Entity}" />
 					<set var="newinputs" value="Location" exclusive="false"/>
 				</effect>
@@ -61,12 +81,33 @@
 				<condition>
 					<if var="a_u" relation="contains"
 						value="({Entity},builtin.encyclopedia.people.*)" />
-					<or>
-						<if var="toground" relation="contains" value="Person" />					
-						<if var="u_u" relation="contains" value="no" />
-					</or>
+					<if var="FocusSlot" relation="=" value="Person" />					
 				</condition>
 				<effect prob="1">
+					<set var="Person" value="{Entity}" />
+					<set var="newinputs" value="Person" exclusive="false"/>
+				</effect>
+			</case>
+			<case>
+				<condition>
+					<if var="a_u" relation="contains"
+						value="({Entity},builtin.encyclopedia.people.*)" />
+					<if var="grounded" relation="!contains" value="Person" />					
+					<if var="enabled" relation="contains" value="Person"/>
+				</condition>
+				<effect prob="0.8">
+					<set var="Person" value="{Entity}" />
+					<set var="newinputs" value="Person" exclusive="false"/>
+				</effect>
+			</case>
+			<case>
+				<condition>
+					<if var="a_u" relation="contains"
+						value="({Entity},builtin.encyclopedia.people.*)" />
+					<if var="u_u" relation="contains" value="no" />		
+					<if var="enabled" relation="contains" value="Person"/>
+				</condition>
+				<effect prob="0.7">
 					<set var="Person" value="{Entity}" />
 					<set var="newinputs" value="Person" exclusive="false"/>
 				</effect>
@@ -78,12 +119,31 @@
 			<case>
 				<condition>
 					<if var="a_u" relation="contains" value="({Entity},builtin.datetime.*)" />
-					<or>
-						<if var="toground" relation="contains" value="StartDate" />					
-						<if var="u_u" relation="contains" value="no" />
-					</or>
+					<if var="FocusSlot" relation="=" value="StartDate"/>				
 				</condition>
 				<effect prob="1">
+					<set var="StartDate" value="{Entity}" />
+					<set var="newinputs" value="StartDate" exclusive="false"/>
+				</effect>
+			</case>
+			<case>
+				<condition>
+					<if var="a_u" relation="contains" value="({Entity},builtin.datetime.*)" />
+					<if var="grounded" relation="!contains" value="StartDate" />	
+					<if var="enabled" relation="contains" value="StartDate"/>
+				</condition>
+				<effect prob="0.8">
+					<set var="StartDate" value="{Entity}" />
+					<set var="newinputs" value="StartDate" exclusive="false"/>
+				</effect>
+			</case>
+			<case>
+				<condition>
+					<if var="a_u" relation="contains" value="({Entity},builtin.datetime.*)" />
+					<if var="u_u" relation="contains" value="no"/>	
+					<if var="enabled" relation="contains" value="StartDate"/>
+				</condition>
+				<effect prob="0.7">
 					<set var="StartDate" value="{Entity}" />
 					<set var="newinputs" value="StartDate" exclusive="false"/>
 				</effect>
@@ -96,12 +156,31 @@
 			<case>
 				<condition>
 					<if var="a_u" relation="contains" value="({Entity},builtin.datetime.*)" />
-					<or>
-						<if var="toground" relation="contains" value="EndDate" />					
-						<if var="u_u" relation="contains" value="no" />
-					</or>
+					<if var="FocusSlot" relation="=" value="EndDate"/>				
 				</condition>
 				<effect prob="1">
+					<set var="EndDate" value="{Entity}" />
+					<set var="newinputs" value="EndDate" exclusive="false"/>
+				</effect>
+			</case>
+			<case>
+				<condition>
+					<if var="a_u" relation="contains" value="({Entity},builtin.datetime.*)" />
+					<if var="grounded" relation="!contains" value="EndDate"/>				
+					<if var="enabled" relation="contains" value="EndDate"/>
+				</condition>
+				<effect prob="0.8">
+					<set var="EndDate" value="{Entity}" />
+					<set var="newinputs" value="EndDate" exclusive="false"/>
+				</effect>
+			</case>
+			<case>
+				<condition>
+					<if var="a_u" relation="contains" value="({Entity},builtin.datetime.*)" />
+					<if var="u_u" relation="contains" value="no"/>	
+					<if var="enabled" relation="contains" value="EndDate"/>
+				</condition>
+				<effect prob="0.7">
 					<set var="EndDate" value="{Entity}" />
 					<set var="newinputs" value="EndDate" exclusive="false"/>
 				</effect>
@@ -112,7 +191,8 @@
 		<rule priority="2">
 			<case>
 				<condition>
-					<if var="Slot" relation="in" value="{toground}" />
+					<if var="Slot" relation="in" value="{Slots}" />
+					<if var="grounded" relation="!contains" value="{Slot}"/>
 					<if var="{Slot}" relation="=" value="{SlotValue}" />
 				</condition>
 				<effect prob="1">
@@ -130,7 +210,7 @@
 				</condition>
 				<effect prob="1">
 					<set var="{Slot}" value="{SlotValue}" />
-					<set var="newinputs" value="{Slot}"/>
+					<set var="newinputs" value="{Slot}" exclusive="false"/>
 				</effect>
 			</case>
 			<case>
@@ -143,12 +223,13 @@
 				</effect>
 			</case>
 		</rule>
+	
 		
 		<!-- Dummy rule to trigger the update of 'newinputs' -->
 		<rule priority="2">
 			<case>
 				<effect>
-					<set var="newinputs" value="None"/>
+					<set var="newinputs" value="[]"/>	
 				</effect>
 			</case>
 		</rule>
@@ -165,31 +246,32 @@
 		<rule>
 			<case>
 				<condition>
-					<if var="newinputs" relation="contains" value="{S1}" />
-					<if var="{S1}" relation="=" value="{S1V}"/>
-					<if var="S1V" relation="!=" value="None" />
+					<if var="newinputs" relation="contains" value="{Slot}" />
+					<if var="{Slot}" relation="=" value="{SlotValue}"/>
+					<if var="SlotValue" relation="!=" value="None" />
 				</condition>
 				<effect util="2">
-					<set var="a_m" value="Ground({S1},{S1V})" />
+					<set var="a_m" value="Ground({Slot},{SlotValue})" />
 				</effect>
 				<effect util="1">
-					<set var="a_m" value="AskConfirm({S1},{S1V})" />
+					<set var="a_m" value="AskConfirm({Slot},{SlotValue})" />
 				</effect>
 			</case>
 			<case>
 				<condition> 
-					<if var="S1V" relation="!=" value="None" />
+					<if var="SlotValue" relation="!=" value="None" />
 				</condition>
 				<effect util="-2">
-					<set var="a_m" value="Ground({S1},{S1V})" />
+					<set var="a_m" value="Ground({Slot},{SlotValue})" />
 				</effect>
-				<effect util="-0.2">
-					<set var="a_m" value="AskConfirm({S1},{S1V})" />
+				<effect util="-0.3">
+					<set var="a_m" value="AskConfirm({Slot},{SlotValue})" />
 				</effect>			
 			</case>
 		</rule>
 		
-		<!-- Utilities for skipping an optional slot -->
+		<!-- Utilities for additional actions, such as skipping an optional slot,
+			restarting the interaction or stating that the utterance was not understood -->
 		<rule>
 			<case>
 				<condition>
@@ -200,16 +282,7 @@
 				<effect util="1">
 					<set var="a_m" value="Skip({Slot})"/>
 				</effect>
-			</case>
-			<case>
-				<effect util="-1">
-					<set var="a_m" value="Skip(*)"/>
-				</effect>
-			</case>
-		</rule>
-
-		<!-- Utilities for restarting the interaction -->
-		<rule>		
+			</case>	
 			<case>
 				<condition>
 					<if var="u_u" relation="contains" value="restart"/>
@@ -219,25 +292,22 @@
 				</effect>
 			</case>	
 			<case>
-				<effect util="-2">
-					<set var="a_m" value="Start"/>
-				</effect>
-			</case>		
-		</rule>
-		
-		<!-- Handles an utterance that was not understood -->
-			<rule>
-			<case>
 				<condition>
-					<if var="a_u" value="None" />
 					<if var="u_u" relation="!=" value="None"/>
 					<if var="u_u" relation="!contains" value="(yes|correct|exactly|no)"/>
+					<if var="a_u" value="None" />
 				</condition>
 				<effect util="0.5">
 					<set var="a_m" value="NotUnderstood" />
 				</effect>
 			</case>
 			<case>
+				<effect util="-1">
+					<set var="a_m" value="Start"/>
+				</effect>
+				<effect util="-1">
+					<set var="a_m" value="Skip(*)"/>
+				</effect>
 				<effect util="-0.2">
 					<set var="a_m" value="NotUnderstood" />
 				</effect>
@@ -245,11 +315,170 @@
 		</rule>
 		
 	</model>
+	
+	
+	<!-- Transition model (following a new system action). -->
+	<model trigger="a_m">
+		
+		<!-- Adds the grounded/skipped value to the 'grounded' variable -->
+		<rule>
+			<case>
+				<condition>
+					<if var="a_m" relation="=" value="Ground({Slot},*)" />
+				</condition>
+				<effect prob="1">
+					<set var="grounded" value="{grounded}+{Slot}"/>
+					<set var="newinputs" value="{newinputs}-{Slot}"/>
+				</effect>
+			</case>
+			<case>
+				<condition>
+					<if var="a_m" relation="=" value="Skip({Slot})"/>
+				</condition>
+				<effect prob="1">
+					<set var="grounded" value="{grounded}+{Slot}"/>
+				</effect>
+			</case>
+		</rule>
+		
+		<!-- Initialises the slots and the 'grounded' variable when (re)starting the dialogue -->
+		<rule> 
+			<case>
+				<condition>
+					<if var="a_m" relation="=" value="Start"/>
+					<if var="Slot" relation="in" value="{Slots}"/>
+				</condition>
+				<effect>
+					<set var="{Slot}" value="None"/>
+					<set var="grounded" value="[]"/>
+				</effect>
+			</case>
+		</rule>
+		
+		<!-- Enables the slots that are not dependent on a preceding slot -->
+		<rule> 
+			<case>
+				<condition>
+					<if var="a_m" relation="=" value="Start"/>
+					<if var="Slot" relation="in" value="{Slots}"/>
+					<if var="precedence" relation="!contains" value="(*,{Slot})"/>
+				</condition>
+				<effect>
+					<set var="enabled" value="{Slot}" exclusive="false"/>
+				</effect>
+			</case>
+		</rule>
+		
+		<!-- Write the current slot 'in focus' in a variable FocusSlot -->
+		<rule>
+			<case>
+				<condition operator="or">
+					<if var="a_m" relation="=" value="Ask({Slot})"/>	
+					<if var="a_m" relation="=" value="AskConfirm({Slot},*)"/>	
+				</condition>
+				<effect prob="1">
+					<set var="FocusSlot" value="{Slot}"/>
+				</effect>
+			</case>
+		</rule>
+		
+		<!-- Updates the enabled slots if a precedence relation is fullfilled -->
+		<rule>
+			<case>
+				<condition>
+					<if var="precedence" relation="contains" value="({Slot1},{Slot2})"/>
+					<if var="a_m" relation="=" value="(Ground|Skip)({Slot1}*"/>
+					<if var="enabled" relation="!contains" value="{Slot2}"/>
+				</condition>
+				<effect prob="1">
+					<set var="enabled" value="{enabled}+{Slot2}" exclusive="false" />
+				</effect>
+			</case>
+		</rule>
+		
+		<!-- Updates the grounded slots in case of mutual exclusivity between two slots -->
+		<rule>
+			<case>
+				<condition>
+					<if var="exclusive" relation="contains" value="({Slot1},{Slot2})"/>
+					<if var="a_m" relation="=" value="(Ground|Skip)(({Slot1}|{Slot2})*"/>
+				</condition>
+				<effect prob="1">
+					<set var="grounded" value="{grounded}+{Slot1}+{Slot2}" exclusive="false"/>
+				</effect>
+			</case>
+		</rule>
+		
+	</model> 
+	
+	
+	<!-- If a new slot is grounded, asks a new question, or present the results -->
+	<model trigger="grounded">
 
+		<rule id="nextquestion">
+			<case>
+				<condition>
+					<if var="Slot" relation="in" value="{Slots}" />
+					<if var="grounded" relation="!contains" value="{Slot}"/>
+					<if var="enabled" relation="contains" value="{Slot}"/>
+				</condition>
+				<effect util="0.1">
+					<set var="a_m" value="Ask({Slot})" />
+				</effect>
+			</case>
+		</rule> 
+	
+		<rule>
+			<case>
+				<!--If everything is grounded, return control to caller-->
+				<condition>
+					<if var="grounded" relation="=" value="{Slots}" />
+				</condition>
+				<effect util="1">
+					<set var="a_m" value="EndDialogue" />
+				</effect>
+			</case>
+	
+		</rule>
+	</model>
+	
+	
 	<!-- Generation model from system actions to the raw utterances -->
 	<model trigger="a_m">
 
 		<rule>
+			<case>
+				<condition>
+					<if var="a_m" relation="=" value="Ask(Person)" />
+				</condition> 
+				<effect util="1">
+					<set var="u_m" value="What is your name? Say 'skip' to ignore the field." />
+				</effect>
+			</case>
+			<case>
+				<condition>
+					<if var="a_m" relation="=" value="Ask(Location)" />
+				</condition> 
+				<effect util="1">
+					<set var="u_m" value="Please provide the location of your trip." />
+				</effect>
+			</case>
+			<case>
+				<condition>
+					<if var="a_m" relation="=" value="Ask(StartDate)" />
+				</condition> 
+				<effect util="1">
+					<set var="u_m" value="What is the starting date of your trip?" />
+				</effect>
+			</case>
+			<case>
+				<condition>
+					<if var="a_m" relation="=" value="Ask(EndDate)" />
+				</condition> 
+				<effect util="1">
+					<set var="u_m" value="What is the end date of your trip?" />
+				</effect>
+			</case>
 			<case>
 				<condition>
 					<if var="a_m" relation="=" value="Start"/>
@@ -292,7 +521,7 @@
 				</condition>
 				<effect util="1">
 					<set var="u_m" value="I'm sorry, I did not understand that." />
-					<set var="toground" value="{toground}"/>
+					<set var="a_m" value="Ask({FocusSlot})"/>
 				</effect>
 			</case>
 			<case>
@@ -305,196 +534,16 @@
 			</case>
 			<case>
 				<condition>
-					<if var="a_m" relation="=" value="AskOpt({Slot})" />
+					<if var="a_m" relation="=" value="EndDialogue" />	
 				</condition>
 				<effect util="1">
-					<set var="u_m" value="Please specify the {Slot}, or say 'skip' to ignore the field." />
+					<set var="u_m" value="Thank you for your input!" />
 				</effect>
 			</case>
-			<case>
-				<condition>
-					<if var="a_m" relation="=" value="Ask({Slot})" />
-				</condition> 
-				<effect util="1">
-					<set var="u_m" value="Please specify the {Slot}." />
-				</effect>
-			</case>
-			<case>
-				<condition>
-					<if var="a_m" relation="=" value="SummariseResults" />	
-				</condition>
-				<effect util="1">
-					<set var="u_m" value="Here are the values filled for the form:" />
-					<set var="a_m" value="{Slots}"/>
-				</effect>
-			</case>
-		</rule>
-		
-		<!-- Rule for the final (recursive) enumeration of filled values -->
-		<rule>
-			<case>
-				<condition>
-					<if var="a_m" relation="=" value="[{S}, {R}]"/>
-					<if var="S" relation="in" value="{Slots}"/>
-					<if var="{S}" relation="=" value="{SlotValue}"/>
-					<if var="SlotValue" relation="!=" value="None"/>
-				</condition>
-				<effect util="1">
-					<set var="u_m" value="The {S} is {SlotValue}"/>
-					<set var="a_m" value="[{R}]"/>
-				</effect>
-			</case>
-			<case>
-				<condition>
-					<if var="a_m" relation="=" value="[{S}]" />
-					<if var="S" relation="in" value="{Slots}"/>	
-					<if var="{S}" relation="=" value="{SlotValue}"/>
-					<if var="SlotValue" relation="!=" value="None"/>
-				</condition>
-				<effect util="1">
-					<set var="u_m" value="And the {S} is {SlotValue}. Thank you for your input!" />
-				</effect>
-			</case>
-		</rule>
+		</rule>	
 
 	</model>
 	
-	
-	<!-- Transition model (following a new system action). -->
-	<model trigger="a_m,toground" blocking="true">
-		
-		<!-- Removing the grounded/skipped value from the 'toground' variable -->
-		<rule>
-			<case>
-				<condition>
-					<if var="a_m" relation="=" value="Ground({Slot},*)" />
-					<if var="toground" relation="contains" value="{Slot}"/>
-				</condition>
-				<effect prob="1">
-					<set var="toground" value="{toground}-{Slot}"/>
-					<set var="newinputs" value="{newinputs}-{Slot}"/>
-				</effect>
-			</case>
-			<case>
-				<condition>
-					<if var="a_m" relation="=" value="Skip({Slot})"/>
-					<if var="toground" relation="contains" value="{Slot}"/>
-				</condition>
-				<effect prob="1">
-					<set var="toground" value="{toground}-{Slot}"/>
-				</effect>
-			</case>
-		</rule>
-		
-		<!-- Updates the toground slots if a precedence relation is fullfilled -->
-		<rule>
-			<case>
-				<condition>
-					<if var="precedence" relation="contains" value="({X1},{X2})"/>
-					<if var="a_m" relation="=" value="(Ground|Skip)({X1}*" />
-					<if var="toground" relation="!contains" value="{X1}"/>
-					<if var="toground" relation="!contains" value="{X2}"/>
-				</condition>
-				<effect prob="1">
-					<set var="toground" value="{toground}+{X2}"/>
-				</effect>
-			</case>
-		</rule>
-		
-		<!-- Updates the toground slots in case of mutual exclusivity between two slots -->
-		<rule>
-			<case>
-				<condition>
-					<if var="exclusive" relation="contains" value="({X1},{X2})"/>
-					<if var="a_m" relation="=" value="(Ground|Skip)(({X1}|{X2})*" />
-					<if var="toground" relation="!contains" value="({X1}|{X2})"/>
-				</condition>
-				<effect prob="1">
-					<set var="toground" value="{toground}-{X1}-{X2}"/>
-				</effect>
-			</case>
-		</rule>
-
-		<!-- Updates the toground slot when (re)starting the dialogue -->
-		<rule> 
-			<case>
-				<condition>
-					<if var="a_m" relation="=" value="Start"/>
-					<if var="toground" relation="=" value="None"/>
-					<if var="slot" relation="in" value="{Slots}"/>
-					<if var="precedence" relation="!contains" value="(*,{Slot})"/>
-				</condition>
-				<effect>
-					<set var="toground" value="{Slot}" exclusive="false"/>
-				</effect>
-			</case>
-		</rule>
-		<rule> 
-			<case>
-				<condition>
-					<if var="a_m" relation="=" value="Start"/>
-				</condition>
-				<effect>
-					<set var="{Slot}" value="None"/>
-				</effect>
-			</case>
-		</rule>
-
-		<!-- Write the current slot 'in focus' in a variable FocusSlot -->
-		<rule>
-			<case>
-				<condition operator="or">
-					<if var="a_m" relation="=" value="Ask({Slot})"/>	
-					<if var="a_m" relation="=" value="AskOpt({Slot})"/>
-				</condition>
-				<effect prob="1">
-					<set var="FocusSlot" value="{Slot}"/>
-				</effect>
-			</case>
-		</rule>
-
-	</model> 
-	
-	
-	<!-- If a new slot is grounded, asks a new question, or present the results -->
-	<model trigger="toground">
-
-		<rule id="nextquestion">
-
-			<case>
-				<condition>
-					<if var="Slot" relation="in" value="{toground}" />
-					<if var="optional" relation="contains" value="{Slot}"/>
-				</condition>
-				<effect util="1">
-					<set var="a_m" value="AskOpt({Slot})" />
-				</effect>
-			</case>
-			<case>
-				<condition>
-					<if var="Slot" relation="in" value="{toground}" />
-				</condition>
-				<effect util="1">
-					<set var="a_m" value="Ask({Slot})" />
-				</effect>
-			</case>
-		</rule> 
-	
-		<rule>
-			<case>
-				<!--If everything is grounded, present all results (return control to caller) -->
-				<condition>
-					<if var="toground" relation="=" value="[]" />
-				</condition>
-				<effect util="1">
-					<set var="a_m" value="SummariseResults" />
-				</effect>
-			</case>
-	
-		</rule>
-	</model>
-	
-	 
  	<settings>
 		<modules>opendial.plugins.NLULuis</modules>
 		<key_luis>ee81a5dae9cd44ebbfb8a682acbacd0a</key_luis>

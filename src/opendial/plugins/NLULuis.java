@@ -131,6 +131,13 @@ public class NLULuis implements Module {
 			for (Value hypothesis : hypotheses) {
 				if (hypothesis instanceof StringVal) {
 					String resp = makeRequest(hypothesis.toString().toLowerCase());
+					if (resp.isEmpty()) {
+						resp = makeRequest(hypothesis.toString().toLowerCase());
+					}
+					if (resp.isEmpty()) {
+						log.warning("Cannot execute request, aborting");
+						return;
+					}
 			//		log.info("Raw response="+resp.toString());
 					LuisJson json = (new Gson()).fromJson(resp, LuisJson.class);
 					
@@ -179,7 +186,6 @@ public class NLULuis implements Module {
 			return response.body().string();
 		}
 		catch (Exception e) {
-			e.printStackTrace();
 			log.warning("Cannot make request " + userUtt);
 			return "";
 		}
