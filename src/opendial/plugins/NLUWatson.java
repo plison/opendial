@@ -63,7 +63,7 @@ public class NLUWatson implements Module {
 
 	boolean paused = true;
 
-	public static String userActVar = "a_u";
+	public static String entitiesVar = "entities";
 
 	public static String serverURL = "http://scorpion-5.2-3-5-7-11.com:8880";		
 	public static String charset = "UTF-8";
@@ -106,7 +106,7 @@ public class NLUWatson implements Module {
 			return;
 		}
 		String userVar = system.getSettings().userInput;
-		String newVar = userActVar + "'";
+		String newVar = entitiesVar + "'";
 		if (updatedVars.contains(userVar) && state.hasChanceNode(userVar)) {
 
 			// if the user action is already specified with good confidence by another model/module,
@@ -116,7 +116,7 @@ public class NLUWatson implements Module {
 			}
 
 			// creating the conditional probability distribution
-			ConditionalTable.Builder builder = new ConditionalTable.Builder(userActVar);
+			ConditionalTable.Builder builder = new ConditionalTable.Builder(entitiesVar);
 
 			// looping on the possible user utterances
 			Set<Value> hypotheses = state.queryProb(userVar).getValues();
@@ -127,7 +127,11 @@ public class NLUWatson implements Module {
 					WatsonJson json = (new Gson()).fromJson(resp, WatsonJson.class);
 					// creating a new value as a list of (entity,type) pairs
 					Set<Value> entities = new HashSet<Value>();
-					for (int segindex=0; json!=null && json.segList!=null & segindex< json.segList.size(); segindex++) {
+					int segsize = 0;
+					if (json!=null && json.segList!=null) {
+						segsize = json.segList.size();
+					}
+					for (int segindex=0; segindex < segsize; segindex++) {
 						Segment seg = json.segList.get(segindex);
 						for (Entity e : seg.outAPI.entities) {
 							String value = e.norm;
@@ -140,9 +144,9 @@ public class NLUWatson implements Module {
 					Value outputVal = (entities.isEmpty())? 
 							ValueFactory.none() : ValueFactory.create(entities);
 
-							// adding the conditional probability in the table
-							Assignment condition = new Assignment(userVar,hypothesis);
-							builder.addRow(condition,outputVal,1.0);
+					// adding the conditional probability in the table
+					Assignment condition = new Assignment(userVar,hypothesis);
+					builder.addRow(condition,outputVal,1.0);
 				}
 				else {
 					Assignment condition = new Assignment(userVar,hypothesis);
