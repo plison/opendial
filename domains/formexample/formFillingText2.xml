@@ -589,7 +589,7 @@
 	</model>
 	
  	<settings>
-		<modules>opendial.plugins.NLULuis</modules>
+		<modules>opendial.plugins.NLULuis,opendial.plugins.FormDisplay</modules>
 		<key_luis>ee81a5dae9cd44ebbfb8a682acbacd0a</key_luis>
 		<model_luis>fb1cb71a-07c4-4f8b-bb0a-61369e90f4ec</model_luis>
 	</settings> 
