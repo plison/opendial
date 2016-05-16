@@ -126,7 +126,7 @@ task compile (type: Copy) {
  */
 startScripts {
     doLast {
-    	unixScript.text = unixScript.text.replaceFirst("\n", "\nJAVA_OPTS=\"\\\$@\"\n")
+    	unixScript.text = unixScript.text.replaceFirst("\n", "\nJAVA_OPTS=\"-Dfile.encoding=UTF-8 \\\$@\"\n")
     	windowsScript.text = windowsScript.text.replaceFirst("\n", "\nset JAVA_OPTS=%* \n")
     }
 }

@@ -18,14 +18,9 @@
 		<variable id="optional">
 			<value prob="1">[Person]</value>
 		</variable>
-
-		<!-- List of precedence relations between slots -->
-		<variable id="precedence">
-			<value>[(StartDate,EndDate)]</value>
-		</variable>
 		
 		<!-- List of mutually exclusive slots -->
-		<variable id="exclusive">
+		<variable id="mutuallyExclusive">
 			<value>[]</value>
 		</variable>
 		 
@@ -54,9 +49,8 @@
 				<condition>
 					<if var="entities" relation="contains" value="({Entity},builtin.geography*)" />
 					<if var="grounded" relation="!contains" value="Location" />	
-					<if var="enabled" relation="contains" value="Location"/>
 				</condition>
-				<effect prob="0.8">
+				<effect prob="0.9">
 					<set var="a_u" value="FillSlot(Location)" exclusive="false"/>/>
 					<set var="Location" value="{Entity}" />
 				</effect>
@@ -66,7 +60,6 @@
 				<condition>
 					<if var="entities" relation="contains" value="({Entity},builtin.geography*)" />
 					<if var="u_u" relation="contains" value="no" />		
-					<if var="enabled" relation="contains" value="Location"/>
 				</condition>
 				<effect prob="0.7">
 					<set var="a_u" value="FillSlot(Location)" exclusive="false"/>/>
@@ -93,9 +86,8 @@
 					<if var="entities" relation="contains"
 						value="({Entity},builtin.encyclopedia*)" />
 					<if var="grounded" relation="!contains" value="Person" />					
-					<if var="enabled" relation="contains" value="Person"/>
 				</condition>
-				<effect prob="0.8">
+				<effect prob="0.9">
 					<set var="a_u" value="FillSlot(Person)" exclusive="false" />
 					<set var="Person" value="{Entity}" />
 				</effect>
@@ -105,7 +97,6 @@
 					<if var="entities" relation="contains"
 						value="({Entity},builtin.encyclopedia*)" />
 					<if var="u_u" relation="contains" value="no" />		
-					<if var="enabled" relation="contains" value="Person"/>
 				</condition>
 				<effect prob="0.7">
 					<set var="a_u" value="FillSlot(Person)"  exclusive="false"/>
@@ -130,9 +121,8 @@
 				<condition>
 					<if var="entities" relation="contains" value="({Entity},builtin.datetime*)" />
 					<if var="grounded" relation="!contains" value="StartDate" />	
-					<if var="enabled" relation="contains" value="StartDate"/>
 				</condition>
-				<effect prob="0.8">
+				<effect prob="0.9">
 					<set var="a_u" value="FillSlot(StartDate)" exclusive="false"/>
 					<set var="StartDate" value="{Entity}" />
 				</effect>
@@ -141,7 +131,6 @@
 				<condition>
 					<if var="entities" relation="contains" value="({Entity},builtin.datetime*)" />
 					<if var="u_u" relation="contains" value="no"/>	
-					<if var="enabled" relation="contains" value="StartDate"/>
 				</condition>
 				<effect prob="0.7">
 					<set var="a_u" value="FillSlot(StartDate)" exclusive="false"/>
@@ -167,9 +156,8 @@
 				<condition>
 					<if var="entities" relation="contains" value="({Entity},builtin.datetime*)" />
 					<if var="grounded" relation="!contains" value="EndDate"/>				
-					<if var="enabled" relation="contains" value="EndDate"/>
 				</condition>
-				<effect prob="0.8">
+				<effect prob="0.9">
 					<set var="a_u" value="FillSlot(EndDate)" exclusive="false"/>
 					<set var="EndDate" value="{Entity}" />
 				</effect>
@@ -178,7 +166,6 @@
 				<condition>
 					<if var="entities" relation="contains" value="({Entity},builtin.datetime*)" />
 					<if var="u_u" relation="contains" value="no"/>	
-					<if var="enabled" relation="contains" value="EndDate"/>
 				</condition>
 				<effect prob="0.7">
 					<set var="a_u" value="FillSlot(EndDate)" exclusive="false"/>
@@ -399,20 +386,7 @@
 				</effect>
 			</case>
 		</rule>
-		
-		<!-- Enables the slots that are not dependent on a preceding slot -->
-		<rule> 
-			<case>
-				<condition>
-					<if var="a_m" relation="=" value="Start"/>
-					<if var="Slot" relation="in" value="{Slots}"/>
-					<if var="precedence" relation="!contains" value="(*,{Slot})"/>
-				</condition>
-				<effect>
-					<set var="enabled" value="{Slot}" exclusive="false"/>
-				</effect>
-			</case>
-		</rule>
+	
 		
 		<!-- Write the current slot 'in focus' in a variable FocusSlot -->
 		<rule>
@@ -426,26 +400,12 @@
 				</effect>
 			</case>
 		</rule>
-		
-		<!-- Updates the enabled slots if a precedence relation is fullfilled -->
-		<rule>
-			<case>
-				<condition>
-					<if var="precedence" relation="contains" value="({Slot1},{Slot2})"/>
-					<if var="a_m" relation="=" value="(Ground|Skip)({Slot1}*"/>
-					<if var="enabled" relation="!contains" value="{Slot2}"/>
-				</condition>
-				<effect prob="1">
-					<set var="enabled" value="{enabled}+{Slot2}" exclusive="false" />
-				</effect>
-			</case>
-		</rule>
-		
+	
 		<!-- Updates the grounded slots in case of mutual exclusivity between two slots -->
 		<rule>
 			<case>
 				<condition>
-					<if var="exclusive" relation="contains" value="({Slot1},{Slot2})"/>
+					<if var="mutuallyExclusive" relation="contains" value="({Slot1},{Slot2})"/>
 					<if var="a_m" relation="=" value="(Ground|Skip)(({Slot1}|{Slot2})*"/>
 				</condition>
 				<effect prob="1">
@@ -465,7 +425,6 @@
 				<condition>
 					<if var="Slot" relation="in" value="{Slots}" />
 					<if var="grounded" relation="!contains" value="{Slot}"/>
-					<if var="enabled" relation="contains" value="{Slot}"/>
 				</condition>
 				<effect util="0.1">
 					<set var="a_m" value="Ask({Slot})" />
@@ -495,7 +454,7 @@
 			<case>
 				<condition>
 					<if var="a_m" relation="=" value="Ask(Person)" />
-				</condition> 
+				</condition>  
 				<effect util="1">
 					<set var="u_m" value="What is your name? Say 'skip' to ignore the field." />
 				</effect>

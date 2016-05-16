@@ -26,6 +26,8 @@ package opendial.plugins;
 import java.awt.Component;
 import java.awt.Font;
 import java.util.Collection;
+import java.util.List;
+import java.util.function.Function;
 import java.util.logging.Logger;
 
 import javax.swing.JFrame;
@@ -36,6 +38,7 @@ import javax.swing.JTable;
 import opendial.DialogueState;
 import opendial.DialogueSystem;
 import opendial.bn.values.Value;
+import opendial.bn.values.ValueFactory;
 import opendial.gui.GUIFrame;
 import opendial.modules.Module;
 
@@ -67,7 +70,7 @@ public class FormDisplay implements Module {
 
 	@Override
 	public void trigger(DialogueState state, Collection<String> updatedVars) {
-		if (running && updatedVars.contains("a_m") && state.hasChanceNode("a_m") 
+		if (running && updatedVars.contains("u_m") && state.hasChanceNode("a_m") 
 				&& state.queryProb("a_m").getBest().toString().equals("EndDialogue")) {
 			
 			String[] columns = {"Slot name", "Slot value"};
@@ -95,7 +98,9 @@ public class FormDisplay implements Module {
 			table.setFillsViewportHeight(true);
 
 			Component parentC = (system.getSettings().showGUI)? system.getModule(GUIFrame.class).getFrame() : null;
-			JOptionPane.showMessageDialog(parentC, scrollPane, "Results of the form-filling process", JOptionPane.INFORMATION_MESSAGE);
+			
+			new Thread(() -> JOptionPane.showMessageDialog(parentC, scrollPane, 
+					"Results of the form-filling process", JOptionPane.INFORMATION_MESSAGE)).start();
 
 		}
 	}
@@ -110,4 +115,39 @@ public class FormDisplay implements Module {
 		return running;
 	}
 
+
+public static final class WatsonConvert implements Function<List<String>,Value> {
+
+	String[] months = {"January", "February", "March", "April", "May", "June",
+			"July", "August", "September", "October", "November", "December"};
+	
+	@Override
+	public Value apply(List<String> args) {
+		if (args.size()!=1) {
+			throw new RuntimeException("Illegal number of arguments: " + args.size());
+		}
+		String arg = args.get(0);
+		if (arg.length() == 10) {
+			String year = arg.substring(0, 4);
+			String month = arg.substring(5, 7);
+			String day = (arg.charAt(8)=='0')? arg.substring(9, 10) : arg.substring(8,10);
+			String monthName = months[Integer.parseInt(month)-1];
+			return ValueFactory.create(monthName + " " + day + " " + year);
+		}
+		if (arg.startsWith("P") && arg.length()==3) {
+			char nb = arg.charAt(1);
+			if (arg.charAt(2)=='D') {
+				return ValueFactory.create(nb + " days");
+			}
+			else if (arg.charAt(2)=='W') {
+				return ValueFactory.create(nb + " weeks");
+			}
+			return ValueFactory.create(nb + " " + arg.charAt(2));
+		}
+		return ValueFactory.create(arg);
+	}
+	
 }
+}
+
+
