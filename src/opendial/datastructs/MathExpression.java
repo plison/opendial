@@ -41,10 +41,7 @@ import opendial.bn.values.Value;
 import opendial.templates.FunctionalTemplate;
 import opendial.templates.Template;
 import net.objecthunter.exp4j.Expression;
-import net.objecthunter.exp4j.function.Function;
-import net.objecthunter.exp4j.operator.Operator;
-import net.objecthunter.exp4j.shuntingyard.ShuntingYard;
-import net.objecthunter.exp4j.tokenizer.Token;
+import net.objecthunter.exp4j.ExpressionBuilder;
 
 /**
  * Representation of a mathematical expression whose value can be evaluated. The
@@ -72,10 +69,10 @@ public final class MathExpression {
 	static Pattern functionPattern = Pattern.compile("\\w+\\(");
 
 	/** The original string for the expression */
-	final String expression;
+	final String expressionStr;
 
 	/** The tokens in the expression */
-	final Token[] tokens;
+	final Expression exp;
 
 	/** The unknown variable labels */
 	final Set<String> variables;
@@ -89,7 +86,7 @@ public final class MathExpression {
 	 * @param expression the expression
 	 */
 	public MathExpression(String expression) {
-		this.expression = expression;
+		this.expressionStr = expression;
 		this.functions = getFunctions(expression);
 		this.variables = new HashSet<String>();
 		String local = new String(expression);
@@ -102,8 +99,9 @@ public final class MathExpression {
 				.forEach(f -> variables.remove(f));
 		local = local.replaceAll("[\\[\\]\\{\\}]", "");
 		local = local.replaceAll("\\.([a-zA-Z])", "_$1");
-		tokens = ShuntingYard.convertToRPN(local, new HashMap<String, Function>(),
-				new HashMap<String, Operator>(), getVariableLabels(local));
+		ExpressionBuilder builder = new ExpressionBuilder(local);
+		builder.variables(getVariableLabels(local));
+		exp = builder.build();
 	}
 
 	private static Set<FunctionalTemplate> getFunctions(String expression) {
@@ -144,9 +142,9 @@ public final class MathExpression {
 	 * @param existing the expression to copy
 	 */
 	public MathExpression(MathExpression existing) {
-		this.expression = existing.expression;
+		this.expressionStr = existing.expressionStr;
 		this.variables = existing.variables;
-		this.tokens = existing.tokens;
+		this.exp = existing.exp;
 		this.functions = existing.functions;
 	}
 
@@ -168,8 +166,8 @@ public final class MathExpression {
 		if (!variables.isEmpty()) {
 			throw new RuntimeException("variables " + variables + " are not set");
 		}
-		Expression exp = new Expression(tokens);
-		return exp.evaluate();
+		Expression exp2 = new Expression(exp);
+		return exp2.evaluate();
 	}
 
 	/**
@@ -186,9 +184,9 @@ public final class MathExpression {
 			Value result = f.getValue(input2);
 			input2.addPair((fu.getName()+f.hashCode()), result);
 		}
-		Expression exp = new Expression(tokens);
-		exp.setVariables(getDoubles(input2));
-		double result = exp.evaluate();
+		Expression exp2 = new Expression(exp);
+		exp2.setVariables(getDoubles(input2));
+		double result = exp2.evaluate();
 		return result;
 	}
 
@@ -201,10 +199,10 @@ public final class MathExpression {
 	 * @return the expression corresponding to the combination
 	 */
 	public MathExpression combine(char operator, MathExpression... elements) {
-		String newExpression = "(" + expression;
+		String newExpression = "(" + expressionStr;
 		for (int i = 0; i < elements.length; i++) {
 			MathExpression element = elements[i];
-			newExpression += operator + element.expression;
+			newExpression += operator + element.expressionStr;
 		}
 		return new MathExpression(newExpression + ")");
 	}
@@ -259,7 +257,7 @@ public final class MathExpression {
 	 */
 	@Override
 	public String toString() {
-		return expression;
+		return expressionStr;
 	}
 
 	/**
@@ -268,7 +266,7 @@ public final class MathExpression {
 	@Override
 	public boolean equals(Object o) {
 		return (o instanceof MathExpression)
-				&& ((MathExpression) o).expression.equals(expression);
+				&& ((MathExpression) o).expressionStr.equals(expressionStr);
 	}
 
 	/**
@@ -276,7 +274,7 @@ public final class MathExpression {
 	 */
 	@Override
 	public int hashCode() {
-		return expression.hashCode();
+		return expressionStr.hashCode();
 	}
 
 }

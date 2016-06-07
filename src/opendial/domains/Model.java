@@ -168,7 +168,7 @@ public class Model {
 				e.printStackTrace();
 			}
 		}
-		return !state.getNewVariables().isEmpty();
+		return !state.getNewVariables().isEmpty() || !state.getNewActionVariables().isEmpty();
 	}
 
 	/**

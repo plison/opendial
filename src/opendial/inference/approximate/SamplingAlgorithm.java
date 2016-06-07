@@ -26,7 +26,9 @@ package opendial.inference.approximate;
 import java.util.logging.*;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.function.Consumer;
 
@@ -250,21 +252,37 @@ public class SamplingAlgorithm implements InferenceAlgorithm {
 	 */
 	public EmpiricalDistribution getWeightedSamples(Query query,
 			Consumer<Collection<Sample>> weightScheme) {
-
-		LikelihoodWeighting isquery =
-				new LikelihoodWeighting(query, nbSamples, maxSamplingTime);
-		List<Sample> samples = isquery.getSamples();
-		weightScheme.accept(samples);
-		Intervals<Sample> intervals =
-				new Intervals<Sample>(samples, s -> s.getWeight());
+		return getWeightedSamples(Collections.singletonMap(query,weightScheme));
+	} 
+	
+	/**
+	 * Returns an empirical distribution for the particular query, after reweighting
+	 * each samples based on the provided weighting scheme.
+	 * 
+	 * @param query the query
+	 * @param weightedQueries the weighting queries
+	 * @return the resulting empirical distribution for the query variables, after
+	 *         reweigthing
+	 */
+	public EmpiricalDistribution getWeightedSamples(Map<Query,Consumer<Collection<Sample>>> weightedQueries) {
 
 		EmpiricalDistribution distrib = new EmpiricalDistribution();
-
-		int sampleSize = samples.size();
-		for (int j = 0; j < sampleSize; j++) {
-			distrib.addSample(intervals.sample());
+		
+		for (Query query : weightedQueries.keySet()) {
+			Consumer<Collection<Sample>> weightScheme = weightedQueries.get(query);
+			LikelihoodWeighting isquery =
+					new LikelihoodWeighting(query, nbSamples, maxSamplingTime);
+			List<Sample> samples = isquery.getSamples();
+			weightScheme.accept(samples);
+			Intervals<Sample> intervals =
+					new Intervals<Sample>(samples, s -> s.getWeight());
+			int sampleSize = samples.size();
+			for (int j = 0; j < sampleSize; j++) {
+				distrib.addSample(intervals.sample());
+			}
 		}
 		return distrib;
-	}
+
+	} 
 
 }
