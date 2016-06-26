@@ -26,8 +26,8 @@
 		<rule id="pizza">
 			<case>
 				<condition>
-					<if var="u_u" relation="contains" value="(a|one) (pizza)? {Type}"/>
 					<if var="Type" relation="in" value="[Margherita,Marinara,Napoli,Capricciosa,Tonno]"/>
+					<if var="u_u" relation="contains" value="(a|one) (pizza)? {Type}"/>
 				</condition>
 				<effect>
 					<set var="a_u" value="Request({Type},one)"/>
@@ -35,9 +35,9 @@
 			</case>
 			<case>
 				<condition>
-					<if var="u_u" relation="contains" value="{Number} (pizzas)? {Type}(s)?"/>
 					<if var="Type" relation="in" value="[Margherita,Marinara,Napoli,Capricciosa,Tonno]"/>
 					<if var="Number" relation="in" value="[two,three,four,five]"/>
+					<if var="u_u" relation="contains" value="{Number} (pizzas)? {Type}(s)?"/>
 				</condition>
 				<effect>
 					<set var="a_u" value="Request({Type},{Number})"/>
@@ -48,8 +48,8 @@
 		<rule id="drinks">
 			<case>
 				<condition>
-					<if var="u_u" relation="contains" value="(a|one) (bottle of)? {Type}"/>
 					<if var="Type" relation="in" value="[Coke,Fanta,Sprite]"/>
+					<if var="u_u" relation="contains" value="(a|one) (bottle of)? {Type}"/>
 				</condition>
 				<effect>
 					<set var="a_u" value="Request({Type},one)"/>
@@ -57,9 +57,9 @@
 			</case>
 			<case>
 				<condition>
-					<if var="u_u" relation="contains" value="{Number} (bottles of)? {Type}(s)?"/>
 					<if var="Type" relation="in" value="[Coke,Fanta,Sprite]"/>
 					<if var="Number" relation="in" value="[two,three,four,five]"/>
+					<if var="u_u" relation="contains" value="{Number} (bottles of)? {Type}(s)?"/>
 				</condition>
 				<effect>
 					<set var="a_u" value="Request({Type},{Number})"/>
