@@ -127,14 +127,17 @@ public static final class WatsonConvert implements Function<List<String>,Value> 
 			throw new RuntimeException("Illegal number of arguments: " + args.size());
 		}
 		String arg = args.get(0);
-		if (arg.length() == 10) {
+		if (arg.startsWith("$")) {
+		    return ValueFactory.create(arg.replace(",","").replace(" ", ""));
+		}
+		else if (arg.length() == 10 && (arg.substring(0,2).equals("19") || arg.substring(0,2).equals("20"))) {
 			String year = arg.substring(0, 4);
 			String month = arg.substring(5, 7);
 			String day = (arg.charAt(8)=='0')? arg.substring(9, 10) : arg.substring(8,10);
 			String monthName = months[Integer.parseInt(month)-1];
 			return ValueFactory.create(monthName + " " + day + " " + year);
 		}
-		if (arg.startsWith("P") && arg.length()==3) {
+		else if (arg.startsWith("P") && arg.length()==3) {
 			char nb = arg.charAt(1);
 			if (arg.charAt(2)=='D') {
 				return ValueFactory.create(nb + " days");
@@ -144,6 +147,7 @@ public static final class WatsonConvert implements Function<List<String>,Value> 
 			}
 			return ValueFactory.create(nb + " " + arg.charAt(2));
 		}
+		System.out.print("creating the value " + ValueFactory.create(arg));
 		return ValueFactory.create(arg);
 	}
 	

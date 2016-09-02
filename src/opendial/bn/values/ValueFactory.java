@@ -77,7 +77,7 @@ public class ValueFactory {
 		}
 
 		Matcher m = doublePattern.matcher(str);
-		if (m.matches()) {
+		if (m.matches() && (!str.startsWith("0") || str.contains("."))) {
 			return new DoubleVal(Double.parseDouble(str));
 		}
 		else if (str.equalsIgnoreCase("true")) {
