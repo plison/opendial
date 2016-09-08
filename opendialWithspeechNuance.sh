@@ -1,0 +1,2 @@
+./scripts/opendial -Dmodules=opendial.plugins.NuanceSpeech -Did=NMDPTRIAL_sstoyanchev20150113210720 -Dkey=54af867afca30854e4a9dcee27a8fad9c2466d1d6dc7fca25870a33d6cec0ec09b943b983743ec1becc809137103ed33495a50b6214c5879bdfcb629e8c4e984  -Dlang=eng-USA
+
