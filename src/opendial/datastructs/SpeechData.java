@@ -89,6 +89,12 @@ public class SpeechData extends InputStream implements Value {
 		this.data = data;
 		isFinal = true;
 	}
+	
+	/**
+	 * get data (e.g. for debugging)
+	 * @return  data byte array
+	 */
+	public byte[] getData(){return data;}
 
 	/**
 	 * Marks the speech data as final (it won't be changed anymore)

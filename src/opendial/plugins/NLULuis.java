@@ -138,7 +138,7 @@ public class NLULuis implements Module {
 						log.warning("Cannot execute request, aborting");
 						return;
 					}
-			//		log.info("Raw response="+resp.toString());
+					log.info("Raw response="+resp.toString());
 					LuisJson json = (new Gson()).fromJson(resp, LuisJson.class);
 					
 					// creating a new value as a list of (entity,type) pairs
@@ -182,6 +182,7 @@ public class NLULuis implements Module {
 			Request request = new Request.Builder()
 					.url(serverURL+"?"+query)
 					.build();
+			log.info(request.toString());
 			Response response = client.newCall(request).execute();
 			return response.body().string();
 		}

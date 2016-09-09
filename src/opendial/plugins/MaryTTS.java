@@ -135,6 +135,7 @@ public class MaryTTS implements Module {
 	 */
 	public void synthesise(String utterance) {
 		try {
+			System.out.println("In synthesis of MaryTTS");
 			AudioInputStream audio = tts.generateAudio(utterance);
 			SpeechData currentOutput = new SpeechData(audio.getFormat());
 			system.addContent(new Assignment(system.getSettings().systemSpeech,
