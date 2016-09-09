@@ -244,7 +244,9 @@ public class WatsonSpeech implements Module {
 				log.info("JsonArray=" + nbest.toString());
 				for (int i = 0; i < nbest.length(); i++)
 				{
-					String hyp = ((JSONObject) nbest.get(i)).getString("ResultText");
+					//String hyp = ((JSONObject) nbest.get(i)).getString("ResultText");
+					//numshape puts the numbers into hypothesis
+					String hyp = ((JSONObject) nbest.get(i)).getString("Hypothesis");
 					hypotheses.put(hyp,  1.0 / (hypotheses.size() + 1));
 				}
 				hypotheses = InferenceUtils.normalise(hypotheses);
@@ -360,7 +362,7 @@ public class WatsonSpeech implements Module {
 			URIBuilder builderAsr = new URIBuilder();
 			builderAsr.setScheme("http");
 			builderAsr.setHost("scorpion-5.som.ma");
-			builderAsr.setPort(8882);
+			builderAsr.setPort(12490);
 			builderAsr.setPath("/sveta/asr");
 			asrURI = builderAsr.build();
 
