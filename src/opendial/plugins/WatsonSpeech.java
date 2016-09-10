@@ -361,7 +361,7 @@ public class WatsonSpeech implements Module {
 
 			URIBuilder builderAsr = new URIBuilder();
 			builderAsr.setScheme("http");
-			builderAsr.setHost("scorpion-5.som.ma");
+			builderAsr.setHost("38.97.82.35");
 			builderAsr.setPort(12490);
 			builderAsr.setPath("/sveta/asr");
 			asrURI = builderAsr.build();
