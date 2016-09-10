@@ -40,6 +40,7 @@ import com.squareup.okhttp.Response;
 import opendial.DialogueState;
 import opendial.DialogueSystem;
 import opendial.bn.distribs.ConditionalTable;
+import opendial.bn.values.DoubleVal;
 import opendial.bn.values.StringVal;
 import opendial.bn.values.Value;
 import opendial.bn.values.ValueFactory;
@@ -121,7 +122,7 @@ public class NLUWatson implements Module {
 			// looping on the possible user utterances
 			Set<Value> hypotheses = state.queryProb(userVar).getValues();
 			for (Value hypothesis : hypotheses) {
-				if (hypothesis instanceof StringVal) {
+			    if ((hypothesis instanceof StringVal) || (hypothesis instanceof DoubleVal)) {
 					String resp = makeRequest(hypothesis.toString().toLowerCase());
 					//		log.info("Raw response="+resp.toString());
 					WatsonJson json = (new Gson()).fromJson(resp, WatsonJson.class);

@@ -39,6 +39,7 @@ import javax.sound.sampled.AudioFormat;
 
 import opendial.DialogueState;
 import opendial.DialogueSystem;
+import opendial.bn.values.DoubleVal;
 import opendial.bn.values.StringVal;
 import opendial.bn.values.Value;
 import opendial.datastructs.SpeechData;
@@ -168,7 +169,7 @@ public class NuanceSpeech implements Module {
 		else if (updatedVars.contains(outputVar) && state.hasChanceNode(outputVar)
 				&& !paused) {
 			Value utteranceVal = system.getContent(outputVar).getBest();
-			if (utteranceVal instanceof StringVal) {
+			if ((utteranceVal instanceof StringVal)  || (utteranceVal instanceof DoubleVal)) {
 				synthesise(utteranceVal.toString());
 			}
 		}
