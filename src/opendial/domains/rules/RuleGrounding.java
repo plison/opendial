@@ -88,7 +88,12 @@ public class RuleGrounding {
 	 * @param other the alternative groundings
 	 */
 	public void add(RuleGrounding other) {
-		groundings.addAll(other.groundings);
+		for (Assignment otherAssign: other.groundings) {
+			if (groundings.stream().anyMatch(g -> g.contains(otherAssign))) {
+				continue;
+			}
+			groundings.add(otherAssign);
+		}
 		if (!isEmpty()) {
 			groundings.remove(new Assignment());
 		}
@@ -101,6 +106,9 @@ public class RuleGrounding {
 	 */
 	public void add(Assignment singleAssign) {
 		if (singleAssign.isEmpty()) {
+			return;
+		}
+		if (groundings.stream().anyMatch(g -> g.contains(singleAssign))) {
 			return;
 		}
 		groundings.add(singleAssign);
