@@ -117,7 +117,8 @@ public class GUIFrame implements Module {
 				else {
 					frame.setIconImage(
 							ImageIO.read(GUIFrame.class.getResourceAsStream(
-									"/" + ICON_PATH.replace("//", "/"))));
+									"/" + ICON_PATH.replace("//", "/").replace('\\', '/')
+									)));
 				}
 			}
 			catch (Exception e) {

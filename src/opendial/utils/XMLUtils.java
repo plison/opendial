@@ -95,10 +95,11 @@ public class XMLUtils {
 			}
 		}
 		else {
+			String resource = "/"+filename.replace("//", "/").replace('\\', '/');
 			is = XMLUtils.class
-					.getResourceAsStream("/" + filename.replace("//", "/"));
+					.getResourceAsStream(resource);
 			if (is == null) {
-				throw new RuntimeException("Resource cannot be found: " + filename);
+				throw new RuntimeException("Resource cannot be found: "+resource+" ("+ filename+")");
 			}
 		}
 
