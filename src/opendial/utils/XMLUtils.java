@@ -31,6 +31,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.net.URL;
 import java.util.HashSet;
 import java.util.Properties;
 import java.util.Set;
@@ -95,7 +96,7 @@ public class XMLUtils {
 			}
 		}
 		else {
-			String resource = "/"+filename.replace("//", "/").replace('\\', '/');
+			String resource = toResourcePath(filename);
 			is = XMLUtils.class
 					.getResourceAsStream(resource);
 			if (is == null) {
@@ -105,6 +106,22 @@ public class XMLUtils {
 
 		return getXMLDocument(new InputSource(new InputStreamReader(is)));
 	}
+	
+	public static String toResourcePath(String filename) {
+			String resource = "/"	// prepend '/' to be an 'absolute' path (i.e. not relative to XMLUtils.class package)
+					+ filename	
+					  .replace("//", "/")	// some resources have the // sequence 
+					  .replace('\\', '/')	// transform windows path into /-path
+					 ;
+			return resource;
+	}
+	
+	public static boolean existResource(String filename) {
+		URL url = XMLUtils.class
+				.getResource(toResourcePath(filename));
+		return url!=null;
+	}
+	
 
 	/**
 	 * Opens the XML document referenced by the input source, and returns it
