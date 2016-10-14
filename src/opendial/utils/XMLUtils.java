@@ -79,12 +79,16 @@ public class XMLUtils {
 	final static Logger log = Logger.getLogger("OpenDial");
 
 	/**
-	 * Opens the XML document referenced by the filename, and returns it
+	 * Opens the XML document stream.
+	 * 
+	 * The XML document could be a real file
+	 *  or a resource in the JAR file. 
 	 * 
 	 * @param filename the filename
 	 * @return the XML document
+	 * @throws RuntimeException if neither the file nor the resource could be found
 	 */
-	public static Document getXMLDocument(String filename) {
+	public static InputStream getXMLDocumentStream(String filename) {
 		InputStream is = null;
 		if (new File(filename).exists()) {
 			try {
@@ -103,8 +107,19 @@ public class XMLUtils {
 				throw new RuntimeException("Resource cannot be found: "+resource+" ("+ filename+")");
 			}
 		}
+		return is;
+	}
 
-		return getXMLDocument(new InputSource(new InputStreamReader(is)));
+	/**
+	 * Opens the XML document referenced by the filename, and returns it
+	 * 
+	 * @param filename the filename
+	 * @return the XML document
+	 */
+	public static Document getXMLDocument(String filename) {
+		InputStream is = getXMLDocumentStream(filename);
+
+		return getXMLDocument(new InputSource(new InputStreamReader(is))); //TODO: set encoding
 	}
 	
 	public static String toResourcePath(String filename) {
@@ -121,6 +136,8 @@ public class XMLUtils {
 				.getResource(toResourcePath(filename));
 		return url!=null;
 	}
+	
+	
 	
 
 	/**

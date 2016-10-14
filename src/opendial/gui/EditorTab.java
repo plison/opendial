@@ -30,8 +30,8 @@ import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -66,6 +66,7 @@ import net.java.balloontip.styles.BalloonTipStyle;
 import net.java.balloontip.styles.RoundedBalloonStyle;
 import opendial.domains.Domain;
 import opendial.gui.utils.DomainEditorKit;
+import opendial.utils.XMLUtils;
 
 public class EditorTab extends JComponent {
 
@@ -195,7 +196,9 @@ public class EditorTab extends JComponent {
 	 */
 	protected void rereadFile() {
 		try {
-			editor.read(new FileReader(shownFile), shownFile);
+			editor.read(
+					new InputStreamReader(XMLUtils.getXMLDocumentStream(shownFile.getPath())) // throw RuntimeException
+					, shownFile);
 
 			// Set the font style (default 13).
 			editor.setFont(new Font("Verdana", Font.PLAIN, 13));
@@ -212,7 +215,9 @@ public class EditorTab extends JComponent {
 			editor.requestFocusInWindow();
 
 		}
-		catch (IOException e) {
+		catch (RuntimeException e) {
+			log.severe("cannot open xml file: " + e);
+		} catch (IOException e) {
 			log.severe("cannot read xml file: " + e);
 		}
 	}
