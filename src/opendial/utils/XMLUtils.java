@@ -32,6 +32,8 @@ import java.io.InputStreamReader;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.net.URL;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.HashSet;
 import java.util.Properties;
 import java.util.Set;
@@ -77,6 +79,8 @@ public class XMLUtils {
 
 	// logger
 	final static Logger log = Logger.getLogger("OpenDial");
+	
+	public static Charset XML_CHARSET = StandardCharsets.UTF_8;
 
 	/**
 	 * Opens the XML document stream.
@@ -119,7 +123,7 @@ public class XMLUtils {
 	public static Document getXMLDocument(String filename) {
 		InputStream is = getXMLDocumentStream(filename);
 
-		return getXMLDocument(new InputSource(new InputStreamReader(is))); //TODO: set encoding
+		return getXMLDocument(new InputSource(new InputStreamReader(is, XML_CHARSET)));
 	}
 	
 	public static String toResourcePath(String filename) {

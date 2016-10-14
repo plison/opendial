@@ -197,7 +197,7 @@ public class EditorTab extends JComponent {
 	protected void rereadFile() {
 		try {
 			editor.read(
-					new InputStreamReader(XMLUtils.getXMLDocumentStream(shownFile.getPath())) // throw RuntimeException
+					new InputStreamReader(XMLUtils.getXMLDocumentStream(shownFile.getPath()), XMLUtils.XML_CHARSET) // throw RuntimeException
 					, shownFile);
 
 			// Set the font style (default 13).

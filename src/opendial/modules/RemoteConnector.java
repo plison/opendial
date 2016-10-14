@@ -175,7 +175,7 @@ public class RemoteConnector implements Module {
 			// socket
 			if (root.hasChildNodes()) {
 				InputStream content = new ByteArrayInputStream(
-						XMLUtils.serialise(xmlDoc).getBytes());
+						XMLUtils.serialise(xmlDoc).getBytes(XMLUtils.XML_CHARSET));
 				forwardContent(MessageType.XML, content);
 				return;
 			}
@@ -322,7 +322,7 @@ public class RemoteConnector implements Module {
 					}
 				}
 				else if (type == MessageType.XML) {
-					String content = new String(message);
+					String content = new String(message, XMLUtils.XML_CHARSET);
 					Document doc = XMLUtils.loadXMLFromString(content);
 					BNetwork nodes = XMLStateReader
 							.getBayesianNetwork(XMLUtils.getMainNode(doc));

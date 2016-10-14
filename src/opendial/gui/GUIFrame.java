@@ -446,7 +446,7 @@ public class GUIFrame implements Module {
 
 		try {
 			String skeletton = "<domain>\n\n</domain>";
-			Files.write(Paths.get(fileToSave.toURI()), skeletton.getBytes());
+			Files.write(Paths.get(fileToSave.toURI()), skeletton.getBytes(XMLUtils.XML_CHARSET));
 			log.info("Saving domain in " + fileToSave);
 			Domain newDomain =
 					XMLDomainReader.extractDomain(fileToSave.getAbsolutePath());
@@ -524,7 +524,7 @@ public class GUIFrame implements Module {
 		String curText = editorTab.getText();
 		if (fileToWrite != null) {
 			try {
-				Files.write(Paths.get(fileToWrite.toURI()), curText.getBytes());
+				Files.write(Paths.get(fileToWrite.toURI()), curText.getBytes(XMLUtils.XML_CHARSET));
 			}
 			catch (IOException e) {
 				log.severe("Cannot save domain: " + e);
