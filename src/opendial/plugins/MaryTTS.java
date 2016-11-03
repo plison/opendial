@@ -101,7 +101,8 @@ public class MaryTTS implements Module {
 			Value utteranceVal =
 					state.queryProb(systemOutput).toDiscrete().getBest();
 			if (utteranceVal instanceof StringVal) {
-				synthesise(utteranceVal.toString());
+				Thread t = new Thread(()-> synthesise(utteranceVal.toString()));
+				t.start();			
 			}
 		}
 	}
@@ -133,12 +134,13 @@ public class MaryTTS implements Module {
 	 * 
 	 * @param utterance the utterance to synthesise.
 	 */
-	public void synthesise(String utterance) {
+	public synchronized void synthesise(String utterance) {
 		try {
 			AudioInputStream audio = tts.generateAudio(utterance);
 			SpeechData currentOutput = new SpeechData(audio.getFormat());
-			system.addContent(new Assignment(system.getSettings().systemSpeech,
-					currentOutput));
+			Thread t = new Thread(() -> system.addContent(new Assignment(system.getSettings().systemSpeech,
+					currentOutput)));
+			t.start();
 			currentOutput.write(audio);
 			currentOutput.setAsFinal();
 
