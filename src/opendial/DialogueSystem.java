@@ -706,7 +706,7 @@ public class DialogueSystem {
 		if (domain.isEmpty()) {
 			return;
 		}
-		String srcFile = domain.getSourceFile().getAbsolutePath();
+		String srcFile = domain.getSourceFile().getPath();//.getAbsolutePath();
 		try {
 			domain = XMLDomainReader.extractDomain(srcFile);
 			changeSettings(domain.getSettings());
