@@ -196,7 +196,7 @@ public class XMLDomainReader {
 
 			String fileName =
 					mainNode.getAttributes().getNamedItem("href").getNodeValue();
-			String filepath = rootpath + File.separator + fileName;
+			String filepath = rootpath==null? fileName : rootpath + File.separator + fileName;
 			domain.addImportedFiles(new File(filepath));
 			Document subdoc = XMLUtils.getXMLDocument(filepath);
 			domain = extractPartialDomain(XMLUtils.getMainNode(subdoc), domain,

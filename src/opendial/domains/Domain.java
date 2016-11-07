@@ -32,6 +32,7 @@ import java.util.List;
 import opendial.DialogueState;
 import opendial.Settings;
 import opendial.bn.BNetwork;
+import opendial.utils.XMLUtils;
 
 /**
  * Representation of a dialogue domain, composed of (1) an initial dialogue state and
@@ -77,7 +78,9 @@ public class Domain {
 	 * @param xmlFile the file to associate
 	 */
 	public void setSourceFile(File xmlFile) {
-		if (xmlFile.exists()) {
+		if ( xmlFile.exists()
+			 || XMLUtils.existResource(xmlFile.getPath()) // file in JAR
+			) {
 			this.xmlFile = xmlFile;
 		}
 		else {
@@ -100,7 +103,9 @@ public class Domain {
 	 * @param xmlFile the file to add
 	 */
 	public void addImportedFiles(File xmlFile) {
-		if (xmlFile.exists()) {
+		if ( xmlFile.exists()
+			 || XMLUtils.existResource(xmlFile.getPath()) // file in JAR
+			) {
 			importedFiles.add(xmlFile);
 		}
 		else {
