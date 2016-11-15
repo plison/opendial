@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import opendial.bn.values.ValueFactory;
 import opendial.Settings;
 import opendial.Settings.CustomFunction;
 import opendial.bn.values.Value;
@@ -114,10 +115,17 @@ public class FunctionalTemplate implements Template {
 		return getValue(fillers).toString();
 	}
 
-	public Value getValue(Assignment fillers) {
-		List<String> filledParams = parameters.stream()
-				.map(p -> p.fillSlots(fillers)).collect(Collectors.toList());
 
+	public Value getValue(Assignment fillers) {
+		List<String> filledParams = new ArrayList<String>();
+		for (Template t : parameters) {
+			if (t.isFilledBy(fillers)){
+				filledParams.add(t.fillSlots(fillers));
+			}
+			else {
+				return ValueFactory.none();
+			}
+		}
 		return function.apply(filledParams);
 	}
 
