@@ -87,6 +87,7 @@ test {
 		exceptionFormat = 'full'
     }
   	systemProperty 'file.encoding', 'UTF-8'
+  	systemProperty 'java.awt.headless', 'true'
 }
 
 /**
