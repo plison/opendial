@@ -34,6 +34,7 @@ import opendial.DialogueSystem;
 import opendial.bn.distribs.CategoricalTable;
 import opendial.bn.values.NoneVal;
 import opendial.bn.values.Value;
+import opendial.modules.DialogueRecorder;
 import opendial.modules.Module;
 import opendial.utils.StringUtils;
 
@@ -98,6 +99,21 @@ public class TextOnlyInterface implements Module {
 				System.out.println(
 						getTextRendering(system.getContent(var).toDiscrete()));
 			}
+		}
+		
+		
+		//save state if statekey is specified
+		String statekey = system.getSettings().params.getProperty("statekey");
+		
+		if (statekey!=null)
+		{
+			String fname = "./saveState/record" + statekey + ".xml";
+			system.getModule(DialogueRecorder.class).writeToFile(fname);
+			log.info("Interaction saved to " + fname);
+		}
+		else
+		{
+			log.info("Interaction NOT saved, statekey is not defined");
 		}
 	}
 

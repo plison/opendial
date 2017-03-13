@@ -34,7 +34,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.FileHandler;
+import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.logging.SimpleFormatter;
 
 import opendial.bn.BNetwork;
 import opendial.bn.distribs.CategoricalTable;
@@ -57,6 +60,7 @@ import opendial.modules.RemoteConnector;
 import opendial.modules.simulation.Simulator;
 import opendial.readers.XMLDomainReader;
 import opendial.readers.XMLDialogueReader;
+import sun.util.logging.resources.logging;
 
 /**
  * <p>
@@ -79,6 +83,7 @@ public class DialogueSystem {
 
 	// logger
 	final static Logger log = Logger.getLogger("OpenDial");
+	
 
 	// the dialogue state
 	protected DialogueState curState;
@@ -104,6 +109,24 @@ public class DialogueSystem {
 	 * 
 	 */
 	public DialogueSystem() {
+		//SS adding this for logging..? how was it done before?
+		log.setLevel(Level.INFO);		
+		log.setUseParentHandlers(false);
+		
+		FileHandler fh;
+		try {
+			fh = new FileHandler("./log/od.log");
+	        log.addHandler(fh);
+	        SimpleFormatter formatter = new SimpleFormatter();  
+	        fh.setFormatter(formatter); 
+
+		} catch (SecurityException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}  
 
 		settings = new Settings();
 		curState = new DialogueState();
@@ -858,6 +881,8 @@ public class DialogueSystem {
 		String dialogueFile = System.getProperty("dialogue");
 		String simulatorFile = System.getProperty("simulator");
 
+		System.out.println("domain=" + domainFile);
+		System.out.println("dialogue=" + dialogueFile);
 		system.getSettings().fillSettings(System.getProperties());
 		if (domainFile != null) {
 			Domain domain;
@@ -874,6 +899,7 @@ public class DialogueSystem {
 		}
 		if (dialogueFile != null) {
 			system.importDialogue(dialogueFile);
+			log.info("Loading Dialog saved in " + dialogueFile);
 		}
 		if (simulatorFile != null) {
 			Simulator simulator = new Simulator(system,
@@ -886,6 +912,7 @@ public class DialogueSystem {
 		system.changeSettings(settings);
 
 		if (!settings.showGUI) {
+			log.info("No GUI, start text only interface");
 			system.attachModule(new TextOnlyInterface(system));
 		}
 
