@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interaction>
+<systemTurn>
+<variable id="u_m">
+<value>Welcome to hotel reservation! When and where do you need a hotel. You can restart the interaction at any time by saying 'restart'.</value>
+</variable>
+<variable id="a_m">
+<value>Start</value>
+</variable>
+</systemTurn>
+<userTurn>
+<variable id="u_u">
+<value>going to New York</value>
+</variable>
+</userTurn>
+<systemTurn>
+<variable id="u_m">
+<value>OK, the hotel in New York.</value>
+</variable>
+<variable id="a_m">
+<value>Ground(location,New York)</value>
+</variable>
+</systemTurn>
+<systemTurn>
+<variable id="u_m">
+<value>When are you arriving to New York?</value>
+</variable>
+<variable id="a_m">
+<value>Ask(arrival)</value>
+</variable>
+</systemTurn>
+<userTurn>
+<variable id="u_u">
+<value>Friday</value>
+</variable>
+</userTurn>
+<systemTurn>
+<variable id="u_m">
+<value>OK, arriving on March 17 2017.</value>
+</variable>
+<variable id="a_m">
+<value>Ground(arrival,March 17 2017)</value>
+</variable>
+</systemTurn>
+<systemTurn>
+<variable id="u_m">
+<value>How long do you plan to stay in New York?</value>
+</variable>
+<variable id="a_m">
+<value>Ask(duration)</value>
+</variable>
+</systemTurn>
+</interaction>
