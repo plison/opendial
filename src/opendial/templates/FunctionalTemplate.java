@@ -26,6 +26,7 @@ package opendial.templates;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -33,6 +34,7 @@ import java.util.stream.Collectors;
 import opendial.Settings;
 import opendial.Settings.CustomFunction;
 import opendial.bn.values.Value;
+import opendial.bn.values.ValueFactory;
 import opendial.datastructs.Assignment;
 
 public class FunctionalTemplate implements Template {
@@ -115,9 +117,15 @@ public class FunctionalTemplate implements Template {
 	}
 
 	public Value getValue(Assignment fillers) {
-		List<String> filledParams = parameters.stream()
-				.map(p -> p.fillSlots(fillers)).collect(Collectors.toList());
-
+		List<String> filledParams = new LinkedList<String>();
+		for (Template t : parameters) {
+			if (t.isFilledBy(fillers)){
+				filledParams.add(t.fillSlots(fillers));
+			}
+			else {
+				return ValueFactory.none();
+			}
+		}
 		return function.apply(filledParams);
 	}
 

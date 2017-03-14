@@ -29,8 +29,10 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -159,11 +161,18 @@ public class InferenceUtils {
 		List<Map.Entry<T, Double>> entries =
 				new ArrayList<Map.Entry<T, Double>>(initTable.entrySet());
 
+		Random rand = new Random();
+
+		Collections.shuffle(entries);
 		Collections.sort(entries, (a, b) -> {
 			double result = a.getValue() - b.getValue();
-			return (Math.abs(result) < 0.0001) ? 0 : (int) (result * 10000000);
+			if  (Math.abs(result) < 0.0001) {
+				return (rand.nextBoolean())? 1 : -1;
+			}
+			else {
+				return (int) (result * 10000000);
+			}
 		});
-
 		Collections.reverse(entries);
 
 		LinkedHashMap<T, Double> newTable = new LinkedHashMap<T, Double>();
