@@ -36,6 +36,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.SwingUtilities;
 
 import opendial.DialogueSystem;
 import opendial.gui.GUIFrame;
@@ -64,14 +65,17 @@ public class GUITest {
 		}
 	}
 
-	@Test
+	@Test(timeout = 10000) // no more than a minute
 	public void newDomainTest() throws IOException {
+		try {
 		if (!GraphicsEnvironment.isHeadless()) {
 			DialogueSystem system = new DialogueSystem();
 			system.startSystem();
 			GUIFrame gui = system.getModule(GUIFrame.class);
 			log.setLevel(Level.OFF);
-			gui.newDomain(new File("blablaNew.xml"));
+			SwingUtilities.invokeAndWait( () -> {
+				gui.newDomain(new File("blablaNew.xml"));
+			});
 			assertEquals("blablaNew.xml",
 					system.getDomain().getSourceFile().getName());
 			assertEquals(0, system.getDomain().getModels().size());
@@ -81,11 +85,15 @@ public class GUITest {
 			String minDom = "<domain><initialstate>"
 					+ "<variable id=\"foo\"><value>bar</value></variable>"
 					+ "</initialstate></domain>";
-			gui.getEditorTab().setText(minDom);
-			gui.saveDomain();
+			SwingUtilities.invokeAndWait( () -> {
+				gui.getEditorTab().setText(minDom);
+				gui.saveDomain();
+			});
 			assertTrue(gui.getChatTab().getChat().contains("successfully created"));
 			assertTrue(gui.getChatTab().getChat().contains("successfully updated"));
-			gui.resetInteraction();
+			SwingUtilities.invokeAndWait( () -> {
+				gui.resetInteraction();
+			});
 			assertEquals(1, system.getState().getChanceNodes().size());
 			assertEquals(minDom, gui.getEditorTab().getText());
 			Path p = Paths.get(new File("blablaNew.xml").toURI());
@@ -94,20 +102,24 @@ public class GUITest {
 			log.setLevel(null);
 			Files.delete(p);
 			system.getModule(GUIFrame.class).getFrame().dispose();
+		}} catch(Exception ie) {
+			throw new RuntimeException(ie);
 		}
 	}
 
-	@Test
+	@Test(timeout = 10000) // no more than a minute
 	public void existingDomainTest() {
+		try {
 		if (!GraphicsEnvironment.isHeadless()) {
 			DialogueSystem system = new DialogueSystem();
 			system.startSystem();
 			log.setLevel(Level.OFF);
-
 			GUIFrame gui = system.getModule(GUIFrame.class);
 			system.changeDomain(XMLDomainReader
 					.extractDomain("test/domains/example-step-by-step_params.xml"));
-			gui.refresh();
+			SwingUtilities.invokeAndWait( () -> {
+				gui.refresh();
+			});
 			assertTrue(gui.getEditorTab().getText().contains("<parameters>"));
 			assertEquals(2, system.getState().getChanceNodes().size());
 			assertEquals(1, gui.getEditorTab().getFiles().size());
@@ -116,62 +128,83 @@ public class GUITest {
 					system.getContent("u_m").getBest().toString());
 			system.changeDomain(XMLDomainReader
 					.extractDomain("test/domains/example-flightbooking.xml"));
-			gui.refresh();
+			SwingUtilities.invokeAndWait( () -> {
+				gui.refresh();
+			});
 			assertFalse(gui.getEditorTab().getText().contains("<parameters>"));
 			system.addUserInput("move left");
 			assertTrue(system.getContent("u_m").getBest().toString()
 					.contains("Sorry, could you"));
 			assertEquals(6, system.getState().getChanceNodes().size());
 			assertEquals(4, gui.getEditorTab().getFiles().size());
-			gui.newDomain(new File("blablaNew.xml"));
+			SwingUtilities.invokeAndWait( () -> {
+				gui.newDomain(new File("blablaNew.xml"));
+			});
 			assertEquals(1, gui.getEditorTab().getFiles().size());
 			assertEquals("<domain>\n\n</domain>", gui.getEditorTab().getText());
-			gui.resetInteraction();
+			SwingUtilities.invokeAndWait( () -> {
+				gui.resetInteraction();
+			});
 			assertEquals(0, system.getState().getChanceNodes().size());
 
 			log.setLevel(null);
 			system.getModule(GUIFrame.class).getFrame().dispose();
+		}} catch(Exception ie) {
+			throw new RuntimeException(ie);
 		}
 	}
 
-	@Test
+	@Test(timeout = 10000) // no more than a minute
 	public void saveDomainTest() throws IOException, InterruptedException {
+		try {
 		if (!GraphicsEnvironment.isHeadless()) {
 			DialogueSystem system = new DialogueSystem();
 			system.startSystem();
 			GUIFrame gui = system.getModule(GUIFrame.class);
 			log.setLevel(Level.OFF);
-			gui.newDomain(new File("blablaNew.xml"));
+			SwingUtilities.invokeAndWait( () -> {
+				gui.newDomain(new File("blablaNew.xml"));
+			});
 			String minDom = "<domain><model trigger=\"u_u\">"
 					+ "<rule><case><condition><if var=\"u_u\" value=\"input\"/>"
 					+ "</condition><effect><set var=\"u_m\" value=\"output\"/>"
 					+ "</effect></case></rule></model></domain>";
-			gui.getEditorTab().setText(minDom);
+			SwingUtilities.invokeAndWait( () -> {
+				gui.getEditorTab().setText(minDom);
+			});
 			system.addUserInput("input");
 			assertEquals(1, system.getState().getChanceNodes().size());
-			gui.saveDomain();
+			SwingUtilities.invokeAndWait( () -> {
+				gui.saveDomain();
+			});
 			assertEquals(1, system.getState().getChanceNodes().size());
 			system.addUserInput("input");
 			assertEquals(2, system.getState().getChanceNodes().size());
 			assertEquals("output", system.getContent("u_m").getBest().toString());
 
-			String minDom2 = "<domain><rule></domain>";
-			gui.getEditorTab().setText(minDom2);
+			SwingUtilities.invokeAndWait( () -> {
+				gui.getEditorTab().setText("<domain><rule></domain>");
+			});
 			gui.saveDomain();
 			assertTrue(gui.getChatTab().getChat().contains("be terminated"));
 			assertEquals(2, system.getState().getChanceNodes().size());
 			assertEquals(0, system.getDomain().getModels().size());
-			gui.resetInteraction();
+			SwingUtilities.invokeAndWait( () -> {
+				gui.resetInteraction();
+			});
 			assertEquals(0, system.getState().getChanceNodes().size());
 
-			minDom2 = "<domain><rule></rule></domain>";
-			gui.getEditorTab().setText(minDom2);
+			SwingUtilities.invokeAndWait( () -> {
+				gui.getEditorTab().setText("<domain><rule></rule></domain>");
+			});
 			gui.saveDomain();
 			assertTrue(gui.getChatTab().getChat().contains("Invalid tag"));
 			assertEquals(0, system.getState().getChanceNodes().size());
 			assertEquals(0, system.getDomain().getModels().size());
 
-			gui.getEditorTab().setText(minDom);
+			SwingUtilities.invokeAndWait( () -> {
+				gui.getEditorTab().setText(minDom);
+			});
 			gui.saveDomain();
 			assertTrue(gui.getChatTab().getChat().contains("successfully updated"));
 			system.addUserInput("input");
@@ -191,8 +224,9 @@ public class GUITest {
 			p = Paths.get(new File("blabla2.xml").toURI());
 			assertEquals(1, Files.readAllLines(p).size());
 			assertEquals(172, Files.readAllLines(p).get(0).length());
-			minDom2 = "<domain><rule></domain>";
-			gui.getEditorTab().setText(minDom2);
+			SwingUtilities.invokeAndWait( () -> {
+				gui.getEditorTab().setText("<domain><rule></domain>");
+			});
 			gui.saveDomain();
 			assertEquals(1, Files.readAllLines(p).size());
 			assertEquals(23, Files.readAllLines(p).get(0).length());
@@ -204,6 +238,8 @@ public class GUITest {
 			Files.delete(Paths.get(new File("blablaNew.xml").toURI()));
 			Files.delete(Paths.get(new File("blabla2.xml").toURI()));
 			system.getModule(GUIFrame.class).getFrame().dispose();
+		}} catch(Exception ie) {
+			throw new RuntimeException(ie);
 		}
 	}
 
