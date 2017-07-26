@@ -60,7 +60,7 @@ public class RecordingTest {
 	// logger
 	final static Logger log = Logger.getLogger("OpenDial");
 
-	@Test
+	@Test(timeout = 10000) // no more than a minute
 	public void testRecord() throws InterruptedException {
 		if (!GraphicsEnvironment.isHeadless()) {
 			DialogueSystem system =

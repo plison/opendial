@@ -28,18 +28,14 @@ import java.awt.Container;
 import java.awt.Graphics;
 import java.awt.Insets;
 import java.io.StringReader;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
-import javax.swing.JButton;
-import javax.swing.JComponent;
-import javax.swing.JLabel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextField;
-import javax.swing.JTextPane;
+import javax.swing.*;
 import javax.swing.text.DefaultCaret;
 import javax.swing.text.html.HTMLDocument;
 import javax.swing.text.html.HTMLEditorKit;
@@ -216,13 +212,25 @@ public class InteractionTab extends JComponent {
 	 * @param comment the comment to display
 	 */
 	public void addComment(String comment) {
+		if (SwingUtilities.isEventDispatchThread())
+			doAddComment(comment);
+		else {
+			try {
+				SwingUtilities.invokeAndWait(() -> doAddComment(comment));
+			} catch (InvocationTargetException | InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
+	private void doAddComment(String comment) {
+		assert SwingUtilities.isEventDispatchThread();
+		final String safeComment = comment.replace("<", "&lt;").replace(">", "&gt;");
 		try {
-			comment = comment.replace("<", "&lt;").replace(">", "&gt;");
-			kit.insertHTML(doc, doc.getLength(), "[" + comment + "]\n", 0, 0, null);
-		}
-		catch (Exception e) {
-			log.warning("text area exception: " + e);
-		}
+			kit.insertHTML(doc, doc.getLength(), "[" + safeComment + "]\n", 0, 0, null);
+		} catch (Exception e) {
+				log.warning("text area exception: " + e);
+			}
 	}
 
 	/**
@@ -295,21 +303,30 @@ public class InteractionTab extends JComponent {
 	 * @param updatedVars the list of recently updated variables
 	 */
 	public void trigger(DialogueState state, Collection<String> updatedVars) {
-		refresh();
-		if (updatedVars.contains(system.getSettings().userInput)
-				&& state.hasChanceNode(system.getSettings().userInput)) {
-			CategoricalTable distrib = state
-					.queryProb(system.getSettings().userInput, false).toDiscrete();
-			showVariable(distrib);
-		}
-		if (updatedVars.contains(system.getSettings().systemOutput)
-				&& state.hasChanceNode(system.getSettings().systemOutput)) {
-			showVariable(
-					state.queryProb(system.getSettings().systemOutput).toDiscrete());
-		}
-		for (String monitorVar : system.getSettings().varsToMonitor) {
-			if (updatedVars.contains(monitorVar)) {
-				showVariable(state.queryProb(monitorVar).toDiscrete());
+		if (SwingUtilities.isEventDispatchThread()) {
+			assert SwingUtilities.isEventDispatchThread();
+			refresh();
+			if (updatedVars.contains(system.getSettings().userInput)
+					&& state.hasChanceNode(system.getSettings().userInput)) {
+				CategoricalTable distrib = state
+						.queryProb(system.getSettings().userInput, false).toDiscrete();
+				showVariable(distrib);
+			}
+			if (updatedVars.contains(system.getSettings().systemOutput)
+					&& state.hasChanceNode(system.getSettings().systemOutput)) {
+				showVariable(
+						state.queryProb(system.getSettings().systemOutput).toDiscrete());
+			}
+			for (String monitorVar : system.getSettings().varsToMonitor) {
+				if (updatedVars.contains(monitorVar)) {
+					showVariable(state.queryProb(monitorVar).toDiscrete());
+				}
+			}
+		} else {
+			try {
+				SwingUtilities.invokeAndWait(() -> trigger(state, updatedVars));
+			} catch (InvocationTargetException | InterruptedException e) {
+				e.printStackTrace();
 			}
 		}
 	}
@@ -320,7 +337,6 @@ public class InteractionTab extends JComponent {
 	 * @param distrib the distribution to display
 	 */
 	private void showVariable(CategoricalTable distrib) {
-
 		if (distrib.getBest() == ValueFactory.none()) {
 			distrib = distrib.getNBest(nBestView + 1);
 		}

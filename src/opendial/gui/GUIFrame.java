@@ -23,6 +23,7 @@
 
 package opendial.gui;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.logging.*;
 import java.awt.Dimension;
 import java.awt.Point;
@@ -38,11 +39,7 @@ import java.nio.file.Paths;
 import java.util.Collection;
 
 import javax.imageio.ImageIO;
-import javax.swing.JFileChooser;
-import javax.swing.JFrame;
-import javax.swing.JOptionPane;
-import javax.swing.JTabbedPane;
-import javax.swing.WindowConstants;
+import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 import opendial.DialogueState;
@@ -197,21 +194,29 @@ public class GUIFrame implements Module {
 	 */
 	public void refresh() {
 		if (frame != null && frame.isVisible()) {
-			menu.update();
-			String title = "OpenDial toolkit";
-			if (!system.getDomain().isEmpty()) {
-				title += " - domain: "
-						+ system.getDomain().getSourceFile().getName();
-				editorTab.refresh();
-			}
-			else {
-				title += " (no domain)";
-			}
-			if (!frame.getTitle().equals(title)) {
-				frame.setTitle(title);
-			}
-			chatTab.refresh();
+			if (SwingUtilities.isEventDispatchThread())
+				doRefresh();
+			else
+				SwingUtilities.invokeLater(() -> doRefresh());
 		}
+	}
+
+	private void doRefresh() {
+		assert SwingUtilities.isEventDispatchThread();
+		menu.update();
+		String title = "OpenDial toolkit";
+		if (!system.getDomain().isEmpty()) {
+			title += " - domain: "
+					+ system.getDomain().getSourceFile().getName();
+			editorTab.refresh();
+		}
+		else {
+			title += " (no domain)";
+		}
+		if (!frame.getTitle().equals(title)) {
+			frame.setTitle(title);
+		}
+		chatTab.refresh();
 	}
 
 	/**
@@ -445,8 +450,8 @@ public class GUIFrame implements Module {
 	public void newDomain(File fileToSave) {
 
 		try {
-			String skeletton = "<domain>\n\n</domain>";
-			Files.write(Paths.get(fileToSave.toURI()), skeletton.getBytes(XMLUtils.XML_CHARSET));
+			String skeleton = "<domain>\n\n</domain>";
+			Files.write(Paths.get(fileToSave.toURI()), skeleton.getBytes(XMLUtils.XML_CHARSET));
 			log.info("Saving domain in " + fileToSave);
 			Domain newDomain =
 					XMLDomainReader.extractDomain(fileToSave.getAbsolutePath());
