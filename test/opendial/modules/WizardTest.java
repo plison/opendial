@@ -81,7 +81,7 @@ public class WizardTest {
 	}
 
 	@SuppressWarnings("unchecked")
-	@Test
+	@Test(timeout = 10000) // no more than a minute
 	public void testWizardControl() throws InterruptedException {
 		if (!GraphicsEnvironment.isHeadless()) {
 			DialogueSystem system =
