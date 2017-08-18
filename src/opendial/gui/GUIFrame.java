@@ -42,6 +42,7 @@ import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JTabbedPane;
+import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
@@ -163,6 +164,8 @@ public class GUIFrame implements Module {
 		}
 		refresh();
 	}
+	
+	
 
 	// ===================================
 	// GUI UPDATE
@@ -185,10 +188,11 @@ public class GUIFrame implements Module {
 	 */
 	@Override
 	public void trigger(DialogueState state, Collection<String> updatedVars) {
-		if (frame != null && frame.isVisible()) {
+		if (frame != null && frame.isVisible()) 
+		  SwingUtilities.invokeLater( () -> {
 			chatTab.trigger(state, updatedVars);
 			stateMonitorTab.refresh(state, updatedVars);
-		}
+		});
 		refresh();
 	}
 

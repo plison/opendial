@@ -41,6 +41,7 @@ import opendial.DialogueSystem;
 import opendial.gui.GUIFrame;
 import opendial.readers.XMLDomainReader;
 
+import org.junit.AfterClass;
 import org.junit.Test;
 
 /**
@@ -64,6 +65,13 @@ public class GUITest {
 		}
 	}
 
+	 @AfterClass
+	    public static void doYourOneTimeTeardown() throws IOException {
+		Files.delete(Paths.get(new File("blablaNew.xml").toURI()));
+		Files.delete(Paths.get(new File("blablaNew.xml").toURI()));
+		Files.delete(Paths.get(new File("blabla2.xml").toURI()));
+	}   
+	 
 	@Test
 	public void newDomainTest() throws IOException {
 		if (!GraphicsEnvironment.isHeadless()) {
@@ -92,7 +100,6 @@ public class GUITest {
 			assertEquals(1, Files.readAllLines(p).size());
 			assertEquals(94, Files.readAllLines(p).get(0).length());
 			log.setLevel(null);
-			Files.delete(p);
 			system.getModule(GUIFrame.class).getFrame().dispose();
 		}
 	}
@@ -201,8 +208,6 @@ public class GUITest {
 			assertEquals(172, Files.readAllLines(p).get(0).length());
 
 			log.setLevel(null);
-			Files.delete(Paths.get(new File("blablaNew.xml").toURI()));
-			Files.delete(Paths.get(new File("blabla2.xml").toURI()));
 			system.getModule(GUIFrame.class).getFrame().dispose();
 		}
 	}
