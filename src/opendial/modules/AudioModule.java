@@ -315,20 +315,12 @@ public class AudioModule implements Module {
 				AudioFormat format = audioLine.getFormat();
 				byte[] buffer = new byte[4000];
 				while (audioLine.isOpen()) {
-					boolean systemTurnBeforeRead = outputSpeech != null;
 
 					int numBytesRead = audioLine.read(buffer, 0, buffer.length);
 
-					// in case the user has interrupted the system, drain the
-					// line
-					if (systemTurnBeforeRead && outputSpeech == null) {
-						audioLine.drain();
-						continue;
-					}
-
 					// if any of these apply, we do not need to process the
 					// buffer
-					else if (outputSpeech != null || numBytesRead == 0
+					if (outputSpeech != null || numBytesRead == 0
 							|| (!voiceActivityDetection && inputSpeech == null)) {
 						if (speechPanel != null) {
 							speechPanel.clearVolume();
