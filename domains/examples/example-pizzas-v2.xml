@@ -2,327 +2,320 @@
 
 <domain>
 
-	<initialstate>
+  <initialstate>
+    <variable id="u_m">
+      <value>Welcome to our Pizza service. We offer the following pizzas:
+        Margherita, Marinara, Napoli, Capricciosa, and Tonno. You can also order
+        bottles of Coke, Fanta or Sprite. What would you like to order?
+      </value>
+    </variable>
+
+    <variable id="order">
+      <value>[]</value>
+    </variable>
+
+  </initialstate>
+
+  <!-- NLU model -->
+  <model trigger="u_u">
+
+    <rule id="pizza">
+      <case>
+        <condition>
+          <if var="Type" relation="in" value="[Margherita,Marinara,Napoli,Capricciosa,Tonno]"/>
+          <if var="u_u" relation="contains" value="(a|one) (pizza)? {Type}"/>
+        </condition>
+        <effect>
+          <set var="a_u" value="Request({Type},one)"/>
+        </effect>
+      </case>
+      <case>
+        <condition>
+          <if var="Type" relation="in" value="[Margherita,Marinara,Napoli,Capricciosa,Tonno]"/>
+          <if var="Number" relation="in" value="[two,three,four,five]"/>
+          <if var="u_u" relation="contains" value="{Number} (pizzas)? {Type}(s)?"/>
+        </condition>
+        <effect>
+          <set var="a_u" value="Request({Type},{Number})"/>
+        </effect>
+      </case>
+      <case>
+        <condition>
+          <if var="Type" relation="in" value="[Margherita,Marinara,Napoli,Capricciosa,Tonno]"/>
+          <if var="u_u" relation="contains" value="{Type} (please)?"/>
+        </condition>
+        <effect>
+          <set var="a_u" value="AskQuantity({Type})"/>
+        </effect>
+      </case>
+    </rule>
+
+    <rule id="drinks">
+      <case>
+        <condition>
+          <if var="Type" relation="in" value="[Coke,Fanta,Sprite]"/>
+          <if var="u_u" relation="contains" value="(a|one) (bottle of)? {Type}"/>
+        </condition>
+        <effect>
+          <set var="a_u" value="Request({Type},one)"/>
+        </effect>
+      </case>
+      <case>
+        <condition>
+          <if var="Type" relation="in" value="[Coke,Fanta,Sprite]"/>
+          <if var="Number" relation="in" value="[two,three,four,five]"/>
+          <if var="u_u" relation="contains" value="{Number} (bottles of)? {Type}(s)?"/>
+        </condition>
+        <effect>
+          <set var="a_u" value="Request({Type},{Number})"/>
+        </effect>
+      </case>
+      <case>
+        <condition>
+          <if var="Type" relation="in" value="[Coke,Fanta,Sprite]"/>
+          <if var="u_u" relation="contains" value="{Type}(s)? (please)?"/>
+        </condition>
+        <effect>
+          <set var="a_u" value="AskQuantity({Type})"/>
+        </effect>
+      </case>
+    </rule>
+
+    <rule id="confirm">
+      <case>
+        <condition>
+          <if var="u_u" relation="contains" value="(yes|yeah|correct|exactly)"/>
+        </condition>
+        <effect>
+          <set var="a_u" value="Confirm"/>
+        </effect>
+      </case>
+      <case>
+        <condition>
+          <if var="u_u" relation="contains" value="(no|wrong)"/>
+        </condition>
+        <effect>
+          <set var="a_u" value="Disconfirm"/>
+        </effect>
+      </case>
+      <case>
+        <condition>
+          <if var="a_m" value="ReqQuantity({X})"/>
+          <if var="Number" relation="in" value="[one,two,three,four,five]"/>
+          <if var="u_u" relation="contains" value="{Number}"/>
+        </condition>
+        <effect>
+          <set var="a_u" value="Request({X},{Number})"/>
+        </effect>
+      </case>
+    </rule>
+
+    <rule id="other" priority="2">
+      <case>
+        <condition>
+          <if var="u_u" relation="!=" value="None"/>
+        </condition>
+        <effect>
+          <set var="a_u" value="Other"/>
+        </effect>
+      </case>
+    </rule>
+
+  </model>
+
+  <model trigger="a_u">
+    <rule>
+      <case>
+        <condition>
+          <if var="a_m" value="AskConfirm({X})"/>
+          <if var="a_u" relation="=" value="Confirm"/>
+        </condition>
+        <effect util="2">
+          <set var="a_m" value="Order({X})"/>
+        </effect>
+      </case>
+
+    </rule>
+    <rule>
+      <case>
+        <condition>
+          <if var="a_u" relation="=" value="Request({X},{N})"/>
+        </condition>
+        <effect util="1">
+          <set var="a_m" value="AskConfirm({X},{N})"/>
+        </effect>
+      </case>
+    </rule>
+    <rule>
+      <case>
+        <condition>
+          <if var="a_u" relation="=" value="AskQuantity({X})"/>
+        </condition>
+        <effect util="1">
+          <set var="a_m" value="ReqQuantity({X})"/>
+        </effect>
+      </case>
+    </rule>
+
+    <rule>
+      <case>
+        <effect util="-1">
+          <set var="a_m" value="Order(*)"/>
+        </effect>
+        <effect util="-1">
+          <set var="a_m" value="Finish"/>
+        </effect>
+        <effect util="-0.5">
+          <set var="a_m" value="AskConfirm(*)"/>
+        </effect>
+        <effect util="-0.1">
+          <set var="a_m" value="AskRepeat"/>
+        </effect>
+      </case>
+    </rule>
+
+    <rule id="finishing">
+      <case>
+        <condition>
+          <if var="a_m" value="Order(*)"/>
+          <if var="a_u" relation="=" value="Disconfirm"/>
+        </condition>
+        <effect util="2">
+          <set var="a_m" value="Finish"/>
+        </effect>
+      </case>
+    </rule>
+
+    <rule>
+      <case>
+        <condition operator="or">
+          <if var="a_u" relation="=" value="Other"/>
+          <if var="a_u" relation="=" value="Disconfirm"/>
+        </condition>
+        <effect util="0.5">
+          <set var="a_m" value="AskRepeat"/>
+        </effect>
+      </case>
+    </rule>
 
 
-		<variable id="u_m">
-			<value>Welcome to our Pizza service. We offer the following pizzas: 
-			Margherita, Marinara, Napoli, Capricciosa, and Tonno.  You can also order
-			bottles of Coke, Fanta or Sprite. What would you like to order?
-			</value>
-		</variable>
-		
-		<variable id="order">
-		<value>[]</value>
-		</variable>
+  </model>
+
+  <model trigger="a_m">
+
+    <rule>
+      <case>
+        <condition>
+          <if var="a_m" value="AskConfirm({X},{N})"/>
+        </condition>
+        <effect util="1">
+          <set var="u_m" value="You said {N} {X}.  Is that correct?"/>
+        </effect>
+      </case>
+
+      <case>
+        <condition>
+          <if var="a_m" value="ReqQuantity({X})"/>
+        </condition>
+        <effect util="1">
+          <set var="u_m" value="You said {X}. How many?"/>
+        </effect>
+      </case>
+
+      <case>
+        <condition>
+          <if var="a_m" value="Order({X},{N})"/>
+        </condition>
+        <effect util="1">
+          <set var="u_m" value="OK, now ordering {N} {X}.  Anything else?"/>
+        </effect>
+      </case>
+      <case>
+        <condition>
+          <if var="a_m" value="AskRepeat"/>
+        </condition>
+        <effect util="1">
+          <set var="u_m" value="Sorry, I couldnt understand your request.  Could you repeat?"/>
+        </effect>
+      </case>
+      <case>
+        <condition>
+          <if var="a_m" value="Finish"/>
+        </condition>
+        <effect util="1">
+          <set var="u_m" value="Thank you for your order, goodbye!"/>
+        </effect>
+      </case>
+    </rule>
+
+    <rule>
+      <case>
+        <condition>
+          <if var="a_m" value="Order({X})"/>
+        </condition>
+        <effect>
+          <set var="order" value="{X}" exclusive="false"/>
+        </effect>
+      </case>
+    </rule>
+
+    <rule>
+      <case>
+        <effect>
+          <set var="order" value="{order}"/>
+        </effect>
+      </case>
+    </rule>
+
+  </model>
 
 
-	</initialstate>
+  <model trigger="u_m">
 
-
-	<!-- NLU model -->
-	<model trigger="u_u">
-	
-		<rule id="pizza">
-			<case>
-				<condition>
-					<if var="Type" relation="in" value="[Margherita,Marinara,Napoli,Capricciosa,Tonno]"/>
-					<if var="u_u" relation="contains" value="(a|one) (pizza)? {Type}"/>
-				</condition>
-				<effect>
-					<set var="a_u" value="Request({Type},one)"/>
-				</effect>
-			</case>
-			<case>
-				<condition>
-					<if var="Type" relation="in" value="[Margherita,Marinara,Napoli,Capricciosa,Tonno]"/>
-					<if var="Number" relation="in" value="[two,three,four,five]"/>
-					<if var="u_u" relation="contains" value="{Number} (pizzas)? {Type}(s)?"/>
-				</condition>
-				<effect>
-					<set var="a_u" value="Request({Type},{Number})"/>
-				</effect>
-			</case>
-			<case>
-				<condition>
-					<if var="Type" relation="in" value="[Margherita,Marinara,Napoli,Capricciosa,Tonno]"/>
-					<if var="u_u" relation="contains" value="{Type} (please)?"/>
-				</condition>
-				<effect>
-					<set var="a_u" value="AskQuantity({Type})"/>
-				</effect>
-			</case>
-		</rule>
-		
-		<rule id="drinks">
-			<case>
-				<condition>
-					<if var="Type" relation="in" value="[Coke,Fanta,Sprite]"/>
-					<if var="u_u" relation="contains" value="(a|one) (bottle of)? {Type}"/>
-				</condition>
-				<effect>
-					<set var="a_u" value="Request({Type},one)"/>
-				</effect>
-			</case>
-			<case>
-				<condition>
-					<if var="Type" relation="in" value="[Coke,Fanta,Sprite]"/>
-					<if var="Number" relation="in" value="[two,three,four,five]"/>
-					<if var="u_u" relation="contains" value="{Number} (bottles of)? {Type}(s)?"/>
-				</condition>
-				<effect>
-					<set var="a_u" value="Request({Type},{Number})"/>
-				</effect>
-			</case>
-			<case>
-				<condition>
-					<if var="Type" relation="in" value="[Coke,Fanta,Sprite]"/>
-					<if var="u_u" relation="contains" value="{Type}(s)? (please)?"/>
-				</condition>
-				<effect>
-					<set var="a_u" value="AskQuantity({Type})"/>
-				</effect>
-			</case>
-		</rule>
-		
-		<rule id="confirm">
-			<case>
-				<condition>
-					<if var="u_u" relation="contains" value="(yes|yeah|correct|exactly)"/>
-				</condition>
-				<effect>
-					<set var="a_u" value="Confirm"/>
-				</effect>
-			</case>
-			<case>
-				<condition>
-					<if var="u_u" relation="contains" value="(no|wrong)"/>
-				</condition>
-				<effect>
-					<set var="a_u" value="Disconfirm"/>
-				</effect>
-			</case>
-			<case>
-				<condition>
-					<if var="a_m" value="ReqQuantity({X})"/>
-					<if var="Number" relation="in" value="[one,two,three,four,five]"/>
-					<if var="u_u" relation="contains" value="{Number}"/>
-				</condition>
-				<effect>
-					<set var="a_u" value="Request({X},{Number})"/>
-				</effect>
-			</case>
-		</rule>
-		
-		<rule id="other" priority="2">
-			<case>
-			<condition>
-					<if var="u_u" relation="!=" value="None"/>
-				</condition>
-				<effect>
-					<set var="a_u" value="Other"/>
-				</effect>
-			</case>
-		</rule>
-		
-		
-
-	</model>
-
-	<model trigger="a_u">
-
-		<rule>
-			<case>
-			<condition>
-				<if var="a_m" value="AskConfirm({X})"/>
-				<if var="a_u" relation="=" value="Confirm"/>
-				</condition>
-				<effect util="2">
-					<set var="a_m" value="Order({X})"/>
-				</effect>
-			</case>
-
-		</rule>
-			<rule>
-			<case>
-			<condition>
-				<if var="a_u" relation="=" value="Request({X},{N})"/>
-				</condition>
-				<effect util="1">
-					<set var="a_m" value="AskConfirm({X},{N})"/>
-				</effect>
-			</case>
-			</rule>
-		<rule>
-			<case>
-				<condition>
-					<if var="a_u" relation="=" value="AskQuantity({X})"/>
-				</condition>
-				<effect util="1">
-					<set var="a_m" value="ReqQuantity({X})"/>
-				</effect>
-			</case>
-		</rule>
-
-			<rule>
-			<case>
-				<effect util="-1">
-					<set var="a_m" value="Order(*)"/>
-				</effect>
-				<effect util="-1">
-					<set var="a_m" value="Finish"/>
-				</effect>
-				<effect util="-0.5">
-					<set var="a_m" value="AskConfirm(*)"/>
-				</effect>
-				<effect util="-0.1">
-					<set var="a_m" value="AskRepeat"/>
-				</effect>
-			</case>
-		</rule>
-		
-		<rule id="finishing">
-		<case>
-			<condition>
-			<if var="a_m" value="Order(*)"/>
-			<if var="a_u" relation="=" value="Disconfirm"/>
-			</condition>
-			<effect util="2">
-				<set var="a_m" value="Finish"/>
-			</effect>
-			</case>
-		</rule>
-		
-		<rule>
-			<case>
-				<condition operator="or">
-					<if var="a_u" relation="=" value="Other"/>
-					<if var="a_u" relation="=" value="Disconfirm"/>
-				</condition>
-				<effect util="0.5">
-					<set var="a_m" value="AskRepeat"/>
-				</effect>
-			</case>
-		</rule>
-		
-
-	</model>
-	
-	<model trigger="a_m">
-	
-	<rule>
-		<case>
-			<condition>
-				<if var="a_m" value="AskConfirm({X},{N})"/>
-			</condition>
-			<effect util="1">
-				<set var="u_m" value="You said {N} {X}.  Is that correct?"/>
-			</effect>
-		</case>
-
-		<case>
-			<condition>
-				<if var="a_m" value="ReqQuantity({X})"/>
-			</condition>
-			<effect util="1">
-				<set var="u_m" value="You said {X}. How many?"/>
-			</effect>
-		</case>
-
-		<case>
-			<condition>
-				<if var="a_m" value="Order({X},{N})"/>
-			</condition>
-			<effect util="1">
-				<set var="u_m" value="OK, now ordering {N} {X}.  Anything else?"/>
-			</effect>
-		</case>
-		<case>
-			<condition>
-				<if var="a_m" value="AskRepeat"/>
-			</condition>
-			<effect util="1">
-				<set var="u_m" value="Sorry, I couldnt understand your request.  Could you repeat?"/>
-			</effect>
-		</case>
-		<case>
-			<condition>
-				<if var="a_m" value="Finish"/>
-			</condition>
-			<effect util="1">
-				<set var="u_m" value="Thank you for your order, goodbye!"/>
-			</effect>
-		</case>
-	</rule>
-	
-	<rule>
-		<case>
-			<condition>
-				<if var="a_m" value="Order({X})"/>
-			</condition>
-			<effect>
-				<set var="order" value="{X}" exclusive="false"/>
-			</effect>
-		</case>
-	</rule>
-	
-	<rule>
-		<case>
-			<effect>
-				<set var="order" value="{order}"/>
-			</effect>
-		</case>
-	</rule>
-
-	</model>
-	
-	
-	<model trigger="u_m">
-	
-	<rule id="predict">
-		<case>
-			<condition operator="or">
-				<if var="u_m" relation="contains" value="What would you like to order?"/>
-				<if var="u_m" relation="contains" value="Anything else?"/>
-				<if var="u_m" relation="contains" value="Could you repeat?"/>
-			</condition>
-			<effect prob="0.2">
-				<set var="a_u^p" value="Request(Margherita,*)"/>
-			</effect>
-			<effect prob="0.05">
-				<set var="a_u^p" value="Request(Marinara,*)"/>
-			</effect>
-			<effect prob="0.1">
-				<set var="a_u^p" value="Request(Napoli,*)"/>
-			</effect>
-			<effect prob="0.1">
-				<set var="a_u^p" value="Request(Capricciosa,*)"/>
-			</effect>
-			<effect prob="0.05">
-				<set var="a_u^p" value="Request(Tonno,*)"/>
-			</effect>
-			<effect prob="0.2">
-				<set var="a_u^p" value="Request(Coke,*)"/>
-			</effect>
-			<effect prob="0.05">
-				<set var="a_u^p" value="Request(Fanta,*)"/>
-			</effect>
-			<effect prob="0.05">
-				<set var="a_u^p" value="Request(Sprite,*)"/>
-			</effect>
-		</case>
-		<case>
-			<condition>
-				<if var="u_m" relation="contains" value="Is that correct?"/>
-			</condition>
-			<effect prob="0.7">
-				<set var="a_u^p" value="Confirm"/>
-			</effect>
-			<effect prob="0.1">
-				<set var="a_u^p" value="Disconfirm"/>
-			</effect>
-		</case>
-	</rule>
-	</model>
+    <rule id="predict">
+      <case>
+        <condition operator="or">
+          <if var="u_m" relation="contains" value="What would you like to order?"/>
+          <if var="u_m" relation="contains" value="Anything else?"/>
+          <if var="u_m" relation="contains" value="Could you repeat?"/>
+        </condition>
+        <effect prob="0.2">
+          <set var="a_u^p" value="Request(Margherita,*)"/>
+        </effect>
+        <effect prob="0.05">
+          <set var="a_u^p" value="Request(Marinara,*)"/>
+        </effect>
+        <effect prob="0.1">
+          <set var="a_u^p" value="Request(Napoli,*)"/>
+        </effect>
+        <effect prob="0.1">
+          <set var="a_u^p" value="Request(Capricciosa,*)"/>
+        </effect>
+        <effect prob="0.05">
+          <set var="a_u^p" value="Request(Tonno,*)"/>
+        </effect>
+        <effect prob="0.2">
+          <set var="a_u^p" value="Request(Coke,*)"/>
+        </effect>
+        <effect prob="0.05">
+          <set var="a_u^p" value="Request(Fanta,*)"/>
+        </effect>
+        <effect prob="0.05">
+          <set var="a_u^p" value="Request(Sprite,*)"/>
+        </effect>
+      </case>
+      <case>
+        <condition>
+          <if var="u_m" relation="contains" value="Is that correct?"/>
+        </condition>
+        <effect prob="0.7">
+          <set var="a_u^p" value="Confirm"/>
+        </effect>
+        <effect prob="0.1">
+          <set var="a_u^p" value="Disconfirm"/>
+        </effect>
+      </case>
+    </rule>
+  </model>
 
 </domain>
