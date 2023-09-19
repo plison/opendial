@@ -1,8 +1,6 @@
 
 ## OpenDial
 
-**Main website**: [http://opendial-toolkit.net](http://opendial-toolkit.net).
-
 **OpenDial** is a Java-based, domain-independent toolkit for developing
  spoken dialogue systems. The primary focus of OpenDial is on robust
  and adaptive dialogue management, but OpenDial can also be used to
